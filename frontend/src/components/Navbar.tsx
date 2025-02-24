@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
    AlignJustify,
    FacebookIcon,
@@ -93,67 +93,72 @@ function MobileMenu() {
                <AlignJustify size={20} />
             </div>
          </nav>
-         {isOpen && (
-            <motion.div
-               initial={{ x: "-100%" }}
-               animate={{ x: isOpen ? "0%" : "-100%" }}
-               exit={{ x: "-100%" }}
-               transition={{ type: "", stiffness: 1 }}
-               className="absolute shadow-2xl bg-white h-full md:hidden"
-            >
-               <div className="flex flex-col gap-6 p-6 w-[300px]">
-                  <button
-                     className="rounded-full aspect-square border border-gray-200 p-px w-8 h-8 flex items-center justify-center ml-auto cursor-pointer hover:scale-95 transition-all"
-                     onClick={() => setIsOpen(false)}
-                  >
-                     <X size={18} className="" />
-                  </button>
-                  <div className="flex items-center justify-center">
-                     <label className="sr-only">Search</label>
-                     <input
-                        type="search"
-                        placeholder="Search"
-                        className="border border-gray-300 px-2 py-1 w-full"
-                     />
-                  </div>
-                  <Button label="BOOKING NOW" isPrimary className="" />
-                  <div className="w-full flex flex-col gap-4">
-                     {links.map((link) => (
-                        <div key={link} className="flex flex-col gap-2">
-                           <Link key={link} href="/" className="font-semibold">
-                              {link}
-                           </Link>
-                           <div className="aspect-square border border-gray-100 w-full h-px" />
-                        </div>
-                     ))}
-                  </div>
-                  <div className="flex items-center justify-center gap-6 mt-5">
-                     <Link href="#">
-                        <FacebookIcon size={18} />
-                     </Link>
-                     <Link href="#">
-                        <TwitterIcon size={18} />
-                     </Link>
-                     <Link href="#">
-                        <InstagramIcon size={18} />
-                     </Link>
-                  </div>
+         <AnimatePresence>
+            {isOpen && (
+               <motion.div
+                  initial={{ x: "-100%" }}
+                  animate={{ x: isOpen ? "0%" : "-100%" }}
+                  exit={{ x: "-100%" }}
+                  className="absolute shadow-2xl bg-white h-full md:hidden"
+               >
+                  <div className="flex flex-col gap-6 p-6 w-[300px]">
+                     <button
+                        className="rounded-full aspect-square border border-gray-200 p-px w-8 h-8 flex items-center justify-center ml-auto cursor-pointer hover:scale-95 transition-all"
+                        onClick={() => setIsOpen(false)}
+                     >
+                        <X size={18} className="" />
+                     </button>
+                     <div className="flex items-center justify-center">
+                        <label className="sr-only">Search</label>
+                        <input
+                           type="search"
+                           placeholder="Search"
+                           className="border border-gray-300 px-2 py-1 w-full"
+                        />
+                     </div>
+                     <Button label="BOOKING NOW" isPrimary className="" />
+                     <div className="w-full flex flex-col gap-4">
+                        {links.map((link) => (
+                           <div key={link} className="flex flex-col gap-2">
+                              <Link
+                                 key={link}
+                                 href="/"
+                                 className="font-semibold"
+                              >
+                                 {link}
+                              </Link>
+                              <div className="aspect-square border border-gray-100 w-full h-px" />
+                           </div>
+                        ))}
+                     </div>
+                     <div className="flex items-center justify-center gap-6 mt-5">
+                        <Link href="#">
+                           <FacebookIcon size={18} />
+                        </Link>
+                        <Link href="#">
+                           <TwitterIcon size={18} />
+                        </Link>
+                        <Link href="#">
+                           <InstagramIcon size={18} />
+                        </Link>
+                     </div>
 
-                  <div className="flex items-center flex-col gap-px">
-                     <div className="flex items-center gap-2">
-                        <PhoneIcon size={16} className="" />
-                        <p className="font-semibold">(12) 345 67890</p>
-                     </div>
-                     <div className="flex items-center gap-2">
-                        <MailIcon size={16} />
-                        <p className="font-semibold">
-                           info.hotelbooking@gmail.com
-                        </p>
+                     <div className="flex items-center flex-col gap-px">
+                        <div className="flex items-center gap-2">
+                           <PhoneIcon size={16} className="" />
+                           <p className="font-semibold">(12) 345 67890</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                           <MailIcon size={16} />
+                           <p className="font-semibold">
+                              info.hotelbooking@gmail.com
+                           </p>
+                        </div>
                      </div>
                   </div>
-               </div>
-            </motion.div>
-         )}
+               </motion.div>
+            )}
+         </AnimatePresence>
       </>
    );
 }
