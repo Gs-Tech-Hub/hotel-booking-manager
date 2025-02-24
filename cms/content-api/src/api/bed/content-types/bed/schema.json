@@ -1,0 +1,20 @@
+{
+  "kind": "collectionType",
+  "collectionName": "beds",
+  "info": {
+    "singularName": "bed",
+    "pluralName": "beds",
+    "displayName": "bed"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "type": {
+      "type": "string"
+    },
+    "size": {
+      "type": "integer"
+    }
+  }
+}
