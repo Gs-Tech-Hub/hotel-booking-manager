@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* @theme {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-} */
+@theme {
+   --breakpoint-md: 50rem;
+}
