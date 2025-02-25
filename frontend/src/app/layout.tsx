@@ -72,7 +72,11 @@ export default function RootLayout({
               </div>
             </div>
             <div className="mt-8 pt-8 border-t border-gray-700 text-center text-gray-300">
-              <p>&copy; {new Date().getFullYear()} MyNextApp. All rights reserved.</p>
+              <p>
+                &copy; {new Date().getFullYear()} . 
+                <a href="https://gstechhub.com.ng" className="text-gray-300 hover:text-white"> Gs Tech Hub </a>
+                All rights reserved.
+              </p>
             </div>
           </div>
         </footer>
