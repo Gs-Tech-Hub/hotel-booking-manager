@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function BlogSection() {
   return (
     <div className="blog">
@@ -15,7 +17,9 @@ export default function BlogSection() {
             <div key={num} className="col-md-4">
               <div className="blog_box">
                 <div className="blog_img">
-                  <figure><img src={`/images/blog${num}.jpg`} alt="#"/></figure>
+                  <figure>
+                    <Image src={`/images/blog${num}.jpg`} alt="#" layout="responsive" width={500} height={300} />
+                  </figure>
                 </div>
                 <div className="blog_room">
                   <h3>Bed Room</h3>
@@ -28,5 +32,5 @@ export default function BlogSection() {
         </div>
       </div>
     </div>
-  )
+  );
 }

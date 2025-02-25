@@ -1,5 +1,7 @@
 // Gallery page 
 
+import Image from 'next/image';
+
 export default function Gallery() {
   const galleryImages = [
     { id: 1, image: "gallery1.jpg" },
@@ -33,7 +35,7 @@ export default function Gallery() {
               <div key={item.id} className="col-md-3 col-sm-6">
                 <div className="gallery_img">
                   <figure>
-                    <img src={`/images/${item.image}`} alt={`Gallery image ${item.id}`} />
+                    <Image src={`/images/${item.image}`} alt={`Gallery image ${item.id}`} layout="responsive" width={500} height={300} />
                   </figure>
                 </div>
               </div>

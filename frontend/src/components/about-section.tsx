@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function AboutSection() {
   return (
     <div className="about">
@@ -12,7 +14,9 @@ export default function AboutSection() {
           </div>
           <div className="col-md-7">
             <div className="about_img">
-              <figure><img src="/images/about.png" alt="#"/></figure>
+              <figure>
+                <Image src="/images/about.png" alt="#" layout="responsive" width={500} height={300} />
+              </figure>
             </div>
           </div>
         </div>
