@@ -1,7 +1,7 @@
+import Navigation from '@/components/Navigation'
 import Script from 'next/script'
 import './globals.css'
 import { Inter } from 'next/font/google'
-import Navigation from '@/components/Navigation'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* Bootstrap CSS */}
-        <link rel="stylesheet" href="/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
         {/* Style CSS */}
         <link rel="stylesheet" href="/css/style.css" />
         {/* Responsive CSS */}
@@ -78,9 +78,8 @@ export default function RootLayout({
         </footer>
 
         {/* Scripts */}
-        <Script src="/js/jquery.min.js" />
-        <Script src="/js/bootstrap.bundle.min.js" />
-        <Script src="/js/jquery-3.0.0.min.js" />
+        <Script src="https://code.jquery.com/jquery-3.6.0.min.js" />
+        <Script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" />
         <Script src="/js/jquery.mCustomScrollbar.concat.min.js" />
         <Script src="/js/custom.js" />
       </body>
