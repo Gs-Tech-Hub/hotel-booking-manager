@@ -1,3 +1,4 @@
+// import Image from 'next/image' // Removed unused import
 import BannerCarousel from '@/components/Banner/Carousel'
 import BookingForm from '@/components/booking-form'
 import AboutSection from '@/components/about-section'

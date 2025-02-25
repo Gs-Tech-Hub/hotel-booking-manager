@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function RoomSection() {
   return (
     <div className="our_room">
@@ -15,7 +17,9 @@ export default function RoomSection() {
             <div key={num} className="col-md-4 col-sm-6">
               <div id="serv_hover" className="room">
                 <div className="room_img">
-                  <figure><img src={`/images/room${num}.jpg`} alt="#"/></figure>
+                  <figure>
+                    <Image src={`/images/room${num}.jpg`} alt={`Room ${num}`} layout="responsive" width={500} height={300} />
+                  </figure>
                 </div>
                 <div className="bed_room">
                   <h3>Bed Room</h3>

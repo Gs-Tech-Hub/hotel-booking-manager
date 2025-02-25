@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function BannerCarousel() {
   return (
     <div id="myCarousel" className="carousel slide banner" data-ride="carousel">
@@ -8,13 +10,13 @@ export default function BannerCarousel() {
       </ol>
       <div className="carousel-inner">
         <div className="carousel-item active">
-          <img className="first-slide" src="/images/banner1.jpg" alt="First slide" />
+          <Image className="first-slide" src="/images/banner1.jpg" alt="First slide" layout="responsive" width={500} height={300} />
         </div>
         <div className="carousel-item">
-          <img className="second-slide" src="/images/banner2.jpg" alt="Second slide" />
+          <Image className="second-slide" src="/images/banner2.jpg" alt="Second slide" layout="responsive" width={500} height={300} />
         </div>
         <div className="carousel-item">
-          <img className="third-slide" src="/images/banner3.jpg" alt="Third slide" />
+          <Image className="third-slide" src="/images/banner3.jpg" alt="Third slide" layout="responsive" width={500} height={300} />
         </div>
       </div>
       <a className="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">

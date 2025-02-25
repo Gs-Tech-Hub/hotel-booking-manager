@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function ContactForm() {
   return (
     <div className="contact">
@@ -40,6 +42,7 @@ export default function ContactForm() {
           </div>
         </div>
       </div>
+      <Image src="/images/contact.png" alt="Contact Us" width={500} height={300} />
     </div>
   )
 }

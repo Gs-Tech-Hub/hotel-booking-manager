@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function Gallery() {
   return (
     <div className="gallery">
@@ -13,7 +15,9 @@ export default function Gallery() {
           {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
             <div key={num} className="col-md-3 col-sm-6">
               <div className="gallery_img">
-                <figure><img src={`/images/gallery${num}.jpg`} alt="#"/></figure>
+                <figure>
+                  <Image src={`/images/gallery${num}.jpg`} alt={`Gallery image ${num}`} layout="responsive" width={500} height={300} />
+                </figure>
               </div>
             </div>
           ))}

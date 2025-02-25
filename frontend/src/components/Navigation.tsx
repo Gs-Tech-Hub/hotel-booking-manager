@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from 'next/image';
 
 export default function Navigation() {
   return (
@@ -10,7 +11,7 @@ export default function Navigation() {
               <div className="center-desk">
                 <div className="logo">
                   <Link href="/">
-                    <img src="/images/logo.png" alt="Logo" width="100"/>
+                    <Image src="/images/logo.png" alt="Logo" width={100} height={100} />
                   </Link>
                 </div>
               </div>

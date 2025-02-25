@@ -1,5 +1,7 @@
 // Blog page 
 
+import Image from 'next/image';
+
 export default function Blog() {
   const blogPosts = [
     {
@@ -7,21 +9,21 @@ export default function Blog() {
       image: "blog1.jpg",
       title: "Bed Room",
       subtitle: "The standard chunk",
-      description: "If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generatorsIf you are"
+      description: "If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text."
     },
     {
       id: 2,
       image: "blog2.jpg",
       title: "Bed Room",
       subtitle: "The standard chunk",
-      description: "If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generatorsIf you are"
+      description: "If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text."
     },
     {
       id: 3,
       image: "blog3.jpg",
       title: "Bed Room",
       subtitle: "The standard chunk",
-      description: "If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generatorsIf you are"
+      description: "If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text."
     }
   ];
 
@@ -55,7 +57,7 @@ export default function Blog() {
                 <div className="blog_box">
                   <div className="blog_img">
                     <figure>
-                      <img src={`/images/${post.image}`} alt={post.title} />
+                      <Image src={`/images/${post.image}`} alt={post.title} layout="responsive" width={500} height={300} />
                     </figure>
                   </div>
                   <div className="blog_room">

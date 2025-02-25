@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function Room() {
   const rooms = [
     { id: 1, image: "room1.jpg" },
@@ -38,7 +40,7 @@ export default function Room() {
                 <div id="serv_hover" className="room">
                   <div className="room_img">
                     <figure>
-                      <img src={`/images/${room.image}`} alt={`Room ${room.id}`}/>
+                      <Image src={`/images/${room.image}`} alt={`Room ${room.id}`} layout="responsive" width={500} height={300} />
                     </figure>
                   </div>
                   <div className="bed_room">
