@@ -16,7 +16,7 @@ export default function Gallery() {
             <div key={num} className="col-md-3 col-sm-6">
               <div className="gallery_img">
                 <figure>
-                  <Image src={`/images/gallery${num}.jpg`} alt="#" layout="responsive" width={500} height={300} />
+                  <Image src={`/images/gallery${num}.jpg`} alt={`Gallery image ${num}`} layout="responsive" width={500} height={300} />
                 </figure>
               </div>
             </div>

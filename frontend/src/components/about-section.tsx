@@ -15,7 +15,7 @@ export default function AboutSection() {
           <div className="col-md-7">
             <div className="about_img">
               <figure>
-                <Image src="/images/about.png" alt="#" layout="responsive" width={500} height={300} />
+                <Image src="/images/about.png" alt="About Us" layout="responsive" width={500} height={300} />
               </figure>
             </div>
           </div>

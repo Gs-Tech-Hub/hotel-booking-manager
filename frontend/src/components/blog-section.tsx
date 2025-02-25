@@ -18,13 +18,13 @@ export default function BlogSection() {
               <div className="blog_box">
                 <div className="blog_img">
                   <figure>
-                    <Image src={`/images/blog${num}.jpg`} alt="#" layout="responsive" width={500} height={300} />
+                    <Image src={`/images/blog${num}.jpg`} alt="blogimage" layout="responsive" width={500} height={300} />
                   </figure>
                 </div>
                 <div className="blog_room">
                   <h3>Bed Room</h3>
                   <span>The standard chunk</span>
-                  <p>If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text.</p>
+                  <p>If you are going to use a passage of Lorem Ipsum, you need to be sure there isnt anything embarrassing hidden in the middle of text.</p>
                 </div>
               </div>
             </div>

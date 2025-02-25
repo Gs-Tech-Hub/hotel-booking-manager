@@ -1,5 +1,6 @@
 'use client'
 import { FormEvent, useState } from 'react'
+import Image from 'next/image'
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -32,6 +33,7 @@ export default function Contact() {
       <div className="contact">
         <div className="container">
           <div className="row">
+            <Image src="/images/contact.png" alt="Contact Us" width={500} height={300} />
             <div className="col-md-6">
               <form id="request" className="main_form" onSubmit={handleSubmit}>
                 <div className="row">
