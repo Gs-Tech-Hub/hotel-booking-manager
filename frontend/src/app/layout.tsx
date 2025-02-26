@@ -25,9 +25,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body className={`${inter.className} main-layout`}>
         {/* Load scripts dynamically */}
-        <Script src="/js/jquery.min.js" strategy="beforeInteractive" />
-        <Script src="/js/bootstrap.bundle.min.js" strategy="lazyOnload" />
-        <Script src="/js/custom-script.js" strategy="lazyOnload" />
+        <Script src="/js/jquery.min.js"  />
+        <Script src="/js/bootstrap.bundle.min.js"  />
+        <Script src="/js/custom-script.js"  />
 
         {/* Header */}
         <header>

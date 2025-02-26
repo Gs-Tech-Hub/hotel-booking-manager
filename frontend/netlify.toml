@@ -2,12 +2,3 @@
   command = "next build"
   publish = ".next"
 
-[[redirects]]
-  from = "/frontend/*"
-  to = "/frontend/index.html"
-  status = 200
-
-[[redirects]]
-  from = "/frontend"
-  to = "/frontend/"
-  status = 301
