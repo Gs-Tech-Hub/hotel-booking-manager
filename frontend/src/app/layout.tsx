@@ -13,8 +13,8 @@ import '../../public/css/responsive.css'; // Responsive styles
 import '../../public/css/jquery.mCustomScrollbar.min.css'; // Custom Scrollbar styles
 
 // Import Bootstrap JavaScript for proper functionality
-// import 'jquery/dist/jquery.min.js'
-// import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import '../../public/js/jquery.min.js'
+// import '../../public/js/bootstrap.bundle.min.js'
 
 const inter = Inter({ subsets: ['latin'] })
 
