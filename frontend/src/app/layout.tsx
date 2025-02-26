@@ -1,40 +1,41 @@
+'use client';
+
 import Navigation from '@/components/Navigation';
-import Script from 'next/script';
-import './globals.css';
 import { Inter } from 'next/font/google';
-import Image from 'next/image';
-import { Suspense } from 'react';
+import Script from 'next/script';
+import { ReactNode } from 'react';
+
+// Import global styles from /styles/
+import '@/styles/bootstrap.min.css';
+import '@/styles/font-awesome.min.css';
+import '@/styles/style.css';
+import '@/styles/responsive.css';
+import '@/styles/jquery.mCustomScrollbar.min.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata = {
-  title: 'F-MMM1 Hotel',
-  description: 'Your hotel booking platform',
-};
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className={`main-layout ${inter.className}`}>
-        {/* Loader */}
-        <div className="loader_bg">
-          <div className="loader">
-            <Suspense fallback={<div>Loading...</div>}>
-              <Image src="/images/loading.gif" alt="Loading" width={500} height={300} />
-            </Suspense>
-          </div>
-        </div>
+      <head>
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>F-MMM1 Hotel</title>
+        <meta name="description" content="Your hotel booking platform" />
+      </head>
+      <body className={`${inter.className} main-layout`}>
+        {/* Load scripts dynamically */}
+        <Script src="/js/jquery.min.js"  />
+        <Script src="/js/bootstrap.bundle.min.js"  />
+        <Script src="/js/custom-script.js"  />
 
         {/* Header */}
         <header>
           <Navigation />
         </header>
 
-        {children}
+        {/* Main Content */}
+        <main>{children}</main>
 
         {/* Footer */}
         <footer className="bg-gray-800 text-white mt-12">
@@ -43,7 +44,7 @@ export default function RootLayout({
               <div>
                 <h3 className="text-lg font-semibold mb-4">About Us</h3>
                 <p className="text-gray-300">
-                  MyNextApp is a modern web application template built with Next.js.
+                  F-MMM1 Hotel is your ultimate booking platform.
                 </p>
               </div>
               <div>
@@ -65,19 +66,13 @@ export default function RootLayout({
             </div>
             <div className="mt-8 pt-8 border-t border-gray-700 text-center text-gray-300">
               <p>
-                &copy; {new Date().getFullYear()} . 
+                &copy; {new Date().getFullYear()}  
                 <a href="https://gstechhub.com.ng" className="text-gray-300 hover:text-white"> Gs Tech Hub </a>
                 All rights reserved.
               </p>
             </div>
           </div>
         </footer>
-
-        {/* Scripts */}
-        <Script src="https://code.jquery.com/jquery-3.6.0.min.js" strategy="beforeInteractive" />
-        <Script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" strategy="beforeInteractive" />
-        <Script src="/js/jquery.mCustomScrollbar.concat.min.js" strategy="lazyOnload" />
-        <Script src="/js/custom.js" strategy="lazyOnload" />
       </body>
     </html>
   );

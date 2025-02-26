@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from 'next/image';
+// import Image from 'next/image';
 
 export default function Navigation() {
   return (
@@ -10,9 +10,9 @@ export default function Navigation() {
             <div className="full">
               <div className="center-desk">
                 <div className="logo">
-                  <Link href="/">
-                    <Image src="/images/logo.png" alt="Logo" width={100} height={100} />
-                  </Link>
+                  {/* <Link href="/">
+                    <Image src="" alt="Logo" width={100} height={100} />
+                  </Link> */}
                 </div>
               </div>
             </div>
@@ -22,7 +22,7 @@ export default function Navigation() {
               <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
                 <span className="navbar-toggler-icon"></span>
               </button>
-              <div className="collapse navbar-collapse" id="navbarsExample04">
+              <div className="collapse navbar-collapse">
                 <ul className="navbar-nav mr-auto">
                   <li className="nav-item">
                     <Link className="nav-link" href="/">Home</Link>
