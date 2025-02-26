@@ -1,40 +1,54 @@
-import Navigation from '@/components/Navigation';
-import Script from 'next/script';
-import './globals.css';
-import { Inter } from 'next/font/google';
-import Image from 'next/image';
-import { Suspense } from 'react';
+'use client'
+import Navigation from '@/components/Navigation'
+import { Inter } from 'next/font/google'
+import Head from 'next/head'
+import { useState, useEffect } from 'react'
+// import '/globals.css'
 
-const inter = Inter({ subsets: ['latin'] });
+// Import external CSS
+import '../../public/css/bootstrap.min.css'; // Bootstrap 4.6.2
+import '../../public/css/font-awesome.min.css'; // Font Awesome
+import '../../public/css/style.css'; // Custom styles
+import '../../public/css/responsive.css'; // Responsive styles
+import '../../public/css/jquery.mCustomScrollbar.min.css'; // Custom Scrollbar styles
 
-export const metadata = {
-  title: 'F-MMM1 Hotel',
-  description: 'Your hotel booking platform',
-};
+// Import Bootstrap JavaScript for proper functionality
+// import 'jquery/dist/jquery.min.js'
+// import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const inter = Inter({ subsets: ['latin'] })
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // Simulate loading effect
+    const timer = setTimeout(() => setLoading(false), 2000)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <html lang="en">
-      <body className={`main-layout ${inter.className}`}>
+      <Head>
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>F-MMM1 Hotel</title>
+        <meta name="description" content="Your hotel booking platform" />
+      </Head>
+      <body className={`${inter.className} main-layout`}>
         {/* Loader */}
-        <div className="loader_bg">
-          <div className="loader">
-            <Suspense fallback={<div>Loading...</div>}>
-              <Image src="/images/loading.gif" alt="Loading" width={500} height={300} />
-            </Suspense>
+        {loading && (
+          <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
+            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
-        </div>
+        )}
 
         {/* Header */}
         <header>
           <Navigation />
         </header>
 
-        {children}
+        <main className={`${loading ? 'hidden' : 'block'}`}>{children}</main>
 
         {/* Footer */}
         <footer className="bg-gray-800 text-white mt-12">
@@ -72,13 +86,7 @@ export default function RootLayout({
             </div>
           </div>
         </footer>
-
-        {/* Scripts */}
-        <Script src="https://code.jquery.com/jquery-3.6.0.min.js" strategy="beforeInteractive" />
-        <Script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" strategy="beforeInteractive" />
-        <Script src="/js/jquery.mCustomScrollbar.concat.min.js" strategy="lazyOnload" />
-        <Script src="/js/custom.js" strategy="lazyOnload" />
       </body>
     </html>
-  );
+  )
 }

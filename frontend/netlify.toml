@@ -1,4 +1,13 @@
+[build]
+  command = "next build"
+  publish = ".next"
+
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/frontend/*"
+  to = "/frontend/index.html"
   status = 200
+
+[[redirects]]
+  from = "/frontend"
+  to = "/frontend/"
+  status = 301
