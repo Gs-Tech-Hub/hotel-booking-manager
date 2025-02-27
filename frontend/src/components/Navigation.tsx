@@ -1,18 +1,18 @@
 import Link from "next/link";
-// import Image from 'next/image';
+import Image from 'next/image';
 
 export default function Navigation() {
   return (
     <div className="header">
       <div className="container">
         <div className="row">
-          <div className="col-xl-3 col-lg-3 col-md-3 col-sm-3 col logo_section">
+          <div className="col-xl-3 col-lg-3 col-md-3 col-sm-3 col ">
             <div className="full">
               <div className="center-desk">
                 <div className="logo">
-                  {/* <Link href="/">
-                    <Image src="" alt="Logo" width={100} height={100} />
-                  </Link> */}
+                  <Link href="/">
+                    <Image src="https://i.postimg.cc/j5qdbbvk/fmmm1-logo.png" alt="Logo" width={100} height={50} />
+                  </Link>
                 </div>
               </div>
             </div>
