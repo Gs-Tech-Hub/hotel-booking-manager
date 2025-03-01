@@ -1,6 +1,17 @@
 import Image from 'next/image';
 
-export default function RoomSection() {
+interface Room {
+  id: number;
+  image: string;
+  title: string;
+  description: string;
+}
+
+interface RoomSectionProps {
+  rooms: Room[];
+}
+
+export default function RoomSection({ rooms }: RoomSectionProps) {
   return (
     <div className="our_room">
       <div className="container">
@@ -13,17 +24,17 @@ export default function RoomSection() {
           </div>
         </div>
         <div className="row">
-          {[1, 2, 3, 4, 5, 6].map((num) => (
-            <div key={num} className="col-md-4 col-sm-6">
+          {rooms.map((room) => (
+            <div key={room.id} className="col-md-4 col-sm-6">
               <div id="serv_hover" className="room">
                 <div className="room_img">
                   <figure>
-                    <Image src={`/images/room${num}.jpg`} alt={`Room ${num}`} layout="responsive" width={500} height={300} />
+                    <Image src={`/images/${room.image}`} alt={room.title} layout="responsive" width={500} height={300} />
                   </figure>
                 </div>
                 <div className="bed_room">
-                  <h3>Bed Room</h3>
-                  <p>If you are going to use a passage of Lorem Ipsum, you need to be sure there</p>
+                  <h3>{room.title}</h3>
+                  <p>{room.description}</p>
                 </div>
               </div>
             </div>
