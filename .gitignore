@@ -8,8 +8,10 @@ package-lock.json
 # Build output
 dist/
 build/
+.next/
 
 # Environment variables
+.gitignore
 .env
 .env.local
 .env.development
