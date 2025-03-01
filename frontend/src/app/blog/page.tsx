@@ -1,76 +1,31 @@
 // Blog page 
 
-import Image from 'next/image';
+import BlogSection from '@/components/blog-section';
 
-export default function Blog() {
-  const blogPosts = [
-    {
-      id: 1,
-      image: "blog1.jpg",
-      title: "Bed Room",
-      subtitle: "The standard chunk",
-      description: "If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text."
-    },
-    {
-      id: 2,
-      image: "blog2.jpg",
-      title: "Bed Room",
-      subtitle: "The standard chunk",
-      description: "If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text."
-    },
-    {
-      id: 3,
-      image: "blog3.jpg",
-      title: "Bed Room",
-      subtitle: "The standard chunk",
-      description: "If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text."
-    }
-  ];
+const blogPosts = [
+  {
+    id: 1,
+    image: 'blog1.jpg',
+    title: 'Bed Room',
+    subtitle: 'The standard chunk',
+    description: 'If you are going to use a passage of Lorem Ipsum, you need to be sure there isnt anything embarrassing hidden in the middle of text.'
+  },
+  {
+    id: 2,
+    image: 'blog2.jpg',
+    title: 'Living Room',
+    subtitle: 'Another standard chunk',
+    description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'
+  },
+  {
+    id: 3,
+    image: 'blog3.jpg',
+    title: 'Dining Room',
+    subtitle: 'Yet another chunk',
+    description: 'Lorem Ipsum has been the industry standard dummy text ever since the 1500s.'
+  }
+];
 
-  return (
-    <>
-      <div className="back_re">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-12">
-              <div className="title">
-                <h2>Blog</h2>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="blog">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-12">
-              <div className="titlepage">
-                <p className="margin_0">Lorem Ipsum available, but the majority have suffered</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="row">
-            {blogPosts.map((post) => (
-              <div key={post.id} className="col-md-4">
-                <div className="blog_box">
-                  <div className="blog_img">
-                    <figure>
-                      <Image src={`/images/${post.image}`} alt={post.title} layout="responsive" width={500} height={300} />
-                    </figure>
-                  </div>
-                  <div className="blog_room">
-                    <h3>{post.title}</h3>
-                    <span>{post.subtitle}</span>
-                    <p>{post.description}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </>
-  )
+export default function BlogPage() {
+  return <BlogSection posts={blogPosts} />;
 } 
