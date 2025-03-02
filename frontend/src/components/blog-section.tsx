@@ -1,6 +1,18 @@
 import Image from 'next/image';
 
-export default function BlogSection() {
+interface BlogPost {
+  id: number;
+  image: string;
+  title: string;
+  subtitle: string;
+  description: string;
+}
+
+interface BlogSectionProps {
+  posts: BlogPost[];
+}
+
+export default function BlogSection({ posts }: BlogSectionProps) {
   return (
     <div className="blog">
       <div className="container">
@@ -13,18 +25,18 @@ export default function BlogSection() {
           </div>
         </div>
         <div className="row">
-          {[1, 2, 3].map((num) => (
-            <div key={num} className="col-md-4">
+          {posts.map((post) => (
+            <div key={post.id} className="col-md-4">
               <div className="blog_box">
                 <div className="blog_img">
                   <figure>
-                    <Image src={`/images/blog${num}.jpg`} alt="blogimage" layout="responsive" width={500} height={300} />
+                    <Image src={`/images/${post.image}`} alt={post.title} layout="responsive" width={500} height={300} />
                   </figure>
                 </div>
                 <div className="blog_room">
-                  <h3>Bed Room</h3>
-                  <span>The standard chunk</span>
-                  <p>If you are going to use a passage of Lorem Ipsum, you need to be sure there isnt anything embarrassing hidden in the middle of text.</p>
+                  <h3>{post.title}</h3>
+                  <span>{post.subtitle}</span>
+                  <p>{post.description}</p>
                 </div>
               </div>
             </div>

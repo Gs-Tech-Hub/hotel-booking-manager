@@ -3,11 +3,13 @@ import type { Schema, Struct } from '@strapi/strapi';
 export interface SharedMedia extends Struct.ComponentSchema {
   collectionName: 'components_shared_media';
   info: {
+    description: '';
     displayName: 'Media';
     icon: 'file-video';
   };
   attributes: {
     file: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
+    url: Schema.Attribute.String;
   };
 }
 
@@ -59,6 +61,7 @@ export interface SharedSlider extends Struct.ComponentSchema {
   };
   attributes: {
     files: Schema.Attribute.Media<'images', true>;
+    url: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
