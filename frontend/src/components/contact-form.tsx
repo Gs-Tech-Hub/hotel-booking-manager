@@ -42,7 +42,6 @@ export default function ContactForm() {
           </div>
         </div>
       </div>
-      <Image src="/images/contact.png" alt="Contact Us" width={500} height={300} />
     </div>
   )
 }

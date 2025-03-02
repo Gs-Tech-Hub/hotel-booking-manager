@@ -2,7 +2,7 @@
   "name": "content-api",
   "version": "0.1.0",
   "private": true,
-  "description": "A Strapi application",
+  "description": "A backend service for hotel management",
   "scripts": {
     "build": "strapi build",
     "deploy": "strapi deploy",
