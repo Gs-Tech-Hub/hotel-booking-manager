@@ -9,7 +9,7 @@ export interface SharedMedia extends Struct.ComponentSchema {
   };
   attributes: {
     file: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
-    url: Schema.Attribute.String;
+    url: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
