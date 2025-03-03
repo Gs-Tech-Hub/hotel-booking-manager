@@ -604,6 +604,36 @@ export interface ApiBoookingBoooking extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiCarrouselCarrousel extends Struct.SingleTypeSchema {
+  collectionName: 'carrousels';
+  info: {
+    description: '';
+    displayName: 'carrousel';
+    pluralName: 'carrousels';
+    singularName: 'carrousel';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    BannerSlider: Schema.Attribute.Component<'shared.slider', true>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::carrousel.carrousel'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   collectionName: 'categories';
   info: {
@@ -1580,6 +1610,7 @@ declare module '@strapi/strapi' {
       'api::bar-and-club.bar-and-club': ApiBarAndClubBarAndClub;
       'api::bed.bed': ApiBedBed;
       'api::boooking.boooking': ApiBoookingBoooking;
+      'api::carrousel.carrousel': ApiCarrouselCarrousel;
       'api::category.category': ApiCategoryCategory;
       'api::customer.customer': ApiCustomerCustomer;
       'api::drink-type.drink-type': ApiDrinkTypeDrinkType;
