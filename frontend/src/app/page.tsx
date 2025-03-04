@@ -1,4 +1,6 @@
-// import Image from 'next/image' // Removed unused import
+"use client"
+import { useEffect, useState } from 'react';
+import ApiHandler from '@/utils/apiHandler';
 import BannerCarousel from '@/components/Banner/Carousel'
 import BookingForm from '@/components/booking-form'
 import AboutSection from '@/components/about-section'
@@ -7,26 +9,104 @@ import Gallery from '@/components/Gallery'
 import BlogSection from '@/components/blog-section'
 import ContactForm from '@/components/contact-form'
 
-export default function Home() {
-  const aboutData = {
-    title: "About Us",
-    description: "The passage experienced a surge in popularity during the 1960s when Letraset used it on their dry-transfer sheets, and again during the 90s as desktop publishers bundled the text with their software.",
-    image: "/images/about.png"
-  };
+interface AboutData {
+  title: string;
+  description: string;
+  image: string;
+}
 
-  const galleryImages = [
-    { id: 1, image: 'gallery1.jpg', alt: 'Gallery image 1' },
-    { id: 2, image: 'gallery2.jpg', alt: 'Gallery image 2' },
-    { id: 3, image: 'gallery3.jpg', alt: 'Gallery image 3' },
-    { id: 4, image: 'gallery4.jpg', alt: 'Gallery image 4' },
-    // Add more images as needed
-  ];
+interface CarrouselImage {
+  id: number;
+  src: string;
+  alt: string;
+}
+
+const renderDescription = (description: any) => {
+  if (typeof description === 'string') {
+    return description; // If it's a string, return it directly
+  }
+
+  if (description && Array.isArray(description.children)) {
+    return description.children.map((child: any, index: number) => (
+      <span key={index}>{child.text}</span> // Render each child text
+    ));
+  }
+
+  return null; // Fallback if the structure is unexpected
+};
+
+export default function Home() {
+  const [aboutData, setAboutData] = useState<AboutData | null>(null);
+  const [carrouselImages, setCarrouselImages] = useState<CarrouselImage[]>([]);
+  const [roomsData, setRoomsData] = useState<any[]>([]);
+  
+  const apiHandler = ApiHandler({ baseUrl: process.env.NEXT_PUBLIC_API_URL || '' });
+
+  useEffect(() => {
+    const fetchAboutData = async () => {
+      try {
+        const data = await apiHandler.fetchData('about?populate=*');
+        setAboutData({
+          title: data.data.title,
+          description: data.data.blocks[1].body,
+          image: data.data.blocks[0].url
+        });
+      } catch (error) {
+        console.error('Error fetching about data:', error);
+      }
+    };
+
+    const fetchCarrouselImages = async () => {
+      try {
+        const data = await apiHandler.fetchData('carrousel?populate=*'); // Fetching from the correct endpoint
+        const bannerSlider = data.data.BannerSlider; // Accessing the BannerSlider array
+        console.log('BannerSlider data:', bannerSlider); // Log the bannerSlider data
+        const formattedImages = bannerSlider.map((item: any) => {
+          return {
+            src: item.url, // Use the correct URL from the BannerSlider
+            alt: `Gallery image ${item.id}` // Use extracted alt text or default
+          };
+        });
+        console.log('Formatted images data:', formattedImages); // Log the formatted images data
+        setCarrouselImages(formattedImages);
+      } catch (error) {
+        console.error('Error fetching gallery images:', error);
+      }
+    };
+
+    const fetchRoomsData = async () => {
+      try {
+        const data = await apiHandler.fetchData('rooms?populate=*'); // Fetching from the correct endpoint
+        const formattedRooms = data.data.map((room: any) => ({
+          id: room.id,
+          title: room.title,
+          imgUrl: room.imgUrl,
+          description: renderDescription(room.description), // Use renderDescription to format the description
+          price: room.price,
+          amenities: room.amenities.map((amenity: any) => ({
+            id: amenity.id,
+            name: amenity.name,
+            description: amenity.description,
+            iconUrl: amenity.icon.url // Assuming you want to include the icon URL
+          })) || [], // Default to an empty array if no amenities
+        }));
+        setRoomsData(formattedRooms); // Update state with formatted room data
+        console.log('Formatted rooms data:', formattedRooms); // Log the formatted rooms data
+      } catch (error) {
+        console.error('Error fetching room data:', error);
+      }
+    };
+
+    fetchAboutData();
+    fetchCarrouselImages();
+    fetchRoomsData();
+  }, []);
 
   return (
     <>
       {/* Banner Section with Carousel */}
       <section className="banner_main">
-        <BannerCarousel />
+        <BannerCarousel images={carrouselImages} />
         <div className="booking_ocline">
           <div className="container">
             <div className="row">
@@ -39,13 +119,13 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      <AboutSection {...aboutData} />
+      {aboutData && typeof aboutData === 'object' && !Array.isArray(aboutData) && <AboutSection title={aboutData.title} description={renderDescription(aboutData.description)} image={aboutData.image} />}
 
       {/* Room Section */}
-      <RoomSection rooms={[]} />
+      <RoomSection rooms={roomsData} />
 
       {/* Gallery Section */}
-      <Gallery images={galleryImages} />
+      {/* <Gallery images={galleryImages} /> */}
 
       {/* Blog Section */}
       <BlogSection posts={[]} />

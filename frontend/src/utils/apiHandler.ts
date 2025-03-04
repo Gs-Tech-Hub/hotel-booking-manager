@@ -1,3 +1,4 @@
+'use client'
 import { useState } from 'react';
 
 type ApiHandlerProps = {
@@ -24,6 +25,8 @@ const ApiHandler = ({ baseUrl }: ApiHandlerProps) => {
 
   const fetchData = async (endpoint: FetchDataParams) => {
     const constructedUrl = `${baseUrl}/${endpoint}`;
+    
+    console.log('Fetching data from:', constructedUrl);
     
     try {
       const response = await fetch(constructedUrl);
