@@ -5,7 +5,6 @@ import BannerCarousel from '@/components/Banner/Carousel'
 import BookingForm from '@/components/booking-form'
 import AboutSection from '@/components/about-section'
 import RoomSection from '@/components/room-section'
-import Gallery from '@/components/Gallery'
 import BlogSection from '@/components/blog-section'
 import ContactForm from '@/components/contact-form'
 
@@ -86,8 +85,7 @@ export default function Home() {
           amenities: room.amenities.map((amenity: any) => ({
             id: amenity.id,
             name: amenity.name,
-            description: amenity.description,
-            iconUrl: amenity.icon ? amenity.icon.url : '', // Check if icon exists before accessing url
+            icon: amenity.icon ? amenity.icon.formats.thumbnail.url : '', // Get the icon URL from the amenity data
           })) || [], // Default to an empty array if no amenities
         }));
         setRoomsData(formattedRooms); // Update state with formatted room data
@@ -100,7 +98,7 @@ export default function Home() {
     fetchAboutData();
     fetchCarrouselImages();
     fetchRoomsData();
-  }, []);
+  }, [apiHandler]);
 
   return (
     <>
