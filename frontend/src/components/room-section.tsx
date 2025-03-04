@@ -2,9 +2,18 @@ import Image from 'next/image';
 
 interface Room {
   id: number;
-  image: string;
   title: string;
+  imgUrl: string;
   description: string;
+  price: number;
+  amenities: { 
+    name: string;
+    icon: { 
+      formats: { 
+        thumbnail: { url: string } 
+      } 
+    } 
+  }[];
 }
 
 interface RoomSectionProps {
@@ -19,7 +28,7 @@ export default function RoomSection({ rooms }: RoomSectionProps) {
           <div className="col-md-12">
             <div className="titlepage">
               <h2>Our Room</h2>
-              <p>Lorem Ipsum available, but the majority have suffered</p>
+              <p>Discover our luxurious rooms, designed for your comfort and relaxation.</p>
             </div>
           </div>
         </div>
@@ -29,12 +38,25 @@ export default function RoomSection({ rooms }: RoomSectionProps) {
               <div id="serv_hover" className="room">
                 <div className="room_img">
                   <figure>
-                    <Image src={`/images/${room.image}`} alt={room.title} layout="responsive" width={500} height={300} />
+                    <Image src={room.imgUrl} alt={room.title} layout="responsive" width={375} height={232} />
                   </figure>
                 </div>
                 <div className="bed_room">
                   <h3>{room.title}</h3>
                   <p>{room.description}</p>
+                  <p className="room-price">Price: ₦ {room.price}</p>
+                  <ul>
+                    {room.amenities.map((amenity) => (
+                      <li key={amenity.name}>
+                        {amenity.icon && amenity.icon.formats && amenity.icon.formats.thumbnail ? (
+                          <img src={amenity.icon.formats.thumbnail.url} alt={amenity.name} width={156} height={156} />
+                        ) : (
+                          <span>something is missing </span>
+                        )}
+                        {amenity.name}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             </div>
