@@ -1076,7 +1076,7 @@ function Home() {
                                 id: amenity.id,
                                 name: amenity.name,
                                 description: amenity.description,
-                                iconUrl: amenity.icon.url // Assuming you want to include the icon URL
+                                iconUrl: amenity.icon ? amenity.icon.url : ''
                             })) || []
                     }));
                 setRoomsData(formattedRooms); // Update state with formatted room data

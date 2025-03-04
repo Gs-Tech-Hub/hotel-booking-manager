@@ -87,7 +87,7 @@ export default function Home() {
             id: amenity.id,
             name: amenity.name,
             description: amenity.description,
-            iconUrl: amenity.icon.url // Assuming you want to include the icon URL
+            iconUrl: amenity.icon ? amenity.icon.url : '', // Check if icon exists before accessing url
           })) || [], // Default to an empty array if no amenities
         }));
         setRoomsData(formattedRooms); // Update state with formatted room data
