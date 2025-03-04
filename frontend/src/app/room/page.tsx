@@ -3,21 +3,27 @@ import RoomSection from '@/components/room-section';
 const roomData = [
   {
     id: 1,
-    image: 'room1.jpg',
     title: 'Deluxe Room',
-    description: 'If you are going to use a passage of Lorem Ipsum, you need to be sure there.'
+    imgUrl: 'room1.jpg',
+    description: 'If you are going to use a passage of Lorem Ipsum, you need to be sure there.',
+    price: 100,
+    amenities: [],
   },
   {
     id: 2,
-    image: 'room2.jpg',
     title: 'Suite Room',
-    description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'
+    imgUrl: 'room2.jpg',
+    description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+    price: 150,
+    amenities: [],
   },
   {
     id: 3,
-    image: 'room3.jpg',
     title: 'Single Room',
-    description: 'Lorem Ipsum has been the industry standard dummy text ever since the 1500s.'
+    imgUrl: 'room3.jpg',
+    description: 'Lorem Ipsum has been the industry standard dummy text ever since the 1500s.',
+    price: 80,
+    amenities: [],
   },
   // Add more rooms as needed
 ];

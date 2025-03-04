@@ -948,6 +948,11 @@ line-height: 35px;
      margin-top: 90px;
 }
 
+.room-price {
+    font-size: 20px; /* Adjust the size as needed */
+    color: orange; /* Set the color to orange */
+}
+
 
 
 
