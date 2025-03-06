@@ -49,7 +49,7 @@ export default function RoomSection({ rooms }: RoomSectionProps) {
                     {room.amenities.map((amenity) => (
                       <li key={amenity.name}>
                         {amenity.icon && amenity.icon.formats && amenity.icon.formats.thumbnail ? (
-                          <img src={amenity.icon.formats.thumbnail.url} alt={amenity.name} width={156} height={156} />
+                          <Image src={amenity.icon.formats.thumbnail.url} alt={amenity.name} width={156} height={156} />
                         ) : (
                           <span>something is missing </span>
                         )}
