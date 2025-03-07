@@ -1021,3 +1021,82 @@ line-height: 35px;
 .text-white h1, .text-white h2, .text-white h3, .text-white h4, .text-white h5, .text-white h6, .text-white p, .text-white span, .text-white li, .text-white a {
 	color: #fff;
 }
+
+/* Hotel info section */
+.hotel-info {
+     padding: 3rem 0;
+     background-color: #f8f9fa;
+   }
+   
+   .section-title {
+     text-align: center;
+     font-size: 2rem;
+     font-weight: bold;
+     color: #333;
+     margin-bottom: 2rem;
+   }
+   
+   /* Grid Layout: 2 Columns & 2 Rows */
+   .hotel-grid {
+     display: block;
+     grid-template-columns: repeat(2, 1fr); 
+     grid-template-rows: repeat(2, auto);
+     gap: 1.5rem;
+   }
+   
+   /* Ensure 1 column on smaller screens */
+   @media (max-width: 768px) {
+     .hotel-grid {
+       grid-template-columns: 1fr; /* One column on small screens */
+       grid-template-rows: auto;
+     }
+   }
+   
+   .hotel-card {
+     background: #fff;
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+     border-left: 4px solid #dc3545;
+     border-radius: 10px;
+     padding: 1.5rem;
+     transition: transform 0.2s ease-in-out;
+     min-height: 120px; 
+   }
+   
+   /* Expand on hover */
+   .hotel-card:hover {
+     transform: translateY(-5px);
+     height: auto;
+   }
+   
+   .hotel-card-body {
+     display: flex;
+     align-items: start;
+     gap: 1rem;
+     word-wrap: break-word;
+     overflow-wrap: break-word;
+   }
+   
+   .hotel-icon {
+     color: #dc3545;
+     font-size: 2rem;
+   }
+   
+   .hotel-card-title {
+     font-size: 1.2rem;
+     font-weight: 600;
+     color: #212529;
+   }
+   
+   .hotel-card-text {
+     font-size: 0.95rem;
+     color: #6c757d;
+     transition: max-height 0.3s ease-in-out;
+     max-height: 3rem;
+     overflow: hidden;
+   }
+   
+   /* Expand text on hover */
+   .hotel-card:hover .hotel-card-text {
+     max-height: 100%;
+   }
+   
