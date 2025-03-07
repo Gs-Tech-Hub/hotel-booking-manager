@@ -1,4 +1,3 @@
-
 export default function ContactForm() {
   return (
     <div className="contact">
@@ -6,31 +5,20 @@ export default function ContactForm() {
         <div className="row">
           <div className="col-md-12">
             <div className="titlepage">
-              <h2>Contact Us</h2>
+              <h2>Our Location</h2>
             </div>
           </div>
         </div>
         <div className="row">
           <div className="col-md-6">
-            <form id="request" className="main_form">
               <div className="row">
                 <div className="col-md-12">
-                  <input className="contactus" placeholder="Name" type="text" name="Name" />
-                </div>
-                <div className="col-md-12">
-                  <input className="contactus" placeholder="Email" type="email" name="Email" />
-                </div>
-                <div className="col-md-12">
-                  <input className="contactus" placeholder="Phone Number" type="tel" name="Phone" />
-                </div>
-                <div className="col-md-12">
-                  <textarea className="textarea" placeholder="Message" name="Message"></textarea>
-                </div>
-                <div className="col-md-12">
-                  <button className="send_btn">Send</button>
+                  <h3>Driving Directions</h3>
+                  <p><strong>Address:</strong> FMMM1 CLOSE, Off Board Road, Alihame, Agbor, Delta State.</p>
+                  <p><strong>Directions:</strong></p>
+                  <p>From UniDEL gate, turn right to Board Road, turn left into Faculty of Science compound, drive to the end of the road to FIND F-MMM1 Hotel & Suite.</p>
                 </div>
               </div>
-            </form>
           </div>
           <div className="col-md-6">
             <div className="map_main">

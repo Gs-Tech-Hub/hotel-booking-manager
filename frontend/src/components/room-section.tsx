@@ -1,19 +1,19 @@
 import Image from 'next/image';
 
+interface Amenity {
+  id: number;
+  name: string;
+  icon: string;
+}
+
 interface Room {
   id: number;
   title: string;
   imgUrl: string;
   description: string;
   price: number;
-  amenities: { 
-    name: string;
-    icon: { 
-      formats: { 
-        thumbnail: { url: string } 
-      } 
-    } 
-  }[];
+  amenities: Amenity[];
+  bed?: string;
 }
 
 interface RoomSectionProps {
@@ -45,18 +45,21 @@ export default function RoomSection({ rooms }: RoomSectionProps) {
                   <h3>{room.title}</h3>
                   <p>{room.description}</p>
                   <p className="room-price">Price: ₦ {room.price}</p>
-                  <ul>
-                    {room.amenities.map((amenity) => (
-                      <li key={amenity.name}>
-                        {amenity.icon && amenity.icon.formats && amenity.icon.formats.thumbnail ? (
-                          <Image src={amenity.icon.formats.thumbnail.url} alt={amenity.name} width={156} height={156} />
-                        ) : (
-                          <span>something is missing </span>
-                        )}
-                        {amenity.name}
-                      </li>
-                    ))}
-                  </ul>
+                  <p className="room-size">BED-SIZE: {room.bed ? room.bed : 'Size not specified'}</p>
+                  <div className="amenities-section" style={{ textAlign: 'center' }}>
+                    <h4 style={{ marginTop: '10px' }}>Amenities:</h4>
+                    <ul style={{ display: 'flex', justifyContent: 'center', listStyleType: 'none', padding: 0 }}>
+                      {room.amenities.map((amenity) => (
+                        <li key={amenity.id} style={{ marginRight: '10px' }}>
+                          {amenity.icon ? (
+                            <Image src={amenity.icon} alt={amenity.name} width={20} height={20} />
+                          ) : (
+                            <span>Icon</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
@@ -64,5 +67,5 @@ export default function RoomSection({ rooms }: RoomSectionProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
