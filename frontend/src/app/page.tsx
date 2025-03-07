@@ -5,7 +5,6 @@ import BannerCarousel from '@/components/Banner/Carousel'
 import BookingForm from '@/components/booking-form'
 import AboutSection from '@/components/about-section'
 import RoomSection from '@/components/room-section'
-import BlogSection from '@/components/blog-section'
 import ContactForm from '@/components/contact-form'
 import ServiceSection from '@/components/service-section'
 
