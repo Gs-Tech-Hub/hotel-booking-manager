@@ -1,8 +1,5 @@
 'use client';
 
-import Link from 'next/link';
-import Image from 'next/image';
-
 export default function Overlay() {
   return (
      <div className="home_banner_area banner_inner d-flex align-items-center justify-content-center position-absolute w-100 h-100 top-0 start-0 z-1" style={{ transform: 'translateY(-50px)' }}>
