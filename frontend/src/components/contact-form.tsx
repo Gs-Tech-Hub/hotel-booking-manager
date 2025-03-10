@@ -1,5 +1,3 @@
-import Image from 'next/image';
-
 export default function ContactForm() {
   return (
     <div className="contact">
@@ -7,31 +5,32 @@ export default function ContactForm() {
         <div className="row">
           <div className="col-md-12">
             <div className="titlepage">
-              <h2>Contact Us</h2>
+              <h2>Our Location</h2>
             </div>
           </div>
         </div>
         <div className="row">
           <div className="col-md-6">
-            <form id="request" className="main_form">
               <div className="row">
-                <div className="col-md-12">
-                  <input className="contactus" placeholder="Name" type="text" name="Name" />
-                </div>
-                <div className="col-md-12">
-                  <input className="contactus" placeholder="Email" type="email" name="Email" />
-                </div>
-                <div className="col-md-12">
-                  <input className="contactus" placeholder="Phone Number" type="tel" name="Phone" />
-                </div>
-                <div className="col-md-12">
-                  <textarea className="textarea" placeholder="Message" name="Message"></textarea>
-                </div>
-                <div className="col-md-12">
-                  <button className="send_btn">Send</button>
-                </div>
+              <div className="col-md-12 p-6 bg-white border rounded-lg shadow-md">
+  <h3 className="text-xl font-semibold text-gray-800">Driving Directions</h3>
+  <div className="flex items-center space-x-2">
+    <span className="text-lg text-gray-600">⏱️</span>
+    <span className="text-md text-gray-600">Estimated Travel Time: <strong>5 mins</strong></span>
+  </div>
+  <div className="mt-4">
+    <p><strong>📍 Address:</strong> FMMM1 CLOSE, Off Board Road, Alihame, Agbor, Delta State.</p>
+    <p className="mt-2"><strong>🛣️ Directions:</strong></p>
+    <ol className="list-none pl-6 space-y-2 text-gray-700">
+      <li>🚦 From UniDEL gate, head straight towards Board Road.</li>
+      <li>➡️ Turn <strong>right</strong> onto Board Road.</li>
+      <li>⬅️ Turn <strong>left</strong> into the Faculty of Science compound.</li>
+      <li>🚗 Drive to the end of the road to find <strong>F-MMM1 Hotel & Suite</strong>.</li>
+    </ol>
+  </div>
+</div>
+
               </div>
-            </form>
           </div>
           <div className="col-md-6">
             <div className="map_main">
@@ -42,7 +41,6 @@ export default function ContactForm() {
           </div>
         </div>
       </div>
-      <Image src="/images/contact.png" alt="Contact Us" width={500} height={300} />
     </div>
   )
 }

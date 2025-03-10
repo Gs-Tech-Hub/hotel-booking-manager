@@ -32,6 +32,26 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
         {/* Header */}
         <header>
+        <div className="top_menu row m2">
+			<div className="container">
+        <div className="float-left">
+          <ul className="list header_social">
+            <li><a href="#">Contact Us +234 704 523 2697</a></li>
+          </ul>
+        </div>
+        <div className="float-right gap-5">
+          <select>
+						<option value="1">USD</option>
+						<option value="1">EUR</option>
+						<option value="1">NGN</option>
+					</select>
+					<select>
+						<option value="1">ENG</option>
+						<option value="1">FRA</option>
+					</select>
+				</div>
+			</div>
+		  </div>
           <Navigation />
         </header>
 

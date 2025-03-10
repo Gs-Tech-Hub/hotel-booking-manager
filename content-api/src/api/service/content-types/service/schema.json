@@ -1,0 +1,28 @@
+{
+  "kind": "singleType",
+  "collectionName": "services",
+  "info": {
+    "singularName": "service",
+    "pluralName": "services",
+    "displayName": "Service",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "serviceInfo": {
+      "type": "dynamiczone",
+      "components": [
+        "shared.rich-text",
+        "shared.media",
+        "shared.quote",
+        "shared.slider",
+        "shared.seo"
+      ]
+    }
+  }
+}

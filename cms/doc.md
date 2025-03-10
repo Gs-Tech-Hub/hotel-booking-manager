@@ -1,2 +1,0 @@
-# the content api documentation
-

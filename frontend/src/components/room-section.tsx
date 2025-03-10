@@ -1,6 +1,26 @@
 import Image from 'next/image';
 
-export default function RoomSection() {
+interface Amenity {
+  id: number;
+  name: string;
+  icon: string;
+}
+
+interface Room {
+  id: number;
+  title: string;
+  imgUrl: string;
+  description: string;
+  price: number;
+  amenities: Amenity[];
+  bed?: string;
+}
+
+interface RoomSectionProps {
+  rooms: Room[];
+}
+
+export default function RoomSection({ rooms }: RoomSectionProps) {
   return (
     <div className="our_room">
       <div className="container">
@@ -8,22 +28,38 @@ export default function RoomSection() {
           <div className="col-md-12">
             <div className="titlepage">
               <h2>Our Room</h2>
-              <p>Lorem Ipsum available, but the majority have suffered</p>
+              <p>Discover our luxurious rooms, designed for your comfort and relaxation.</p>
             </div>
           </div>
         </div>
         <div className="row">
-          {[1, 2, 3, 4, 5, 6].map((num) => (
-            <div key={num} className="col-md-4 col-sm-6">
+          {rooms.map((room) => (
+            <div key={room.id} className="col-md-4 col-sm-6">
               <div id="serv_hover" className="room">
                 <div className="room_img">
                   <figure>
-                    <Image src={`/images/room${num}.jpg`} alt={`Room ${num}`} layout="responsive" width={500} height={300} />
+                    <Image src={room.imgUrl} alt={room.title} layout="responsive" width={375} height={232} />
                   </figure>
                 </div>
                 <div className="bed_room">
-                  <h3>Bed Room</h3>
-                  <p>If you are going to use a passage of Lorem Ipsum, you need to be sure there</p>
+                  <h3>{room.title}</h3>
+                  <p>{room.description}</p>
+                  <p className="room-price">Price: ₦ {room.price}</p>
+                  <p className="room-size">BED-SIZE: {room.bed ? room.bed : 'Size not specified'}</p>
+                  <div className="amenities-section" style={{ textAlign: 'center' }}>
+                    <h4 style={{ marginTop: '10px' }}>Amenities:</h4>
+                    <ul style={{ display: 'flex', justifyContent: 'center', listStyleType: 'none', padding: 0 }}>
+                      {room.amenities.map((amenity) => (
+                        <li key={amenity.id} style={{ marginRight: '10px' }}>
+                          {amenity.icon ? (
+                            <Image src={amenity.icon} alt={amenity.name} width={20} height={20} />
+                          ) : (
+                            <span>Icon</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
@@ -31,5 +67,5 @@ export default function RoomSection() {
         </div>
       </div>
     </div>
-  )
+  );
 }

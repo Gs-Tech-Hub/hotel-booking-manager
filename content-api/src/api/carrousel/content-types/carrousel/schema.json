@@ -1,0 +1,23 @@
+{
+  "kind": "singleType",
+  "collectionName": "carrousels",
+  "info": {
+    "singularName": "carrousel",
+    "pluralName": "carrousels",
+    "displayName": "carrousel",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "BannerSlider": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.slider"
+    }
+  }
+}
