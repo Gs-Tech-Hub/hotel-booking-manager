@@ -1,13 +1,19 @@
-import Image from 'next/image';
+'use client';
 
-// Define the type for the props
+import Link from 'next/link';
+import Image from 'next/image';
+import Overlay from './overlay';
+
 interface BannerCarouselProps {
   images: { src: string; alt: string }[];
 }
 
 export default function BannerCarousel({ images }: BannerCarouselProps) {
   return (
-    <div id="myCarousel" className="carousel slide banner" data-ride="carousel">
+    <div id="myCarousel" className="carousel slide home_banner_area position-relative" data-ride="carousel">
+     <div className="container">
+     <Overlay />
+     </div>
       <ol className="carousel-indicators">
         {images.map((_, index) => (
           <li key={index} data-target="#myCarousel" data-slide-to={index} className={index === 0 ? "active" : ""}></li>
@@ -16,7 +22,7 @@ export default function BannerCarousel({ images }: BannerCarouselProps) {
       <div className="carousel-inner">
         {images.map((image, index) => (
           <div key={index} className={`carousel-item ${index === 0 ? "active" : ""}`}>
-            <Image className={`${index === 0 ? "first-slide" : index === 1 ? "second-slide" : "third-slide"}`} src={image.src} alt={image.alt} layout="responsive" width={500} height={300} />
+            <Image className={`w-100 ${index === 0 ? "first-slide" : index === 1 ? "second-slide" : "third-slide"}`} src={image.src} alt={image.alt} layout="responsive" width={500} height={300} />
           </div>
         ))}
       </div>
@@ -29,5 +35,5 @@ export default function BannerCarousel({ images }: BannerCarouselProps) {
         <span className="sr-only">Next</span>
       </a>
     </div>
-  )
+  );
 }

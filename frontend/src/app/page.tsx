@@ -157,16 +157,10 @@ export default function Home() {
     <>
       {/* Banner Section with Carousel */}
       <section className="banner_main">
-        <BannerCarousel images={carrouselImages} />
-        <div className="booking_ocline">
-          <div className="container">
-            <div className="row">
-              <div className="col-md-5">
-                <BookingForm />
-              </div>
-            </div>
-          </div>
-        </div>
+        <BannerCarousel images={carrouselImages} />  
+        <div className="container">
+          <BookingForm />
+         </div>      
       </section>
 
       {/* About Section */}
