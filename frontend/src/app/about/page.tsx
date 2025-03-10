@@ -7,6 +7,8 @@ const aboutData = {
 };
 
 export default function AboutPage() {
-  return <AboutSection {...aboutData} />;
+  return
+   <AboutSection {...aboutData} />;
+
 }
   

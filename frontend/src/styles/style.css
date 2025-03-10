@@ -1099,4 +1099,275 @@ line-height: 35px;
    .hotel-card:hover .hotel-card-text {
      max-height: 100%;
    }
+
+   /* Booking Area css */
+.booking_area {
+     background: #ffffff;
+     position: relative;
+     z-index: 2;
+     margin-top: -100px;
+     box-shadow: 0 20px 50px rgba(158, 158, 158, 0.2); }
+     @media (max-width: 991px) {
+       .booking_area {
+         margin-top: 65px; } }
+     .booking_area .row {
+       margin: 0; }
+     .booking_area .col-lg-3 {
+       padding: 30px 0; }
+       .booking_area .col-lg-3:nth-child(3) .booking_item, .booking_area .col-lg-3:nth-child(4) .booking_item {
+         border-right: 0; }
+     .booking_area .coupon-code {
+       background: #f1f9ff; }
    
+   .booking_item {
+     padding: 7px 40px;
+     border-right: 1px solid #ddd; }
+     .booking_item input[type="date"]::-webkit-calendar-picker-indicator,
+     .booking_item input[type="date"]::-webkit-inner-spin-button {
+       display: none; }
+     @media (max-width: 460px) {
+       .booking_item {
+         padding: 7px 12px; } }
+     @media (max-width: 1199px) {
+       .booking_item .main_btn {
+         font-size: 12px;
+         padding: 0 15px; } }
+     @media (max-width: 460px) {
+       .booking_item .main_btn {
+         line-height: 34px;
+         padding: 0 10px;
+         font-size: 11px; } }
+     .booking_item p {
+       text-transform: uppercase;
+       font-size: 14px; }
+       @media (max-width: 460px) {
+         .booking_item p {
+           font-size: 13px; } }
+     .booking_item .day {
+       font-size: 60px;
+       font-family: "Playfair Display", serif;
+       color: #000;
+       font-weight: 600;
+       margin-right: 10px;
+       letter-spacing: 1px; }
+       @media (max-width: 1199px) {
+         .booking_item .day {
+           font-size: 48px; } }
+       @media (max-width: 460px) {
+         .booking_item .day {
+           font-size: 32px; } }
+     .booking_item .month {
+       font-family: "Playfair Display", serif;
+       color: #000000;
+       text-transform: uppercase;
+       font-weight: 500; }
+       @media (max-width: 460px) {
+         .booking_item .month {
+           font-size: 13px; } }
+     .booking_item label {
+       color: #000000;
+       margin-left: 10px;
+       cursor: pointer; }
+       @media (max-width: 460px) {
+         .booking_item label {
+           margin-left: 6px; } }
+     .booking_item input {
+       border: 0;
+       width: 0;
+       height: 0;
+       padding: 0; }
+       .booking_item input:focus {
+         box-shadow: none;
+         outline: none; }
+     .booking_item a {
+       color: #777777; }
+   
+       .main_btn {
+          display: inline-block;
+          background: #4d8eff;
+          padding: 0px 34px;
+          color: #fff;
+          font-family: "Roboto", sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          line-height: 48px;
+          border-radius: 0px;
+          outline: none !important;
+          box-shadow: none !important;
+          text-align: center;
+          border: 1px solid #4d8eff;
+          cursor: pointer;
+          transition: all 300ms linear 0s; }
+          .main_btn:hover {
+            background: transparent;
+            color: #4d8eff; }
+        
+   /* End Booking Area css */
+
+   .top_menu .container {
+     border-bottom: 1px solid #eeeeee; }
+   .top_menu .header_social li {
+     display: inline-block;
+     margin-right: 15px; }
+     .top_menu .header_social li a {
+       font-size: 14px;
+       color: #777777;
+       display: inline-block;
+       line-height: 40px;
+       transition: all 300ms linear 0s; }
+     .top_menu .header_social li:last-child {
+       margin-right: 0px; }
+     .top_menu .header_social li:hover a {
+       color: #4d8eff; }
+   .top_menu .nice-select {
+     float: none;
+     display: inline-block;
+     border: 0;
+     background: transparent;
+     height: 39px; }
+   .top_menu .dn_btn {
+     line-height: 40px;
+     display: inline-block;
+     font-size: 12px;
+     margin-right: 30px;
+     font-family: "Roboto", sans-serif;
+     font-weight: normal;
+     color: #777777;
+     transition: all 300ms linear 0s; }
+     .top_menu .dn_btn:hover {
+       color: #4d8eff; }
+     .top_menu .dn_btn:last-child {
+       margin-right: 0px; }
+   .top_menu .lan_pack {
+     height: 30px;
+     border: 1px solid #eeeeee;
+     border-radius: 3px;
+     line-height: 28px;
+     font-size: 12px;
+     font-family: "Roboto", sans-serif;
+     font-weight: 500;
+     padding-left: 19px;
+     padding-right: 36px;
+     color: #777777;
+     background: #f9f9ff;
+     margin-right: 5px;
+     margin-top: 8px; }
+     .top_menu .lan_pack .current {
+       color: #777777; }
+     .top_menu .lan_pack:after {
+       content: "\f0d7";
+       border: none !important;
+       font: normal normal normal 12px/1 FontAwesome;
+       -webkit-transform: rotate(0deg);
+       -moz-transform: rotate(0deg);
+       -ms-transform: rotate(0deg);
+       -o-transform: rotate(0deg);
+       transform: rotate(0deg);
+       height: auto;
+       margin-top: -6px;
+       right: 20px; }
+
+       /* top menu end */
+       /* Home Banner Area css
+=================================================================== */
+.home_banner_area {
+     position: relative;
+     z-index: 1;
+     min-height: 780px; }
+     .home_banner_area .banner_inner {
+       position: relative;
+       overflow: hidden;
+       width: 100%;
+       min-height: 780px; }
+       .home_banner_area .banner_inner .banner_content {
+         color: #fff; }
+         .home_banner_area .banner_inner .banner_content h5 {
+           text-transform: uppercase;
+           font-family: "Roboto", sans-serif;
+           font-size: 14px;
+           font-weight: normal;
+           margin-bottom: 15px; }
+         .home_banner_area .banner_inner .banner_content h1 {
+           font-size: 120px;
+           line-height: 60px;
+           font-family: "Playfair Display", serif;
+           font-weight: 900;
+           margin-bottom: 60px;
+             color: orange; }
+
+           @media (max-width: 767px) {
+             .home_banner_area .banner_inner .banner_content h1 {
+               font-size: 60px;
+               margin-bottom: 10px; } }
+         .home_banner_area .banner_inner .banner_content .top-text {
+           text-align: right;
+           max-width: 506px;
+           margin: auto;
+           font-size: 16px;
+           text-transform: uppercase;
+           font-weight: 500;
+           letter-spacing: 3px;
+           margin-bottom: 20px; }
+           @media (max-width: 767px) {
+             .home_banner_area .banner_inner .banner_content .top-text {
+               max-width: 50%; } }
+           @media (max-width: 320px) {
+             .home_banner_area .banner_inner .banner_content .top-text {
+               max-width: 53%;
+               margin-bottom: 10px; } }
+         .home_banner_area .banner_inner .banner_content .text {
+           max-width: 620px;
+           margin: auto; }
+           @media (max-width: 320px) {
+             .home_banner_area .banner_inner .banner_content .text {
+               display: none; } }
+         .home_banner_area .banner_inner .banner_content .vdo-btn {
+           margin-top: 50px; }
+   
+   .banner_box {
+     max-width: 1620px;
+     margin: auto; }
+   
+   .banner_area {
+     position: relative;
+     z-index: 1;
+     min-height: 300px; }
+     .banner_area .banner_inner {
+       position: relative;
+       overflow: hidden;
+       width: 100%;
+       min-height: 300px;
+       background: #000000;
+       z-index: 1; }
+       .banner_area .banner_inner .banner_content h2 {
+         color: #fff;
+         font-size: 60px;
+         font-family: "Playfair Display", serif;
+         margin-bottom: 0px;
+         font-weight: bold; }
+       .banner_area .banner_inner .banner_content .page_link a {
+         font-size: 14px;
+         color: #fff;
+         font-family: "Roboto", sans-serif;
+         margin-right: 32px;
+         position: relative; }
+         .banner_area .banner_inner .banner_content .page_link a:before {
+           content: "\e87a";
+           font-family: 'Linearicons-Free';
+           position: absolute;
+           right: -25px;
+           top: 50%;
+           -webkit-transform: translateY(-50%);
+           -moz-transform: translateY(-50%);
+           -ms-transform: translateY(-50%);
+           -o-transform: translateY(-50%);
+           transform: translateY(-50%); }
+         .banner_area .banner_inner .banner_content .page_link a:last-child {
+           margin-right: 0px; }
+           .banner_area .banner_inner .banner_content .page_link a:last-child:before {
+             display: none; }
+         .banner_area .banner_inner .banner_content .page_link a:hover {
+           color: #4d8eff; }
+   
+   /* End Home Banner Area css
+/*--------------------------------------------------------------------- End of File ---------------------------------------------------------------------*/
