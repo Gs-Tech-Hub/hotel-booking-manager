@@ -1368,6 +1368,107 @@ line-height: 35px;
              display: none; }
          .banner_area .banner_inner .banner_content .page_link a:hover {
            color: #4d8eff; }
+
+ /* booking page css */
+ .booking-container {
+  max-width: 1170px;
+  margin: auto;
+  padding: 40px 20px;
+  background: #f8f9fa;
+}
+
+.booking-header {
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  color: #121212;
+  text-transform: uppercase;
+  margin-bottom: 40px;
+}
+
+.room-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+  border-left: 4px solid #ff0909;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.room-card:hover {
+  transform: translateY(-5px);
+}
+
+.room-info {
+  display: flex;
+  align-items: center;
+}
+
+.room-info img {
+  border-radius: 10px;
+  width: 350px;
+  height: auto;
+}
+
+.room-details {
+  margin-left: 20px;
+}
+
+.room-name {
+  font-size: 22px;
+  font-weight: 600;
+  color: #121212;
+}
+
+.room-availability {
+  font-size: 14px;
+  color: #ff0909;
+  font-weight: bold;
+}
+
+.room-amenities {
+  font-size: 14px;
+  color: #6c757d;
+  margin-top: 10px;
+}
+
+.room-pricing {
+  text-align: right;
+}
+
+.price {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.price-online {
+  color: #28a745;
+}
+
+.price-premise {
+  color: #007bff;
+}
+
+.book-btn {
+  margin-top: 10px;
+  display: inline-block;
+  background: #fe0000;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 50px;
+  transition: all 0.3s ease-in-out;
+}
+
+.book-btn:hover {
+  background: #fff;
+  color: #fe0000;
+  border: 2px solid #fe0000;
+}
+
    
    /* End Home Banner Area css
 /*--------------------------------------------------------------------- End of File ---------------------------------------------------------------------*/
