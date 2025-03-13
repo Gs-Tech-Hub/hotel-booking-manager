@@ -1,13 +1,30 @@
-import { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, addDays } from "date-fns";
+import { useBookingStore } from "../store/bookingStore";
+import { useRouter } from "next/navigation";
+
 
 export default function BookingForm() {
-  const [checkIn, setCheckIn] = useState<Date>(new Date());
-  const [checkOut, setCheckOut] = useState<Date>(addDays(new Date(), 1));
-  const [guests, setGuests] = useState(2);
+  const router = useRouter();
+  const { checkIn, checkOut, guests, updateBooking } = useBookingStore();
+  const [localCheckIn, setLocalCheckIn] = useState<Date>(checkIn || new Date());
+  const [localCheckOut, setLocalCheckOut] = useState<Date>(checkOut || addDays(new Date(), 1));
+  const [localGuests, setLocalGuests] = useState<number>(guests);
   const [showGuestDropdown, setShowGuestDropdown] = useState(false);
+
+  // Sync Zustand state when local state changes
+  useEffect(() => {
+    updateBooking({ checkIn: localCheckIn, checkOut: localCheckOut, guests: localGuests });
+  }, [localCheckIn, localCheckOut, localGuests, updateBooking]);
+
+  const handleCheckAvailability = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.push("/bookings"); // Navigate to booking page
+  };
 
   return (
     <div className="booking_area">
@@ -18,17 +35,15 @@ export default function BookingForm() {
             <div className="booking_item relative">
               <p>Check - in</p>
               <div className="flex items-center rounded p-2 cursor-pointer bg-white">
-                {/* Display selected date */}
-                <span className="day">{format(checkIn, "dd")}</span>
-                <span className="month">{format(checkIn, "MMM")}</span>
+                <span className="day">{format(localCheckIn, "dd")}</span>
+                <span className="month">{format(localCheckIn, "MMM")}</span>
                 <label htmlFor="CheckIn">
                   <i className="fa fa-angle-down ml-2"></i>
                 </label>
               </div>
-              {/* Hidden DatePicker to trigger selection */}
               <DatePicker
-                selected={checkIn}
-                onChange={(date: Date | null) => date && setCheckIn(date)}
+                selected={localCheckIn}
+                onChange={(date: Date | null) => date && setLocalCheckIn(date)}
                 dateFormat="dd/MM/yyyy"
                 className="absolute top-full left-0 z-50 opacity-0 w-0 h-0"
                 id="CheckIn"
@@ -41,21 +56,19 @@ export default function BookingForm() {
             <div className="booking_item relative">
               <p>Check - out</p>
               <div className="flex items-center rounded p-2 cursor-pointer bg-white">
-                {/* Display selected date */}
-                <span className="day">{format(checkOut, "dd")}</span>
-                <span className="month">{format(checkOut, "MMM")}</span>
+                <span className="day">{format(localCheckOut, "dd")}</span>
+                <span className="month">{format(localCheckOut, "MMM")}</span>
                 <label htmlFor="CheckOut">
                   <i className="fa fa-angle-down ml-2"></i>
                 </label>
               </div>
-              {/* Hidden DatePicker */}
               <DatePicker
-                selected={checkOut}
-                onChange={(date: Date | null) => date && setCheckOut(date)}
+                selected={localCheckOut}
+                onChange={(date: Date | null) => date && setLocalCheckOut(date)}
                 dateFormat="dd/MM/yyyy"
                 className="absolute opacity-0 w-0 h-0"
                 id="CheckOut"
-                minDate={checkIn} // Ensures valid date selection
+                minDate={localCheckIn}
               />
             </div>
           </div>
@@ -67,8 +80,8 @@ export default function BookingForm() {
               onClick={() => setShowGuestDropdown(!showGuestDropdown)}
             >
               <p>Total guests</p>
-              <span className="day">{guests}</span>
-              <span className="month">person{guests > 1 ? "s" : ""}</span>
+              <span className="day">{localGuests}</span>
+              <span className="month">person{localGuests > 1 ? "s" : ""}</span>
             </div>
             {showGuestDropdown && (
               <div className="absolute bg-white shadow-lg rounded-lg p-2 mt-1 w-full z-10">
@@ -77,7 +90,7 @@ export default function BookingForm() {
                     key={num}
                     className="p-2 hover:bg-gray-200 cursor-pointer"
                     onClick={() => {
-                      setGuests(num);
+                      setLocalGuests(num);
                       setShowGuestDropdown(false);
                     }}
                   >
@@ -94,8 +107,8 @@ export default function BookingForm() {
               <p className="text-capitalize">
                 <a href="#">Got a Coupon Code?</a>
               </p>
-              <button type="submit" className="main_btn text-uppercase">
-                check availability
+              <button type="button" className="main_btn text-uppercase" onClick={handleCheckAvailability}>
+              check availability
               </button>
             </div>
           </div>
