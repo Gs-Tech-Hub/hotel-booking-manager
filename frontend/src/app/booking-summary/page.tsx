@@ -1,85 +1,79 @@
 "use client";
 
-import { useSearchParams } from 'next/navigation';
-import { useState} from 'react';
-import Image from 'next/image';
+import { Suspense, useState, useEffect } from "react";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { useBookingStore } from "../../store/bookingStore";
 
-interface Service {
+interface BookingDetails {
   name: string;
-  price: number;
+  image: string;
+  amenities: string[];
+  nights: number;
+  priceOnline: number;
 }
 
-const additionalServices: Service[] = [
-  { name: "Meals", price: 20 },
-  { name: "Pool Access", price: 15 },
-  { name: "Laundry", price: 10 },
-];
-
-export default function BookingSummary() {
+function BookingSummaryContent() {
   const searchParams = useSearchParams();
+  const { checkIn, checkOut, guests } = useBookingStore();
 
-  const name = searchParams.get("name") || "N/A";
-  const image = searchParams.get("image") || "";
-  const amenities = searchParams.get("amenities")?.split(", ") || [];
-  const priceOnline = searchParams.get("priceOnline") || "0";
+  const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(null);
 
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
-  const [totalPrice, setTotalPrice] = useState<number>(parseFloat(priceOnline));
+  useEffect(() => {
+    const name = searchParams.get("name") || "";
+    const image = searchParams.get("image") || "";
+    const amenities = searchParams.get("amenities") ? searchParams.get("amenities")!.split(", ") : [];
+    const nights = searchParams.get("nights") ? parseInt(searchParams.get("nights")!) : 1;
+    const priceOnline = searchParams.get("priceOnline") ? parseFloat(searchParams.get("priceOnline")!) : 0;
 
-  const toggleService = (service: string) => {
-    const isSelected = selectedServices.includes(service);
-    const updatedServices = isSelected
-      ? selectedServices.filter((s) => s !== service)
-      : [...selectedServices, service];
+    setBookingDetails({ name, image, amenities, nights, priceOnline });
+  }, [searchParams]);
 
-    setSelectedServices(updatedServices);
-
-    const servicePrice = additionalServices.find((s) => s.name === service)?.price || 0;
-    setTotalPrice((prevTotal) =>
-      isSelected ? prevTotal - servicePrice : prevTotal + servicePrice
-    );
-  };
-
-  const handleConfirmBooking = () => {
-    alert(`Booking Confirmed! Total: $${totalPrice}`);
-  };
+  if (!bookingDetails) {
+    return <h2 className="text-center">Loading booking details...</h2>; // ✅ Prevents rendering before state updates
+  }
 
   return (
     <div className="booking-container">
       <h1 className="booking-header">Booking Summary</h1>
+      <h3 className="text-center text-lg font-bold mt-4">
+        You are booking for {bookingDetails.nights} night{bookingDetails.nights > 1 ? "s" : ""}
+      </h3>
       <div className="room-card">
         <div className="room-info">
-          {image && <Image src={image} width={350} height={200} className="rounded-lg" alt={name} />}
+          {bookingDetails.image && (
+            <Image
+              src={bookingDetails.image}
+              width={350}
+              height={200}
+              className="rounded-lg"
+              alt={bookingDetails.name}
+            />
+          )}
           <div className="room-details">
-            <h2 className="room-name">{name}</h2>
-            <p className="room-availability">Amenities: {amenities.join(", ")}</p>
-            <p className="price price-online">Online Price: ${totalPrice}</p>
+            <h2 className="room-name">{bookingDetails.name}</h2>
+            <p className="room-availability">
+              Amenities: {bookingDetails.amenities.length ? bookingDetails.amenities.join(", ") : "N/A"}
+            </p>
+            <p className="price price-online">Total Price: ${bookingDetails.priceOnline}</p>
           </div>
         </div>
       </div>
 
-      <h2 className="booking-header mt-4">Additional Services</h2>
-      <div className="space-y-2">
-        {additionalServices.map((service) => (
-          <label key={service.name} className="service-item">
-            <span>{service.name} (+${service.price})</span>
-            <input
-              type="checkbox"
-              checked={selectedServices.includes(service.name)}
-              onChange={() => toggleService(service.name)}
-              className="service-checkbox"
-            />
-          </label>
-        ))}
+      {/* ✅ Display check-in, check-out, and guests */}
+      <div className="text-center mt-4">
+        <p><strong>Check-in:</strong> {checkIn ? checkIn.toLocaleDateString() : "N/A"}</p>
+        <p><strong>Check-out:</strong> {checkOut ? checkOut.toLocaleDateString() : "N/A"}</p>
+        <p><strong>Guests:</strong> {guests}</p>
       </div>
-
-      <div className="total-price">
-        <h3>Total Price: <span className="price price-online">${totalPrice}</span></h3>
-      </div>
-
-      <button className="book-btn" onClick={handleConfirmBooking}>
-        Confirm Booking
-      </button>
     </div>
+  );
+}
+
+export default function BookingSummary() {
+  return (
+    <Suspense fallback={<h2 className="text-center">Loading booking details...</h2>}>
+      <BookingSummaryContent />
+    </Suspense>
   );
 }
