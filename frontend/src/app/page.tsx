@@ -166,14 +166,10 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      {aboutData && typeof aboutData === 'object' && 
-      !Array.isArray(aboutData) && <AboutSection title={aboutData.title} 
-      description={renderDescription(aboutData.description)} 
-      image={aboutData.image} 
-      />}
+       <AboutSection/>
 
       {/* Room Section */}
-      <RoomSection rooms={roomsData} />
+      <RoomSection/>
 
       {/* Hotel information section */}
       <HotelInfo />
