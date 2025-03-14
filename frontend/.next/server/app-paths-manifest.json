@@ -3,10 +3,12 @@
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/about/page": "app/about/page.js",
   "/blog/page": "app/blog/page.js",
+  "/booking-summary/page": "app/booking-summary/page.js",
   "/bookings/page": "app/bookings/page.js",
   "/contact/page": "app/contact/page.js",
   "/gallery/page": "app/gallery/page.js",
   "/page": "app/page.js",
+  "/restaurant/page": "app/restaurant/page.js",
   "/room/page": "app/room/page.js",
   "/rooms/page": "app/rooms/page.js"
 }
