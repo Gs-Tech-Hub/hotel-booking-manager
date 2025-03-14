@@ -9,6 +9,7 @@ import ContactForm from '@/components/contact-form'
 import ServiceSection from '@/components/service-section'
 import HotelInfo from '@/components/hotel-info';
 import Restaurant from '@/components/restaurant-section';
+import HotelFacilities from '@/components/facilities';
 
 interface AboutData {
   title: string;
@@ -176,13 +177,15 @@ export default function Home() {
 
       {/* Hotel information section */}
       <HotelInfo />
-      
+
       {/* Restaurant Section */}
       <Restaurant />
       
       {/* Gallery Section */}
       {/* <Gallery images={galleryImages} /> */}
 
+        {/* facilities section */}
+        <HotelFacilities /> 
       {/* Blog Section */}
       {/* <BlogSection posts={[]} /> */}
 
