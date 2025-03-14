@@ -8,6 +8,7 @@ import RoomSection from '@/components/room-section'
 import ContactForm from '@/components/contact-form'
 import ServiceSection from '@/components/service-section'
 import HotelInfo from '@/components/hotel-info';
+import Restaurant from '@/components/restaurant-section';
 
 interface AboutData {
   title: string;
@@ -175,7 +176,10 @@ export default function Home() {
 
       {/* Hotel information section */}
       <HotelInfo />
-
+      
+      {/* Restaurant Section */}
+      <Restaurant />
+      
       {/* Gallery Section */}
       {/* <Gallery images={galleryImages} /> */}
 

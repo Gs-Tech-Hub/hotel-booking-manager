@@ -1469,6 +1469,171 @@ line-height: 35px;
   border: 2px solid #fe0000;
 }
 
+
+/* Restaurant Section css */
+.restaurant-section {
+     background: #f8f9fa;
+     padding: 80px 0;
+   }
+   .restaurant-content {
+     display: flex;
+     align-items: center;
+     gap: 40px;
+   }
+   .restaurant-image img {
+     border-radius: 10px;
+     width: 100%;
+     max-width: 600px;
+   }
+   .restaurant-info {
+     max-width: 500px;
+   }
+   .restaurant-info h3 {
+     font-size: 26px;
+     color: #121212;
+     margin-bottom: 15px;
+   }
+   .restaurant-info p {
+     font-size: 16px;
+     color: #6c757d;
+     margin-bottom: 20px;
+   }
+   .restaurant-features {
+     list-style: none;
+     padding: 0;
+   }
+   .restaurant-features li {
+     font-size: 16px;
+     color: #121212;
+     margin-bottom: 10px;
+     display: flex;
+     align-items: center;
+   }
+   .restaurant-features li i {
+     margin-right: 10px;
+     color: #ff0909;
+   }
+   .book-btn {
+     background-color: #fe0000;
+     color: #fff;
+     padding: 12px 20px;
+     font-size: 16px;
+     border-radius: 30px;
+     display: inline-block;
+     transition: all 0.3s ease-in-out;
+   }
+   .book-btn:hover {
+     background: #fff;
+     color: #fe0000;
+     border: 2px solid #fe0000;
+   }
+   @media (max-width: 768px) {
+     .restaurant-content {
+       flex-direction: column;
+       text-align: center;
+     }
+     .restaurant-info {
+       max-width: 100%;
+     }
+   }
+
+/* Restaurant Page css */
+
+.restaurant-page {
+     padding: 40px;
+     max-width: 800px;
+     margin: auto;
+     background: #ffffff;
+   }
+   .tabs {
+     display: flex;
+     justify-content: center;
+     margin-bottom: 20px;
+   }
+   .tabs button {
+     padding: 10px 20px;
+     border: none;
+     background: #ddd;
+     cursor: pointer;
+     margin: 0 5px;
+   }
+   .tabs .active {
+     background: #ff0909;
+     color: white;
+   }
+   .description-section {
+     text-align: center;
+   }
+   .cover-image {
+     border-radius: 10px;
+     margin-top: 20px;
+   }
+   .section-title {
+     font-size: 28px;
+     text-align: center;
+     margin-bottom: 20px;
+   }
+   .menu-list {
+     display: flex;
+     flex-direction: column;
+     gap: 15px;
+   }
+   .menu-row {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     border-bottom: 1px solid #ddd;
+     padding-bottom: 10px;
+   }
+   .menu-details {
+     flex: 1;
+     margin-left: 15px;
+   }
+   .menu-price {
+     color: #ff0909;
+     font-weight: bold;
+   }
+   .add-btn {
+     background: #ff0909;
+     color: white;
+     padding: 5px 10px;
+     border-radius: 5px;
+     cursor: pointer;
+     border: none;
+   }
+   .checkout-section {
+     margin-top: 30px;
+     text-align: center;
+   }
+   .checkout-section select, .checkout-section input {
+     display: block;
+     width: 100%;
+     margin: 10px 0;
+     padding: 8px;
+   }
+   .checkout-btn {
+     background: #ff0909;
+     color: white;
+     padding: 10px 15px;
+     border-radius: 5px;
+     cursor: pointer;
+     border: none;
+     margin-top: 10px;
+   }
+
+   .thumbnail-gallery {
+     display: flex;
+     justify-content: center;
+     gap: 15px;
+     margin-top: 20px;
+   }
+   .thumbnail-image {
+     border-radius: 10px;
+     cursor: pointer;
+     transition: transform 0.3s ease-in-out;
+   }
+   .thumbnail-image:hover {
+     transform: scale(1.1);
+   }
    
-   /* End Home Banner Area css
 /*--------------------------------------------------------------------- End of File ---------------------------------------------------------------------*/
