@@ -1,0 +1,51 @@
+{
+    "kind": "collectionType",
+    "collectionName": "boookings",
+    "info": {
+        "singularName": "boooking",
+        "pluralName": "boookings",
+        "displayName": "boooking",
+        "description": ""
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "attributes": {
+        "checkin": {
+            "type": "date"
+        },
+        "checkout": {
+            "type": "date"
+        },
+        "customer": {
+            "type": "relation",
+            "relation": "oneToOne",
+            "target": "api::customer.customer"
+        },
+        "payment": {
+            "type": "relation",
+            "relation": "oneToOne",
+            "target": "api::payment.payment"
+        },
+        "food_item": {
+            "type": "relation",
+            "relation": "oneToOne",
+            "target": "api::food-item.food-item"
+        },
+        "room": {
+            "type": "relation",
+            "relation": "oneToOne",
+            "target": "api::room.room"
+        },
+        "restaurant": {
+            "type": "relation",
+            "relation": "oneToOne",
+            "target": "api::restaurant.restaurant"
+        },
+        "bar_and_club": {
+            "type": "relation",
+            "relation": "oneToOne",
+            "target": "api::bar-and-club.bar-and-club"
+        }
+    }
+}

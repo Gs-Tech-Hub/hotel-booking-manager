@@ -1,0 +1,17 @@
+{
+    "kind": "collectionType",
+    "collectionName": "drink_types",
+    "info": {
+        "singularName": "drink-type",
+        "pluralName": "drink-types",
+        "displayName": "drink-type"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "attributes": {
+        "typeName": {
+            "type": "string"
+        }
+    }
+}
