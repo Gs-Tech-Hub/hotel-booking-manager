@@ -1,9 +1,14 @@
 "use client";
-
-import { AboutData } from "@/app/page";
 import ApiHandler from "@/utils/apiHandler";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+
+interface AboutData {
+   title: string;
+   description: string;
+   image: string;
+}
+
 
 export default function AboutSection() {
    const [aboutData, setAboutData] = useState<AboutData | null>(null);

@@ -1,0 +1,17 @@
+{
+    "kind": "collectionType",
+    "collectionName": "food_types",
+    "info": {
+        "singularName": "food-type",
+        "pluralName": "food-types",
+        "displayName": "food-type"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "attributes": {
+        "typeName": {
+            "type": "string"
+        }
+    }
+}

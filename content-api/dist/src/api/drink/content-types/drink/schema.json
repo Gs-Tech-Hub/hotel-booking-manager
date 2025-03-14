@@ -1,0 +1,40 @@
+{
+    "kind": "collectionType",
+    "collectionName": "drinks",
+    "info": {
+        "singularName": "drink",
+        "pluralName": "drinks",
+        "displayName": "drink",
+        "description": ""
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "attributes": {
+        "name": {
+            "type": "string"
+        },
+        "description": {
+            "type": "text"
+        },
+        "price": {
+            "type": "integer"
+        },
+        "image": {
+            "type": "media",
+            "multiple": true,
+            "required": false,
+            "allowedTypes": [
+                "images",
+                "files",
+                "videos",
+                "audios"
+            ]
+        },
+        "drink_type": {
+            "type": "relation",
+            "relation": "oneToOne",
+            "target": "api::drink-type.drink-type"
+        }
+    }
+}
