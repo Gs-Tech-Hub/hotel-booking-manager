@@ -6,7 +6,7 @@ interface Amenity {
   icon: string;
 }
 
-interface Room {
+interface Room { 
   id: number;
   title: string;
   imgUrl: string;
