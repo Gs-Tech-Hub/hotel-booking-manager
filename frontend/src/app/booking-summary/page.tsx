@@ -1,71 +1,144 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useBookingStore } from "../../store/bookingStore";
 
-interface BookingDetails {
-  name: string;
-  image: string;
-  amenities: string[];
-  nights: number;
-  priceOnline: number;
-}
-
 function BookingSummaryContent() {
-  const searchParams = useSearchParams();
-  const { checkIn, checkOut, guests } = useBookingStore();
+  const router = useRouter();
+  const {
+    checkIn,
+    checkOut,
+    guests,
+    selectedRoom,
+    paymentMethod,
+    guestInfo,
+    extras,
+    totalPrice,
+    updateBooking,
+  } = useBookingStore();
 
-  const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(null);
+  const [selectedExtras, setSelectedExtras] = useState<string[]>((extras || []).map(extra => extra.name));
 
-  useEffect(() => {
-    const name = searchParams.get("name") || "";
-    const image = searchParams.get("image") || "";
-    const amenities = searchParams.get("amenities") ? searchParams.get("amenities")!.split(", ") : [];
-    const nights = searchParams.get("nights") ? parseInt(searchParams.get("nights")!) : 1;
-    const priceOnline = searchParams.get("priceOnline") ? parseFloat(searchParams.get("priceOnline")!) : 0;
-
-    setBookingDetails({ name, image, amenities, nights, priceOnline });
-  }, [searchParams]);
-
-  if (!bookingDetails) {
-    return <h2 className="text-center">Loading booking details...</h2>; // ✅ Prevents rendering before state updates
+  // Handle case where no room is selected
+  if (!selectedRoom) {
+    return <h2 className="text-center">No booking details found.</h2>;
   }
+
+  // Extra services list
+  const availableExtras = [
+    { name: "Breakfast", price: 10 },
+    { name: "Lunch", price: 15 },
+    { name: "Dinner", price: 20 },
+    { name: "Laundry Service", price: 8 },
+    { name: "Spa Access", price: 25 },
+  ];
+
+  // Toggle extra selection
+  const toggleExtra = (extra: string) => {
+    setSelectedExtras((prev) =>
+      prev.includes(extra) ? prev.filter((item) => item !== extra) : [...prev, extra]
+    );
+  };
+
+  // Calculate totals
+  const extraTotal = availableExtras.reduce(
+    (sum, extra) => (selectedExtras.includes(extra.name) ? sum + extra.price : sum),
+    0
+  );
+  const grandTotal = totalPrice + extraTotal;
+
+  // Proceed to checkout
+  const handleCheckout = () => {
+    const selectedExtrasWithPrices = availableExtras.filter(extra => 
+      selectedExtras.includes(extra.name)
+    );
+    updateBooking({
+      extras: selectedExtrasWithPrices,
+      totalPrice: grandTotal,
+    });
+    router.push("/checkout");
+  };
 
   return (
     <div className="booking-container">
-      <h1 className="booking-header">Booking Summary</h1>
-      <h3 className="text-center text-lg font-bold mt-4">
-        You are booking for {bookingDetails.nights} night{bookingDetails.nights > 1 ? "s" : ""}
-      </h3>
-      <div className="room-card">
+      <h1 className="booking-header text-center">
+        Booking Summary for{" "}
+        <span className="highlight-text">
+          {selectedRoom && selectedRoom.name}
+        </span>
+      </h1>
+
+      <div className="room-card mt-4">
         <div className="room-info">
-          {bookingDetails.image && (
+          {selectedRoom.image && (
             <Image
-              src={bookingDetails.image}
+              src={selectedRoom.image}
               width={350}
               height={200}
               className="rounded-lg"
-              alt={bookingDetails.name}
+              alt={selectedRoom.name}
             />
           )}
           <div className="room-details">
-            <h2 className="room-name">{bookingDetails.name}</h2>
-            <p className="room-availability">
-              Amenities: {bookingDetails.amenities.length ? bookingDetails.amenities.join(", ") : "N/A"}
+            <h2 className="room-name">{selectedRoom.name}</h2>
+            <p className="price price-online">
+              Room Price: ${totalPrice.toFixed(2)}
             </p>
-            <p className="price price-online">Total Price: ${bookingDetails.priceOnline}</p>
+            <p className="payment-method">
+              <strong>Payment Method:</strong> {paymentMethod === "online" ? "Pay Online" : "Pay at Hotel"}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* ✅ Display check-in, check-out, and guests */}
-      <div className="text-center mt-4">
-        <p><strong>Check-in:</strong> {checkIn ? checkIn.toLocaleDateString() : "N/A"}</p>
-        <p><strong>Check-out:</strong> {checkOut ? checkOut.toLocaleDateString() : "N/A"}</p>
-        <p><strong>Guests:</strong> {guests}</p>
+      <div className="room-card mt-4">
+        <h2 className="room-name">Stay Details</h2>
+        <p>
+          <strong>Check-in:</strong> {checkIn ? checkIn.toLocaleDateString() : "N/A"}
+        </p>
+        <p>
+          <strong>Check-out:</strong> {checkOut ? checkOut.toLocaleDateString() : "N/A"}
+        </p>
+        <p>
+          <strong>Guests:</strong> {guests}
+        </p>
       </div>
+
+      <div className="room-card mt-4">
+        <h2 className="room-name">Extra Services</h2>
+        <div className="extra-options-grid">
+          {availableExtras.map((extra) => (
+            <label key={extra.name} className="extra-option">
+              <input
+                type="checkbox"
+                checked={selectedExtras.includes(extra.name)}
+                onChange={() => toggleExtra(extra.name)}
+              />
+              <span className="extra-name">{extra.name}</span>
+              <span className="extra-price">${extra.price}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="room-card mt-4">
+        <h2 className="room-name">Total Cost</h2>
+        <p>
+          <strong>Room Price:</strong> ${totalPrice.toFixed(2)}
+        </p>
+        <p>
+          <strong>Extras Total:</strong> ${extraTotal.toFixed(2)}
+        </p>
+        <p className="total-price">
+          <strong>Grand Total:</strong> ${grandTotal.toFixed(2)}
+        </p>
+      </div>
+
+      <button className="book-btn mt-4" onClick={handleCheckout}>
+        Proceed to Checkout
+      </button>
     </div>
   );
 }

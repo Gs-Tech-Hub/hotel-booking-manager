@@ -1071,6 +1071,7 @@ line-height: 35px;
    .hotel-card-body {
      display: flex;
      align-items: center;
+     justify-content: space-between;
      gap: 1rem;
      word-wrap: break-word;
      overflow-wrap: break-word;
@@ -1433,6 +1434,7 @@ line-height: 35px;
   font-size: 14px;
   color: #6c757d;
   margin-top: 10px;
+  font-weight: bold;
 }
 
 .room-pricing {
@@ -1444,30 +1446,87 @@ line-height: 35px;
   font-weight: bold;
 }
 
-.price-online {
-  color: #28a745;
-}
-
-.price-premise {
-  color: #007bff;
-}
-
+/* Booking Buttons */
 .book-btn {
-  margin-top: 10px;
-  display: inline-block;
-  background: #fe0000;
-  color: #fff;
-  padding: 10px 20px;
-  font-size: 16px;
-  border-radius: 50px;
-  transition: all 0.3s ease-in-out;
-}
-
-.book-btn:hover {
-  background: #fff;
-  color: #fe0000;
-  border: 2px solid #fe0000;
-}
+     display: inline-block;
+     width: auto;
+     text-align: center;
+     font-size: 18px;
+     font-weight: bold;
+     padding: 12px 20px;
+     border-radius: 50px;
+     transition: all 0.3s ease-in-out;
+     cursor: pointer;
+     margin-bottom: 4px; /* Adds spacing between buttons */
+ }
+ 
+ /* Online Payment Button */
+ .book-btn.online {
+     background-color: #007bff; /* Bootstrap Blue */
+     color: white !important;
+     border: 2px solid #007bff;
+ }
+ 
+ .book-btn.online:hover {
+     background-color: white;
+     color: #007bff !important;;
+ }
+ 
+ /* Pay at Hotel Button */
+ .book-btn.premise {
+     background-color: #dc3545; /* Bootstrap Red */
+     color: white !important;
+     border: 2px solid #dc3545;
+ }
+ 
+ .book-btn.premise:hover {
+     background-color: white;
+     color: #dc3545 !important;
+ }
+ 
+ /* Room Pricing Section */
+ .room-pricing {
+     display: flex;
+     flex-direction: column;
+     gap: 2px; /* Ensures buttons have 4px gap */
+     margin-top: 10px;
+ }
+ 
+   /* Extra Options Styling */
+  .highlight-text {
+     color: #ff0909; /* Existing red color */
+     font-weight: bold;
+     text-decoration: underline;
+   }
+   
+.extra-options-grid {
+     display: grid;
+     grid-template-columns: repeat(3, 1fr); /* Two items per row */
+     gap: 10px; /* Space between items */
+   }
+   
+   
+   .extra-option {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     width: 100%;
+     background: #f8f9fa; /* Light background */
+     padding: 10px;
+     border-radius: 5px;
+     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+   }
+   
+   .extra-option input {
+     margin-right: 10px;
+   }
+   
+   .price-premise {
+     font-size: 16px;
+     font-weight: bold;
+     color: #007bff; /* Existing blue for price */
+   }
+   
 
 
 /* Restaurant Section css */
@@ -1696,6 +1755,63 @@ line-height: 35px;
    @media (max-width: 768px) {
      .hotel-grid {
        grid-template-columns: repeat(1, 1fr);
+     }
+   }
+   
+   /* Checkout Page Layout */
+.checkout-layout {
+     display: grid;
+     grid-template-columns: 2fr 1fr;
+     gap: 20px;
+     margin-top: 20px;
+   }
+   
+   /* Guest Information Form */
+   .form-container {
+     background: #fff;
+     padding: 20px;
+     border-radius: 10px;
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+   }
+   
+   .guest-form label {
+     display: block;
+     font-weight: bold;
+     margin-top: 10px;
+   }
+   
+   .guest-form input {
+     width: 100%;
+     padding: 10px;
+     margin-top: 5px;
+     border: 1px solid #ccc;
+     border-radius: 5px;
+   }
+   
+   /* Price Summary */
+   .price-summary {
+     background: #f8f9fa;
+     padding: 20px;
+     border-radius: 10px;
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+   }
+   
+   .price-summary p {
+     font-size: 16px;
+     font-weight: 500;
+     margin: 8px 0;
+   }
+   
+   .total-price {
+     font-size: 20px;
+     font-weight: bold;
+     color: #28a745;
+   }
+   
+   /* Responsive Design */
+   @media (max-width: 768px) {
+     .checkout-layout {
+       grid-template-columns: 1fr;
      }
    }
    

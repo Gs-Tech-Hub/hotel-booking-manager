@@ -14,7 +14,7 @@ const HotelFacilities: React.FC = () => {
   return (
     <section className="hotel-info">
       <div className="container">
-        <h2 className="section-title">Our Facilities & Stats</h2>
+        <h2 className="section-title">Our Facilities Info</h2>
         <div className="hotel-grid">
           {facilities.map((facility, index) => (
             <div key={index} className="hotel-card">
