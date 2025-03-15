@@ -73,6 +73,9 @@ export default function BookingPage() {
         {nights} night{nights > 1 ? "s" : ""}
         </span>
       </h2>
+      <h3 className="text-center text-lg font-bold mt-4">
+        Booking for {nights} night{nights > 1 ? "s" : ""}
+      </h3>
 
       <div className="space-y-8">
         {rooms.map((room) => (
