@@ -13,7 +13,6 @@ function BookingSummaryContent() {
     guests,
     selectedRoom,
     paymentMethod,
-    guestInfo,
     extras,
     totalPrice,
     updateBooking,
