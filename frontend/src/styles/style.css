@@ -259,7 +259,61 @@ button {
 
 
 /*-- header area --*/
+.logo {
+     width: 100%;
+     height: 100%;
+}
 
+/* Header container */
+
+   /* Social section */
+   .header_social {
+     list-style: none;
+     padding: 0;
+     margin: 0;
+     display: flex;
+   }
+   
+   .header_social li {
+     display: inline;
+   }
+   
+   .header_social a {
+     text-decoration: none;
+     color: white;
+     font-weight: bold;
+     transition: color 0.3s ease-in-out;
+   }
+   
+   .header_social a:hover {
+     color: orange;
+   }
+   
+   /* Right-side dropdowns */
+   .float-right {
+     display: flex;
+     gap: 15px;
+   }
+   
+   .float-right select {
+     padding: 5px 10px;
+     border: none;
+     border-radius: 5px;
+     background: white;
+     cursor: pointer;
+     transition: all 0.3s ease-in-out;
+   }
+   
+   .float-right select:hover {
+     border-color: orange;
+   }
+   
+   .float-right select:focus {
+     outline: none;
+     border-color: #ff6600;
+     box-shadow: 0 0 5px rgba(255, 102, 0, 0.5);
+   }
+   
 
 /*--------------------------------------------------------------------- top banner area ---------------------------------------------------------------------*/
 
@@ -463,6 +517,61 @@ button {
      color: #fff;
      transition: ease-in all 0.5s;
 }
+
+/* Overlay */
+.overlay-container {
+     position: absolute;
+     background-color: #000000;
+     opacity: 0.7;
+     width: 100%;
+     height: 100%;
+     top: 50;
+     left: 0;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     z-index: 1;
+     transform: translateY(-50px);
+     transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+   }
+   
+   .overlay-content {
+     text-align: center;
+     color: white;
+     opacity: 0;
+     transform: translateY(20px);
+     transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+   }
+
+   .overlay-container:hover .overlay-content {
+     opacity: 1;
+     transform: translateY(0);
+   }
+   
+   .overlay-content .top-text {
+     font-size: 1.2rem;
+     transition: color 0.3s ease-in-out;
+   }
+   .overlay-content h1:hover {
+     transform: scale(1.1);
+   }
+   .overlay-content h1 {
+     font-size: 3.2rem;
+     font-weight: bold;
+     color: white;
+     transition: transform 0.3s ease-in-out;
+   }
+  
+   .overlay-content .text {
+     font-size: 1rem;
+   }
+   
+   .overlay-content .orange {
+     color: orange;
+     font-weight: bold;
+     font-size: 2.1rem;
+   }
+   
 
 /** about section **/
 

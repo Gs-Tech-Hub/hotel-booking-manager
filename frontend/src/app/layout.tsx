@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
         {/* Header */}
         <header>
-        <div className="top_menu row m2">
+        <div className="top_menu row mt-2">
 			<div className="container">
         <div className="float-left">
           <ul className="list header_social">
