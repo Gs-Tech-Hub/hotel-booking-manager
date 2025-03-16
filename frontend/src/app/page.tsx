@@ -5,11 +5,12 @@ import BannerCarousel from '@/components/Banner/Carousel'
 import BookingForm from '@/components/booking-form'
 import AboutSection from '@/components/about-section'
 import RoomSection from '@/components/room-section'
-import ContactForm from '@/components/contact-form'
+// import ContactForm from '@/components/contact-form'
 import ServiceSection from '@/components/service-section'
 import HotelInfo from '@/components/hotel-info';
 import Restaurant from '@/components/restaurant-section';
 import HotelFacilities from '@/components/facilities';
+import MapSection from '@/components/map-section';
 
 interface AboutData {
   title: string;
@@ -188,8 +189,11 @@ export default function Home() {
       {/* Service Section */}
       <ServiceSection services={services} />
 
+      {/*  Map view section  */}
+      <MapSection />
+
       {/* Contact Section */}
-      <ContactForm />
+      {/* <ContactForm /> */}
     </>
   );
 }
