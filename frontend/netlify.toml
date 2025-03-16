@@ -1,4 +1,3 @@
 [build]
-  command = "npm install --force" &&  "next build"
+  command = "npm install --force && next build"
   publish = ".next"
-
