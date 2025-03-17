@@ -1,4 +1,4 @@
-// File: C:\Users\hp\Documents\hotel-booking-frontend\frontend\src\app\room\page.tsx
+// File: C:\Users\HP\Documents\GitHub\hotel-booking-frontend\frontend\src\app\room\page.tsx
 import * as entry from '../../../../src/app/room/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

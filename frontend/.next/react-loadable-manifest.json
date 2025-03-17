@@ -10,5 +10,11 @@
     "files": [
       "static/chunks/218.75f70797871db307.js"
     ]
+  },
+  "app\\checkout\\page.tsx -> react-paystack": {
+    "id": 2482,
+    "files": [
+      "static/chunks/482.ba39b4d47239842f.js"
+    ]
   }
 }
