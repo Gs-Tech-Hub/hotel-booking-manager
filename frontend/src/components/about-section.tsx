@@ -44,8 +44,8 @@ export default function AboutSection() {
                      <p>
                         {aboutData?.description.split("\n").slice(1).join("\n")}
                      </p>
-                     <a className="read_more" href="#">
-                        EXPLORE
+                     <a className="read_more" href="/about">
+                        EXPLORE MORE
                      </a>
                   </div>
                </div>

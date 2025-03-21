@@ -31,7 +31,7 @@ export default function Navigation() {
                     <Link className="nav-link" href="/about">About</Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link" href="/room">Our Rooms</Link>
+                    <Link className="nav-link" href="/rooms">Our Rooms</Link>
                   </li>
                   {/* <li className="nav-item">
                     <Link className="nav-link" href="/gallery">Gallery</Link>

@@ -616,6 +616,56 @@ button {
 .about_img figure img:hover {
      transform: scale(1.2);
 }
+
+.about-img {
+     flex: 1;
+     max-width: 50%;
+     border-radius: 10px;
+     overflow: hidden;
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+ }
+ 
+ .about-img img {
+     width: 100%;
+     height: auto;
+     transition: transform 0.3s ease-in-out;
+ }
+ 
+ .about-img img:hover {
+     transform: scale(1.05);
+ }
+ 
+ .about-text {
+     flex: 1;
+     max-width: 50%;
+     text-align: left;
+ }
+ 
+ .about-text h3 {
+     font-size: 1.8rem;
+     font-weight: bold;
+     color: #dc3545;
+     margin-bottom: 10px;
+     text-transform: uppercase;
+ }
+ 
+ .about-text p {
+     font-size: 1.1rem;
+     color: #6c757d;
+     line-height: 1.6;
+ }
+ 
+ /* Responsive adjustments */
+ @media (max-width: 768px) {
+     .about-section {
+         flex-direction: column;
+         text-align: center;
+     }
+ 
+     .about-img, .about-text {
+         max-width: 100%;
+     }
+ }
 /** end about section **/
 
 /** our_room section **/

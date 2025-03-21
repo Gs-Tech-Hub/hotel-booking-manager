@@ -1,8 +1,7 @@
 "use client";
 
-import ApiHandler from "@/utils/apiHandler";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import Link from "next/link";
 
 interface Amenity {
    id: number;
@@ -24,59 +23,8 @@ interface RoomSectionProps {
    rooms: Room[];
 }
 
-const renderDescription = (description: any) => {
-   if (typeof description === "string") {
-      return description; // If it's a string, return it directly
-   }
-
-   if (description && Array.isArray(description.children)) {
-      return description.children.map((child: any, index: number) => (
-         <span key={index}>{child.text}</span> // Render each child text
-      ));
-   }
-
-   return null; // Fallback if the structure is unexpected
-};
-
-export default function RoomSection() {
-   const [rooms, setRooms] = useState<RoomSectionProps["rooms"]>([]);
-
-   const apiHandler = ApiHandler({
-      baseUrl: process.env.NEXT_PUBLIC_API_URL || "",
-   });
-
-   useEffect(() => {
-      const fetchRoomsData = async () => {
-         try {
-            const data = await apiHandler.fetchData(
-               "rooms?populate[amenities][populate]=*&populate[bed][populate]=*"
-            ); // Fetching from the correct endpoint
-            const formattedRooms = data.data.map((room: any) => ({
-               id: room.id,
-               title: room.title,
-               imgUrl: room.imgUrl,
-               description: renderDescription(room.description), // Use renderDescription to format the description
-               price: room.price,
-               amenities:
-                  room.amenities.map((amenity: any) => ({
-                     id: amenity.id,
-                     name: amenity.name,
-                     icon: amenity.icon
-                        ? amenity.icon.formats.thumbnail.url
-                        : "", // Get the icon URL from the amenity data
-                  })) || [], // Default to an empty array if no amenities
-               bed: room.bed
-                  ? `${room.bed.type} (Size: ${room.bed.size} cm)`
-                  : "No bed information", // Extract bed information
-            }));
-            setRooms(formattedRooms); // Update state with formatted room data
-            console.log("Formatted rooms data:", formattedRooms); // Log the formatted rooms data
-         } catch (error) {
-            console.error("Error fetching room data:", error);
-         }
-      };
-      fetchRoomsData();
-   });
+export default function RoomSection({ rooms }: RoomSectionProps) {
+   const displayedRooms = rooms.slice(0, 3); // Show only the first 3 rooms
 
    return (
       <div className="our_room">
@@ -84,7 +32,7 @@ export default function RoomSection() {
             <div className="row">
                <div className="col-md-12">
                   <div className="titlepage">
-                     <h2>Our Room</h2>
+                     <h2>Our Rooms</h2>
                      <p>
                         Discover our luxurious rooms, designed for your comfort
                         and relaxation.
@@ -93,7 +41,7 @@ export default function RoomSection() {
                </div>
             </div>
             <div className="row">
-               {rooms.map((room) => (
+               {displayedRooms.map((room) => (
                   <div key={room.id} className="col-md-4 col-sm-6">
                      <div id="serv_hover" className="room">
                         <div className="room_img">
@@ -151,6 +99,15 @@ export default function RoomSection() {
                      </div>
                   </div>
                ))}
+            </div>
+
+            {/* "Explore More Rooms" Button */}
+            <div className="row">
+               <div className="col-md-12 text-center mt-4">
+                  <Link href="/rooms">
+                     <button className="btn btn-primary">Explore More Rooms</button>
+                  </Link>
+               </div>
             </div>
          </div>
       </div>

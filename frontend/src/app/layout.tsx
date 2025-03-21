@@ -36,7 +36,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 			<div className="container">
         <div className="float-left">
           <ul className="list header_social">
-            <li><a href="#">Contact Us +234 704 523 2697</a></li>
+            <li><a href="#">Contact Us: +234 704 523 2697</a></li>
           </ul>
         </div>
         <div className="float-right gap-5">

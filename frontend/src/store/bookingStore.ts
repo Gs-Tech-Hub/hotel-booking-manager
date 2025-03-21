@@ -1,12 +1,20 @@
 import { create } from "zustand";
 
-interface Room {
+interface Amenity {
   id: number;
   name: string;
-  image: string;
-  amenities: string[];
+  icon: string;
+}
+
+interface Room {
+  id: number;
+  title: string;
+  imgUrl: string;
+  description: string;
+  amenities: Amenity[];
+  price: number;
+  bed?: string;
   priceOnline: number;
-  pricePremise: number;
   discount: string;
   availability: number;
 }

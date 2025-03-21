@@ -27,11 +27,11 @@ function BookingSummaryContent() {
 
   // Extra services list
   const availableExtras = [
-    { name: "Breakfast", price: 10 },
-    { name: "Lunch", price: 15 },
-    { name: "Dinner", price: 20 },
-    { name: "Laundry Service", price: 8 },
-    { name: "Spa Access", price: 25 },
+    { name: "Breakfast", price: 4000 },
+    { name: "Lunch", price: 4000 },
+    { name: "Dinner", price: 4500 },
+    { name: "Laundry Service", price: 3000 },
+    { name: "Spa", price: 2500 },
   ];
 
   // Toggle extra selection
@@ -65,23 +65,23 @@ function BookingSummaryContent() {
       <h1 className="booking-header text-center">
         Booking Summary for{" "}
         <span className="highlight-text">
-          {selectedRoom && selectedRoom.name}
+          {selectedRoom && selectedRoom.title}
         </span>
       </h1>
 
       <div className="room-card mt-4">
         <div className="room-info">
-          {selectedRoom.image && (
+          {selectedRoom.imgUrl && (
             <Image
-              src={selectedRoom.image}
+              src={selectedRoom.imgUrl}
               width={350}
               height={200}
               className="rounded-lg"
-              alt={selectedRoom.name}
+              alt={selectedRoom.title}
             />
           )}
           <div className="room-details">
-            <h2 className="room-name">{selectedRoom.name}</h2>
+            <h2 className="room-name">{selectedRoom.title}</h2>
             <p className="price price-online">
               Room Price: ${totalPrice.toFixed(2)}
             </p>
