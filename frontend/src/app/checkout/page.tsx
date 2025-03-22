@@ -1,7 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useBookingStore } from "../../store/bookingStore";
-// import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import Image from "next/image";
 
 function CheckoutPage() {
@@ -14,37 +13,6 @@ function CheckoutPage() {
   const vatAmount = (roomTotal + extrasTotal) * vatRate;
   const grandTotal = roomTotal + extrasTotal + vatAmount;
 
-  const config = {
-    public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "",
-    tx_ref: `BOOKING_${Date.now()}`,
-    amount: grandTotal,
-    currency: "NGN",
-    payment_options: "card, mobilemoney, ussd",
-    customer: {
-      email: guestInfo.email || "",
-      phone_number: guestInfo.phone || "",
-      name: `${guestInfo.firstName} ${guestInfo.lastName}`,
-    },
-    customizations: {
-      title: "Hotel Booking Payment",
-      description: "Payment for hotel room reservation",
-      logo: "https://i.postimg.cc/j5qdbbvk/fmmm1-logo.png/50" // Replace with your actual logo URL
-    },
-    callback: (response: { transaction_id: number; status: string; currency?: string; amount: number; customer: { email: string; phone_number: string; name: string } }) => {
-      console.log("Payment successful:", response);
-      const bookingId = `BOOKING_${response.transaction_id.toString()}`;
-      router.push(
-        `/booking-confirmation?bookingId=${bookingId}&reference=${response.transaction_id}&email=${guestInfo.email}&amount=${grandTotal}&checkIn=${checkIn?.toLocaleDateString() || "N/A"}&checkOut=${checkOut?.toLocaleDateString() || "N/A"}&guests=${guests}&room=${selectedRoom?.title}&roomImage=${selectedRoom?.imgUrl}`
-      );
-      // closePaymentModal();
-    },
-    onClose: () => {
-      alert("Payment was not completed.");
-    },
-  };
-
-  // const initializePayment = useFlutterwave(config);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     updateBooking({
       guestInfo: { ...guestInfo, [e.target.name]: e.target.value },
@@ -53,7 +21,7 @@ function CheckoutPage() {
 
   if (!selectedRoom || !guestInfo) {
     return <h2 className="text-center">No booking selected. Please return to the booking page.</h2>;
-  };
+  }
 
   return (
     <div className="booking-container">
@@ -100,9 +68,9 @@ function CheckoutPage() {
           </form>
 
           <button className="book-btn mt-4" onClick={() => {
-            console.log('Initializing payment...');
-            // initializePayment({ callback: config.callback, onClose: config.onClose });
-          }}>Confirm Payment</button>
+            console.log('Proceeding to confirmation...');
+            router.push("/booking-confirmation");
+          }}>Confirm Booking</button>
         </div>
       </div>
     </div>
