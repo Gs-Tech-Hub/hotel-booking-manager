@@ -91,17 +91,21 @@ export default function Contact() {
                 <h3>Get in Touch</h3>
                 <div className="info-item">
                   <FaMapMarkerAlt className="info-icon" />
-                  <span>1234 Example Street, City, Country</span>
+                  <span>FMMM1 CLOSE, off Board Road, 
+                    Alihame, Agbor.
+                     Delta State. 
+                     Nigeria
+                  </span>
                 </div>
                 <div className="info-item">
                   <FaPhoneAlt className="info-icon" />
-                  <span>+1 234 567 890</span>
+                  <span>+234 704 523 2697</span>
                 </div>
                 <div className="info-item">
                   <FaEnvelope className="info-icon" />
-                  <span>contact@example.com</span>
+                  <span> fmmm1hotel@gmail.com</span>
                 </div>
-                <p>We're here to answer any questions or help with reservations. Feel free to reach out using the form or the details above!</p>
+                <p>We are here to answer any questions or help with reservations. Feel free to reach out using the form or the details above!</p>
               </div>
             </div>
           </div>
