@@ -33,7 +33,7 @@ export default function Contact() {
       <div className="contact">
         <div className="container">
           <div className="row">
-            <Image src="/images/contact.png" alt="Contact Us" width={500} height={300} />
+            <Image src="/images/whole-view.jpg" alt="Contact Us" width={500} height={300} />
             <div className="col-md-6">
               <form id="request" className="main_form" onSubmit={handleSubmit}>
                 <div className="row">
@@ -83,7 +83,7 @@ export default function Contact() {
               </form>
             </div>
             <div className="col-md-6">
-              <div className="map_main">
+              <div className="map">
                 <div className="map-responsive">
                   <iframe 
                     src="https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q=Eiffel+Tower+Paris+France" 

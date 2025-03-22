@@ -14,9 +14,9 @@ export default function BannerCarousel({ images }: BannerCarouselProps) {
          className="carousel slide home_banner_area position-relative"
          data-ride="carousel"
       >
-         <div className="container">
-            <Overlay />
-         </div>
+         {/* Move Overlay outside container to cover the entire carousel */}
+         <Overlay />
+
          <ol className="carousel-indicators">
             {images.map((_, index) => (
                <li
@@ -27,6 +27,7 @@ export default function BannerCarousel({ images }: BannerCarouselProps) {
                ></li>
             ))}
          </ol>
+
          <div className="carousel-inner">
             {images.map((image, index) => (
                <div
@@ -34,44 +35,34 @@ export default function BannerCarousel({ images }: BannerCarouselProps) {
                   className={`carousel-item ${index === 0 ? "active" : ""}`}
                >
                   <Image
-                     className={`w-100 ${
-                        index === 0
-                           ? "first-slide"
-                           : index === 1
-                           ? "second-slide"
-                           : "third-slide"
-                     }`}
+                     className="w-100"
                      src={image.src}
                      alt={image.alt}
                      layout="responsive"
-                     width={500}
-                     height={300}
+                     width={400}
+                     height={200}
                   />
                </div>
             ))}
          </div>
+
          <a
             className="carousel-control-prev"
             href="#myCarousel"
             role="button"
             data-slide="prev"
          >
-            <span
-               className="carousel-control-prev-icon"
-               aria-hidden="true"
-            ></span>
+            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
             <span className="sr-only">Previous</span>
          </a>
+
          <a
             className="carousel-control-next"
             href="#myCarousel"
             role="button"
             data-slide="next"
          >
-            <span
-               className="carousel-control-next-icon"
-               aria-hidden="true"
-            ></span>
+            <span className="carousel-control-next-icon" aria-hidden="true"></span>
             <span className="sr-only">Next</span>
          </a>
       </div>
