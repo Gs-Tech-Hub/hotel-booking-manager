@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useBookingStore } from "../../store/bookingStore";
-import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
+// import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import Image from "next/image";
 
 function CheckoutPage() {
@@ -36,14 +36,14 @@ function CheckoutPage() {
       router.push(
         `/booking-confirmation?bookingId=${bookingId}&reference=${response.transaction_id}&email=${guestInfo.email}&amount=${grandTotal}&checkIn=${checkIn?.toLocaleDateString() || "N/A"}&checkOut=${checkOut?.toLocaleDateString() || "N/A"}&guests=${guests}&room=${selectedRoom?.title}&roomImage=${selectedRoom?.imgUrl}`
       );
-      closePaymentModal();
+      // closePaymentModal();
     },
     onClose: () => {
       alert("Payment was not completed.");
     },
   };
 
-  const initializePayment = useFlutterwave(config);
+  // const initializePayment = useFlutterwave(config);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     updateBooking({
@@ -101,7 +101,7 @@ function CheckoutPage() {
 
           <button className="book-btn mt-4" onClick={() => {
             console.log('Initializing payment...');
-            initializePayment({ callback: config.callback, onClose: config.onClose });
+            // initializePayment({ callback: config.callback, onClose: config.onClose });
           }}>Confirm Payment</button>
         </div>
       </div>
