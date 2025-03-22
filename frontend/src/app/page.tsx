@@ -157,7 +157,7 @@ export default function Home() {
     }
     if (roomsData.length === 0) {
       fetchRoomsData();
-    }
+    } 
     if (services.length === 0) {
       fetchServices();
     }

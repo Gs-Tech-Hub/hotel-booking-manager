@@ -567,28 +567,39 @@ button {
 
 /* Overlay */
 .overlay-container {
-     position: absolute;
-     background-color: #000000;
-     opacity: 0.7;
-     width: 100%;
-     height: 100%;
-     top: 50;
-     left: 0;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     z-index: 1;
-     transform: translateY(-50px);
-     transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
-   }
-   
-   .overlay-content {
-     text-align: center;
-     color: white;
-     opacity: 0;
-     transform: translateY(20px);
-     transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-   }
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0,0,0,0.6);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* Prevent blocking carousel controls */
+}
+
+.overlay-content {
+  text-align: center;
+  color: white;
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+/* .overlay-content h1 {
+  font-size: 3rem;
+  color: white;
+  margin-bottom: 10px;
+} */
+
+.overlay-content .orange {
+  color: orange;
+}
+
+.overlay-content p.text {
+  font-size: 1.2rem;
+}
+
 
    .overlay-container:hover .overlay-content {
      opacity: 1;
