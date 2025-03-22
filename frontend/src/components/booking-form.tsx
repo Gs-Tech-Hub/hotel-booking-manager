@@ -42,12 +42,14 @@ export default function BookingForm() {
                 </label>
               </div>
               <DatePicker
-                selected={localCheckIn}
-                onChange={(date: Date | null) => date && setLocalCheckIn(date)}
-                dateFormat="dd/MM/yyyy"
-                className="absolute top-full left-0 z-50 opacity-0 w-0 h-0"
-                id="CheckIn"
-              />
+               selected={localCheckIn}
+               onChange={(date: Date | null) => date && setLocalCheckIn(date)}
+               dateFormat="dd/MM/yyyy"
+               className="absolute top-full left-0 z-50 opacity-0 w-0 h-0"
+               id="CheckIn"
+               minDate={new Date()} // Prevent past dates
+               popperPlacement="bottom-start"
+               />
             </div>
           </div>
 
@@ -69,6 +71,7 @@ export default function BookingForm() {
                 className="absolute opacity-0 w-0 h-0"
                 id="CheckOut"
                 minDate={localCheckIn}
+                popperPlacement="bottom-start"
               />
             </div>
           </div>
