@@ -5,8 +5,11 @@ import BannerCarousel from '@/components/Banner/Carousel'
 import BookingForm from '@/components/booking-form'
 import AboutSection from '@/components/about-section'
 import RoomSection from '@/components/room-section'
-import BlogSection from '@/components/blog-section'
-import ContactForm from '@/components/contact-form'
+import ServiceSection from '@/components/service-section'
+import HotelInfo from '@/components/hotel-info';
+import Restaurant from '@/components/restaurant-section';
+import HotelFacilities from '@/components/facilities';
+import MapSection from '@/components/map-section';
 
 interface AboutData {
   title: string;
@@ -38,6 +41,7 @@ export default function Home() {
   const [aboutData, setAboutData] = useState<AboutData | null>(null);
   const [carrouselImages, setCarrouselImages] = useState<CarrouselImage[]>([]);
   const [roomsData, setRoomsData] = useState<any[]>([]);
+  const [services, setServices] = useState<any[]>([]);
   
   const apiHandler = ApiHandler({ baseUrl: process.env.NEXT_PUBLIC_API_URL || '' });
 
@@ -47,8 +51,8 @@ export default function Home() {
         const data = await apiHandler.fetchData('about?populate=*');
         setAboutData({
           title: data.data.title,
-          description: data.data.blocks[1].body,
-          image: data.data.blocks[0].url
+          description: data.data.blocks[2].body,
+          image: data.data.blocks[3].url
         });
       } catch (error) {
         console.error('Error fetching about data:', error);
@@ -75,7 +79,7 @@ export default function Home() {
 
     const fetchRoomsData = async () => {
       try {
-        const data = await apiHandler.fetchData('rooms?populate=*'); // Fetching from the correct endpoint
+        const data = await apiHandler.fetchData('rooms?populate[amenities][populate]=*&populate[bed][populate]=*'); // Fetching from the correct endpoint
         const formattedRooms = data.data.map((room: any) => ({
           id: room.id,
           title: room.title,
@@ -87,6 +91,7 @@ export default function Home() {
             name: amenity.name,
             icon: amenity.icon ? amenity.icon.formats.thumbnail.url : '', // Get the icon URL from the amenity data
           })) || [], // Default to an empty array if no amenities
+          bed: room.bed ? `${room.bed.type} (Size: ${room.bed.size} cm)` : 'No bed information', // Extract bed information
         }));
         setRoomsData(formattedRooms); // Update state with formatted room data
         console.log('Formatted rooms data:', formattedRooms); // Log the formatted rooms data
@@ -95,41 +100,99 @@ export default function Home() {
       }
     };
 
-    fetchAboutData();
-    fetchCarrouselImages();
-    fetchRoomsData();
-  }, [apiHandler]);
+    const fetchServices = async () => {
+      try {
+        const data = await apiHandler.fetchData('service?populate=*');
+        const serviceInfo = data.data.serviceInfo;
+
+        const formattedServices = [];
+        
+        // Loop through the serviceInfo array
+        for (let i = 0; i < serviceInfo.length && formattedServices.length < 6; i++) { // Limit to first 4 services
+          const service = serviceInfo[i];
+
+          // Check if the current block is a rich-text block
+          if (service.__component === "shared.rich-text" && service.body) {
+            const [titleLine, descriptionLine] = service.body.split('\n\n').length > 1 
+                ? service.body.split('\n\n') 
+                : service.body.split('\n'); // Handle single newline case
+            const title = titleLine.split(': ')[1].trim();
+            console.log('Service Title:', title); // Log the extracted title
+            const description = descriptionLine.split(': ')[1].trim();
+            console.log('Service Description:', description); // Log the extracted description
+
+            // The next block should be a media block containing the URL
+            const nextService = serviceInfo[i + 1];
+            const iconUrl = nextService && nextService.__component === "shared.media" ? nextService.url : '';
+
+            formattedServices.push({
+              id: formattedServices.length + 1, // Assigning a unique ID
+              icon: iconUrl, // Use the URL from the next block as the icon
+              title,
+              description
+            });
+          }
+        }
+
+        setServices(formattedServices);
+      } catch (error) {
+        console.error('Error fetching services:', error);
+      }
+    };
+
+    // Check if data is already set before fetching
+    if (!aboutData) {
+      fetchAboutData();
+    }
+    if (carrouselImages.length === 0) {
+      fetchCarrouselImages();
+    }
+    if (roomsData.length === 0) {
+      fetchRoomsData();
+    }
+    if (services.length === 0) {
+      fetchServices();
+    }
+  }, [apiHandler, aboutData, carrouselImages, roomsData, services]);
 
   return (
     <>
       {/* Banner Section with Carousel */}
       <section className="banner_main">
-        <BannerCarousel images={carrouselImages} />
-        <div className="booking_ocline">
-          <div className="container">
-            <div className="row">
-              <div className="col-md-5">
-                <BookingForm />
-              </div>
-            </div>
-          </div>
-        </div>
+        <BannerCarousel images={carrouselImages} />  
+        <div className="container">
+          <BookingForm />
+         </div>      
       </section>
 
       {/* About Section */}
-      {aboutData && typeof aboutData === 'object' && !Array.isArray(aboutData) && <AboutSection title={aboutData.title} description={renderDescription(aboutData.description)} image={aboutData.image} />}
+       <AboutSection/>
 
       {/* Room Section */}
-      <RoomSection rooms={roomsData} />
+    <RoomSection rooms={roomsData} />;
 
+      {/* Hotel information section */}
+      <HotelInfo />
+
+      {/* Restaurant Section */}
+      <Restaurant />
+      
       {/* Gallery Section */}
       {/* <Gallery images={galleryImages} /> */}
 
+        {/* facilities section */}
+        <HotelFacilities /> 
       {/* Blog Section */}
-      <BlogSection posts={[]} />
+      {/* <BlogSection posts={[]} /> */}
+
+      {/* Service Section */}
+      <ServiceSection services={services} />
+
+      {/*  Map view section  */}
+      <MapSection />
 
       {/* Contact Section */}
-      <ContactForm />
+      {/* <ContactForm /> */}
     </>
   );
 }

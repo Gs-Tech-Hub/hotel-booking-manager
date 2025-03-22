@@ -1,0 +1,29 @@
+{
+    "kind": "collectionType",
+    "collectionName": "restaurants",
+    "info": {
+        "singularName": "restaurant",
+        "pluralName": "restaurants",
+        "displayName": "restaurant",
+        "description": ""
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "attributes": {
+        "name": {
+            "type": "string"
+        },
+        "operatingHours": {
+            "type": "time"
+        },
+        "location": {
+            "type": "string"
+        },
+        "menu_categories": {
+            "type": "relation",
+            "relation": "oneToMany",
+            "target": "api::menu-category.menu-category"
+        }
+    }
+}
