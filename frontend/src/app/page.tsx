@@ -172,8 +172,8 @@ export default function Home() {
           <BookingForm />
          </div>      
       </section>
-
-      {/* About Section */}
+      <section className="content_main">
+          {/* About Section */}
       <AboutSection aboutData={aboutData} />
       {/* Room Section */}
       <RoomSection rooms={roomsData} />
@@ -200,6 +200,9 @@ export default function Home() {
 
       {/* Contact Section */}
       {/* <ContactForm /> */}
+      </section>
+
+    
     </>
   );
 }

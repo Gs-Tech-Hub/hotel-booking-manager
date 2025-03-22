@@ -320,6 +320,21 @@ button {
 
 /*-- navigation--*/
 
+.menubar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1050; /* Ensures it's above most elements */
+  background: rgba(0, 0, 0, 0.9); /* Slight transparency */
+  transition: background 0.3s ease-in-out;
+}
+
+.menubar.scrolled {
+  background: #000; /* Solid background when scrolled */
+}
+
+
 .navigation.navbar {
      float: right;
      padding-top: 14px !important;
@@ -329,7 +344,7 @@ button {
 .navigation.navbar-dark .navbar-nav .nav-link {
      padding: 7px 0px 27px 0px;
      margin: 0 22px;
-     color: #010101;
+     color: #f1e7e7;
      font-size: 16px;
      line-height: 20px;
      font-weight: 500;
@@ -386,7 +401,15 @@ button {
 /** banner section **/
 
 .banner_main {
-     position: relative;
+     position: absolute;
+     top: 50;
+     width: 100%;
+     margin-bottom: 300px;
+}
+
+.content_main {
+   position: relative;
+   margin-top: 900px;
 }
 
 .banner .carousel-indicators li {
@@ -480,9 +503,6 @@ button {
      bottom: 53px;
      margin-left: 9%;
 }
-
-
-   
 
 /** end banner section **/
 
@@ -604,7 +624,7 @@ button {
 
 .about {
      background-color: #fff;
-     padding-top: 85px;
+     padding-top: 185px;
 }
 
 .about .titlepage {
@@ -699,8 +719,8 @@ button {
 
 .our_room {
      background-color: #f4f5f7;
-     padding: 60px 0 30px 0;
-     margin-top: 90px;
+     padding-top: 185px;
+
 }
 
 .our_room .titlepage {
@@ -1110,19 +1130,90 @@ ul.social_icon li a:hover {
 
 /**  inner page css **/
 .back_re {
-     background-color: #0f1521;
+  background-color: #f4f5f7;
+     padding-top: 185px;
+    }
+    .title {
+      text-align: center;
+      padding-bottom: 40px;
+ }
+ 
+ .title h2 {
+      font-size: 40px;
+      color: #121212;
+      line-height: 45px;
+      font-weight: bold;
+      text-transform: uppercase;
+      padding: 0;
+ }
+ 
+ .title h2::before {
+      position: absolute;
+      content: "";
+      background-color: #ff0909;
+      width: 20px;
+      height: 4px;
+      transform: rotate(-36deg);
+ }
+ 
+ .title h2::after {
+      position: absolute;
+      content: "";
+      background-color: #ff0909;
+      width: 20px;
+      height: 4px;
+      transform: rotate(-36deg);
+      bottom: 10px;
+ }
+
+ /* Modern Contact Info Styling */
+
+.modern-contact-info {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
 }
-.back_re .title {
-     text-align: center;
+
+.modern-contact-info h3 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #dc3545;
+  text-align: center;
 }
-.back_re .title h2 {
-color:#fff;
-font-size: 40px;
-padding: 40px 0;
-font-weight: 600;
-text-transform: uppercase;
-line-height: 35px;
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 15px;
 }
+
+.info-icon {
+  font-size: 24px;
+  color: #dc3545;
+}
+
+.info-item span {
+  font-size: 18px;
+  color: #333;
+}
+
+.modern-contact-info p {
+  margin-top: 20px;
+  font-size: 16px;
+  color: #555;
+  text-align: center;
+}
+
+.modern-contact-info:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+    
+
 .margin_0 {
      margin:0 !important;
 }
@@ -1392,26 +1483,32 @@ line-height: 35px;
    /* End Booking Area css */
 
    .top_menu .container {
-     border-bottom: 1px solid #eeeeee; }
+     border-bottom: 1px #eeeeee; 
+     padding-bottom: 2px;
+    }
    .top_menu .header_social li {
      display: inline-block;
-     margin-right: 15px; }
+     margin-right: 15px;
+     }
      .top_menu .header_social li a {
        font-size: 14px;
        color: #777777;
        display: inline-block;
        line-height: 40px;
-       transition: all 300ms linear 0s; }
+       transition: all 300ms linear 0s; 
+      }
      .top_menu .header_social li:last-child {
        margin-right: 0px; }
      .top_menu .header_social li:hover a {
-       color: #4d8eff; }
+       color: #4d8eff; 
+      }
    .top_menu .nice-select {
      float: none;
      display: inline-block;
      border: 0;
      background: transparent;
-     height: 39px; }
+     height: 39px;
+     }
    .top_menu .dn_btn {
      line-height: 40px;
      display: inline-block;
@@ -1420,11 +1517,14 @@ line-height: 35px;
      font-family: "Roboto", sans-serif;
      font-weight: normal;
      color: #777777;
-     transition: all 300ms linear 0s; }
+     transition: all 300ms linear 0s;
+     }
      .top_menu .dn_btn:hover {
-       color: #4d8eff; }
+       color: #4d8eff;
+       }
      .top_menu .dn_btn:last-child {
-       margin-right: 0px; }
+       margin-right: 0px;
+       }
    .top_menu .lan_pack {
      height: 30px;
      border: 1px solid #eeeeee;
@@ -1438,9 +1538,12 @@ line-height: 35px;
      color: #777777;
      background: #f9f9ff;
      margin-right: 5px;
-     margin-top: 8px; }
+     margin-top: 8px;
+     }
      .top_menu .lan_pack .current {
-       color: #777777; }
+       color: #777777;
+       }
+       
      .top_menu .lan_pack:after {
        content: "\f0d7";
        border: none !important;
@@ -1452,7 +1555,8 @@ line-height: 35px;
        transform: rotate(0deg);
        height: auto;
        margin-top: -6px;
-       right: 20px; }
+       right: 20px;
+       }
 
        /* top menu end */
        /* Home Banner Area css
@@ -1785,7 +1889,7 @@ line-height: 35px;
 /* Restaurant Page css */
 
 .restaurant-page {
-     padding: 40px;
+     padding-top: 185px;
      max-width: 800px;
      margin: auto;
      background: #ffffff;
