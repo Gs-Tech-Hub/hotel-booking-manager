@@ -1,0 +1,20 @@
+# Dockerfile for Strapi
+FROM strapi/strapi:latest
+
+WORKDIR /srv/app
+
+# Copy the package.json and package-lock.json
+COPY package.json ./
+COPY package-lock.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application code
+COPY . .
+
+# Expose the port
+EXPOSE 1337
+
+# Start the Strapi application
+CMD ["npm", "run", "develop"]

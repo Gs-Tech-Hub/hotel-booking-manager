@@ -1,0 +1,26 @@
+{
+  "kind": "collectionType",
+  "collectionName": "payments",
+  "info": {
+    "singularName": "payment",
+    "pluralName": "payments",
+    "displayName": "payment"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "totalPrice": {
+      "type": "integer"
+    },
+    "paymentMethod": {
+      "type": "string"
+    },
+    "transactionID": {
+      "type": "string"
+    },
+    "PaymentStatus": {
+      "type": "string"
+    }
+  }
+}

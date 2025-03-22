@@ -1,0 +1,23 @@
+{
+    "kind": "collectionType",
+    "collectionName": "floor_plans",
+    "info": {
+        "singularName": "floor-plan",
+        "pluralName": "floor-plans",
+        "displayName": "floor-plan"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "attributes": {
+        "floorNumber": {
+            "type": "integer"
+        },
+        "numberOfRooms": {
+            "type": "integer"
+        },
+        "description": {
+            "type": "text"
+        }
+    }
+}

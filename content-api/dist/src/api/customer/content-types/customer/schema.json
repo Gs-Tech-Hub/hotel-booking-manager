@@ -1,0 +1,29 @@
+{
+    "kind": "collectionType",
+    "collectionName": "customers",
+    "info": {
+        "singularName": "customer",
+        "pluralName": "customers",
+        "displayName": "customer"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "attributes": {
+        "FirstName": {
+            "type": "string"
+        },
+        "lastName": {
+            "type": "string"
+        },
+        "phone": {
+            "type": "integer"
+        },
+        "address": {
+            "type": "text"
+        },
+        "email": {
+            "type": "email"
+        }
+    }
+}

@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  strapi:
+    image: strapi/strapi:latest
+    container_name: strapi
+    restart: always
+    environment:
+      DATABASE_CLIENT: sqlite
+      DATABASE_FILENAME: ./data.db
+      APP_KEYS: your_app_keys
+      JWT_SECRET: your_jwt_secret
+      ADMIN_JWT_SECRET: your_admin_jwt_secret
+    volumes:
+      - ./cms/content-api:/srv/app
+      - ./cms/content-api/data:/srv/app/data
+    ports:
+      - '1337:1337'
+    networks:
+      - app-network
+
+  nextjs:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nextjs
+    restart: always
+    ports:
+      - '3000:3000'
+    networks:
+      - app-network
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:1337
+
+  nodejs:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nodejs
+    restart: always
+    ports:
+      - '8080:8080'
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

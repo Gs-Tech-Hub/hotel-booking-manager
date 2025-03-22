@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "payment_details",
+  "info": {
+    "singularName": "payment-detail",
+    "pluralName": "payment-details",
+    "displayName": "payment-detail"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "paymentID": {
+      "type": "uid"
+    },
+    "customer": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::customer.customer"
+    },
+    "payments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::payment.payment"
+    },
+    "bankName": {
+      "type": "string"
+    },
+    "bankAccount": {
+      "type": "biginteger"
+    }
+  }
+}

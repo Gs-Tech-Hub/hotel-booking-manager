@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "bar_and_clubs",
+  "info": {
+    "singularName": "bar-and-club",
+    "pluralName": "bar-and-clubs",
+    "displayName": "bar-and-club",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "happyHours": {
+      "type": "time"
+    },
+    "entryFees": {
+      "type": "integer"
+    },
+    "drinks": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::drink.drink"
+    }
+  }
+}
