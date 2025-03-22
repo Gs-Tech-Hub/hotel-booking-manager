@@ -11,7 +11,7 @@ export default function BannerCarousel({ images }: BannerCarouselProps) {
    return (
       <div
          id="myCarousel"
-         className="carousel slide home_banner_area position-relative"
+         className="carousel slide home_banner_area"
          data-ride="carousel"
       >
          {/* Move Overlay outside container to cover the entire carousel */}
@@ -39,8 +39,8 @@ export default function BannerCarousel({ images }: BannerCarouselProps) {
                      src={image.src}
                      alt={image.alt}
                      layout="responsive"
-                     width={400}
-                     height={200}
+                     width={500}
+                     height={300}
                   />
                </div>
             ))}
