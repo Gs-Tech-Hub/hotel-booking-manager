@@ -404,12 +404,12 @@ button {
      position: absolute;
      top: 50;
      width: 100%;
-     margin-bottom: 300px;
+     /* margin-bottom: 300px; */
 }
 
 .content_main {
    position: relative;
-   margin-top: 900px;
+   /* margin-top: 900px; */
 }
 
 .banner .carousel-indicators li {
