@@ -109,7 +109,7 @@ export default function RoomDetailsPage() {
         <div className="booking-header">
           <h1>{room.title}</h1>
 
-          <div className="flex flex-col lg:flex-row gap-6">
+          <div className="flex flex-col lg:flex-row gap-6 items-center">
             <div className="room-photos flex-1">
               <Image
                 src={room.imgUrl}
@@ -131,8 +131,12 @@ export default function RoomDetailsPage() {
                 ))}
               </div>
             </div>
-            <div className="flex-1 p-4 bg-gray-50 rounded-xl shadow align-items-center justify-center ">
-            <div className="amenities-section">
+            <div className="p-4 bg-gray-50 rounded-xl shadow align-items-center justify-between flex-1 ">
+              <div>
+              <p className="text-lg font-semibold mb-2">Price: ₦ {room.price}</p>
+              <p className="text-md mb-4">BED-SIZE: {room.bed ?? "Size not specified"}</p>
+              
+              <div className="amenities-section">
                 <h4 className="text-lg font-medium mb-2">Amenities:</h4>
                 <ul className="extra-options-grid">
                   {room.amenities.map((amenity) => (
@@ -142,18 +146,15 @@ export default function RoomDetailsPage() {
                   ))}
                 </ul>
             </div>
-              <p className="text-lg font-semibold mb-2">Price: ₦ {room.price}</p>
-              <p className="text-md mb-4">BED-SIZE: {room.bed ?? "Size not specified"}</p>
             </div>
-            <div className="flex">
               <div className="mt-8">
                <h2 className="text-2xl font-semibold mb-4">Room Description</h2>
                <p className="text-gray-700 leading-relaxed whitespace-pre-line">
               {room.description}
               </p>
-                </div>
               </div>
             <div>
+              </div>
             </div>
             </div>
           </div>

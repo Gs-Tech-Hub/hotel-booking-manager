@@ -18,29 +18,30 @@ const BookingConfirmationContent = () => {
   const roomImage = searchParams.get("roomImage"); // Room banner image
 
   return (
-    <div className="our_room">
-    <div className="booking-container">
-      <h1 className="booking-header text-center">Booking Confirmed!</h1>
-
-      {/* Room Banner with Next.js Image */}
-      {roomImage && (
-        <div className="flex flex-col items-center justify-center mx-auto">
-          <Image src={roomImage} width={300} height={300} alt={room || 'Room image'} className="rounded-lg" />
-          <h2>Booking Receipt</h2>
-          <p><strong>Booking ID:</strong> {bookingId}</p>
-          <p><strong>Reference:</strong> {reference}</p>
-          <p><strong>Email:</strong> {email}</p>
-          <p><strong>Amount Paid:</strong> ₦{(Number(amount) / 100).toFixed(2)}</p>
-          <p><strong>Check-in:</strong> {checkIn}</p>
-          <p><strong>Check-out:</strong> {checkOut}</p>
-          <p><strong>Guests:</strong> {guests}</p>
-          <p><strong>Room:</strong> {room}</p>
-        </div>
-      )}
-      <button onClick={() => window.print()} className="book-btn mt-4">Print Receipt</button>
+    <div className="flex items-center justify-center min-h-screen p-4">
+      <div className="booking-container bg-gray-100 p-6 rounded-lg shadow-xl text-center">
+        <h1 className="booking-header text-3xl font-bold mb-4">Booking Confirmed!</h1>
+  
+        {roomImage && (
+          <div className="flex flex-col items-center">
+            <Image src={roomImage} width={500} height={300} alt={room || 'Room image'} className="rounded-lg mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Booking Receipt</h2>
+            <p><strong>Booking ID:</strong> {bookingId}</p>
+            <p><strong>Reference:</strong> {reference}</p>
+            <p><strong>Email:</strong> {email}</p>
+            <p><strong>Amount Paid:</strong> ₦{(Number(amount)).toFixed(2)}</p>
+            <p><strong>Check-in:</strong> {checkIn}</p>
+            <p><strong>Check-out:</strong> {checkOut}</p>
+            <p><strong>Guests:</strong> {guests}</p>
+            <p><strong>Room:</strong> {room}</p>
+          </div>
+        )}
+        <button onClick={() => window.print()} className="book-btn mt-8 px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
+          Print Receipt
+        </button>
+      </div>
     </div>
-    </div>
-  );
+  );  
 };
 
 const BookingConfirmation = () => (

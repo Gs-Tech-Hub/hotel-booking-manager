@@ -1683,7 +1683,6 @@ ul.social_icon li a:hover {
  /* booking page css */
  .amenities-section {
   max-width: fit-content;
-  justify-items: center;
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
   padding: 0.5rem 0.75rem;
