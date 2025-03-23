@@ -88,7 +88,7 @@ export default function Contact() {
             </div>
             <div className="col-md-6">
               <div className="contact-info-text modern-contact-info">
-                <h3>Get in Touch</h3>
+                <h3>GET IN TOUCH</h3>
                 <div className="info-item">
                   <FaMapMarkerAlt className="info-icon" />
                   <span>FMMM1 CLOSE, off Board Road, 

@@ -83,7 +83,7 @@ function BookingSummaryContent() {
           <div className="room-details">
             <h2 className="room-name">{selectedRoom.title}</h2>
             <p className="price price-online">
-              Room Price: ${totalPrice.toFixed(2)}
+              Room Price: ₦ {totalPrice.toFixed(2)}
             </p>
             <p className="payment-method">
               <strong>Payment Method:</strong> {paymentMethod === "online" ? "Pay Online" : "Pay at Hotel"}
@@ -116,7 +116,7 @@ function BookingSummaryContent() {
                 onChange={() => toggleExtra(extra.name)}
               />
               <span className="extra-name">{extra.name}</span>
-              <span className="extra-price">${extra.price}</span>
+              <span className="extra-price">₦{extra.price}</span>
             </label>
           ))}
         </div>
@@ -125,13 +125,13 @@ function BookingSummaryContent() {
       <div className="room-card mt-4">
         <h2 className="room-name">Total Cost</h2>
         <p>
-          <strong>Room Price:</strong> ${totalPrice.toFixed(2)}
+          <strong>Room Price:</strong> ₦{totalPrice.toFixed(2)}
         </p>
         <p>
-          <strong>Extras Total:</strong> ${extraTotal.toFixed(2)}
+          <strong>Extras Total:</strong> ₦{extraTotal.toFixed(2)}
         </p>
         <p className="total-price">
-          <strong>Grand Total:</strong> ${grandTotal.toFixed(2)}
+          <strong>Grand Total:</strong> ₦{grandTotal.toFixed(2)}
         </p>
       </div>
 

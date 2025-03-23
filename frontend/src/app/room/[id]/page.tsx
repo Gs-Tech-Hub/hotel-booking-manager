@@ -9,7 +9,6 @@ import BookingForm from "@/components/booking-form"; // Import BookingForm
 interface Amenity {
   id: number;
   name: string;
-  icon?: string;
 }
 
 interface Room {
@@ -53,8 +52,12 @@ export default function RoomDetailsPage() {
       setError(null);
 
       try {
-        console.log(`Fetching room details for document ID: ${documentId}`);
+        const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/rooms/${documentId}?populate=*`;
+        console.log(`Fetching room details from: ${apiUrl}`);
+        console.log("Params object:", params);
+
         const data = await apiHandler.fetchData(`rooms/${documentId}?populate=*`);
+        console.log("Fetched data:", data);
 
         if (!data || !data.data) {
           throw new Error("Room not found");
@@ -70,10 +73,9 @@ export default function RoomDetailsPage() {
           description: extractDescription(roomData.description),
           price: roomData.price ?? 0,
           amenities: Array.isArray(roomData.amenities)
-            ? roomData.amenities.map((amenity: any): Amenity => ({
+            ? roomData.amenities.map((amenity: any) => ({
                 id: amenity.id,
                 name: amenity.name ?? "Unknown Amenity",
-                icon: amenity.icon?.formats?.thumbnail?.url ?? "",
               }))
             : [],
           bed:
@@ -81,12 +83,18 @@ export default function RoomDetailsPage() {
               ? `${roomData.bed.type} (Size: ${roomData.bed.size} cm)`
               : "No bed information",
           photos: Array.isArray(roomData.roomPhotos)
-            ? roomData.roomPhotos.map((photo: any) => photo.url)
+            ? roomData.roomPhotos.map(
+                (photo: any) =>
+                  photo.formats?.large?.url ||
+                  photo.formats?.medium?.url ||
+                  photo.url
+              )
             : [],
         };
 
         setRoom(formattedRoom);
       } catch (error) {
+        console.error("Error fetching room details:", error);
         setError((error as Error).message);
       } finally {
         setLoading(false);
@@ -94,49 +102,57 @@ export default function RoomDetailsPage() {
     };
 
     fetchRoomData();
-  }, [documentId, apiHandler]);
+  }, [documentId]);
 
   if (loading) return <p>Loading room details...</p>;
   if (error) return <p>Error: {error}</p>;
   if (!room) return <p>Room not found.</p>;
 
   return (
-    <div className="container">
-      <h1>{room.title}</h1>
+    <div className="our_room">
+      <div className="booking-header">
+        <h1>{room.title}</h1>
 
-      {/* Room Photos */}
-      <div className="room-photos">
-        {room.photos.length > 0 ? (
-          room.photos.map((photo, index) => (
-            <Image key={index} src={photo} alt={room.title} width={800} height={450} />
-          ))
-        ) : (
-          <Image src={room.imgUrl} alt={room.title} width={800} height={450} />
-        )}
-      </div>
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Room Photos */}
+          <div className="room-photos flex-1">
+            {room.photos.length > 0 ? (
+              room.photos.map((photo, index) => (
+                <Image key={index} src={photo} alt={room.title} width={800} height={450} />
+              ))
+            ) : (
+              <Image src={room.imgUrl} alt={room.title} width={800} height={450} />
+            )}
+          </div>
 
-      <p>{room.description}</p>
-      <p className="room-price">Price: ₦ {room.price}</p>
-      <p className="room-size">BED-SIZE: {room.bed ?? "Size not specified"}</p>
+          <div className="flex-1 p-4 bg-gray-50 rounded-xl shadow">
+            <p className="text-lg font-semibold mb-2">Price: ₦ {room.price}</p>
+            <p className="text-md mb-4">BED-SIZE: {room.bed ?? "Size not specified"}</p>
 
-      <div className="amenities-section">
-        <h4>Amenities:</h4>
-        <ul style={{ display: "flex", listStyleType: "none", padding: 0 }}>
-          {room.amenities.map((amenity) => (
-            <li key={amenity.id} style={{ marginRight: "10px" }}>
-              {amenity.icon ? (
-                <Image src={amenity.icon} alt={amenity.name} width={20} height={20} />
-              ) : (
-                <span>{amenity.name}</span>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
+            <div className="amenities-section">
+              <h4 className="text-lg font-medium mb-2">Amenities:</h4>
+              <ul className="extra-options-grid">
+                {room.amenities.map((amenity) => (
+                  <li
+                    key={amenity.id}
+                    className="room-amenities"
+                  >
+                    {amenity.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
 
-      {/* Integrated Booking Form Here */}
-      <div className="room-booking-form">
-        <BookingForm />
+        <div className="mt-8">
+          <h2 className="text-2xl font-semibold mb-4">Room Description</h2>
+          <p className="text-gray-700 leading-relaxed">{room.description}</p>
+        </div>
+
+        <div className="mt-16">
+          <BookingForm />
+        </div>
       </div>
     </div>
   );
