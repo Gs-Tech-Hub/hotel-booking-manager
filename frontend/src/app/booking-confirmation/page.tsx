@@ -18,6 +18,7 @@ const BookingConfirmationContent = () => {
   const roomImage = searchParams.get("roomImage"); // Room banner image
 
   return (
+    <div className="our_room">
     <div className="booking-container">
       <h1 className="booking-header text-center">Booking Confirmed!</h1>
 
@@ -37,6 +38,7 @@ const BookingConfirmationContent = () => {
         </div>
       )}
       <button onClick={() => window.print()} className="book-btn mt-4">Print Receipt</button>
+    </div>
     </div>
   );
 };

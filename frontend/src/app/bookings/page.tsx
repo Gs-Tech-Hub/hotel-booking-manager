@@ -109,6 +109,7 @@ export default function BookingPage() {
   };
 
   return (
+    <div className="our_room">
     <div className="booking-container">
       <h2 className="booking-header">
         Book Your Stay for{" "}
@@ -164,6 +165,7 @@ export default function BookingPage() {
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 }

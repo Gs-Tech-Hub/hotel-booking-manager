@@ -409,7 +409,7 @@ button {
 
 .content_main {
    position: relative;
-   margin-top: 900px;
+   margin-top: 400px;
 }
 
 .banner .carousel-indicators li {
@@ -1390,23 +1390,29 @@ ul.social_icon li a:hover {
    }
 
    /* Booking Area css */
-.booking_area {
+   .booking_area {
      background: #ffffff;
      position: relative;
      z-index: 2;
      margin-top: -100px;
-     box-shadow: 0 20px 50px rgba(158, 158, 158, 0.2); }
+     box-shadow: 0 20px 50px rgba(158, 158, 158, 0.2);
+     }
      @media (max-width: 991px) {
        .booking_area {
-         margin-top: 65px; } }
+         margin-top: 65px; }
+         }
      .booking_area .row {
-       margin: 0; }
+       margin: 0;
+       }
      .booking_area .col-lg-3 {
-       padding: 30px 0; }
+       padding: 30px 0;
+       }
        .booking_area .col-lg-3:nth-child(3) .booking_item, .booking_area .col-lg-3:nth-child(4) .booking_item {
-         border-right: 0; }
+         border-right: 0;
+         }
      .booking_area .coupon-code {
-       background: #f1f9ff; }
+       background: #f1f9ff;
+       }
    
    .booking_item {
      padding: 7px 40px;
@@ -1674,9 +1680,8 @@ ul.social_icon li a:hover {
 
  /* booking page css */
  .amenities-section {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Two items per row */
-  gap: 10px; /* Space between items */
+  max-width: fit-content;
+  justify-items: center;
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
   padding: 0.5rem 0.75rem;

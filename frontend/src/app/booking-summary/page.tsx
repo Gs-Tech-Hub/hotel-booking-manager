@@ -61,7 +61,8 @@ function BookingSummaryContent() {
   };
 
   return (
-    <div className="booking-container">
+    <div className="our_room">
+ <div className="booking-container">
       <h1 className="booking-header text-center">
         Booking Summary for{" "}
         <span className="highlight-text">
@@ -139,6 +140,8 @@ function BookingSummaryContent() {
         Proceed to Checkout
       </button>
     </div>
+    </div>
+  
   );
 }
 

@@ -1,10 +1,9 @@
-"use client";
-
-import { useEffect, useState } from "react";
+'use client'
+import { useEffect, useState, Fragment } from "react";
 import { useParams } from "next/navigation";
 import ApiHandler from "@/utils/apiHandler";
 import Image from "next/image";
-import BookingForm from "@/components/booking-form"; // Import BookingForm
+import BookingForm from "@/components/booking-form";
 
 interface Amenity {
   id: number;
@@ -52,12 +51,7 @@ export default function RoomDetailsPage() {
       setError(null);
 
       try {
-        const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/rooms/${documentId}?populate=*`;
-        console.log(`Fetching room details from: ${apiUrl}`);
-        console.log("Params object:", params);
-
         const data = await apiHandler.fetchData(`rooms/${documentId}?populate=*`);
-        console.log("Fetched data:", data);
 
         if (!data || !data.data) {
           throw new Error("Room not found");
@@ -92,9 +86,10 @@ export default function RoomDetailsPage() {
             : [],
         };
 
+        console.log("Mapped room photos:", formattedRoom.photos);
+
         setRoom(formattedRoom);
       } catch (error) {
-        console.error("Error fetching room details:", error);
         setError((error as Error).message);
       } finally {
         setLoading(false);
@@ -109,51 +104,63 @@ export default function RoomDetailsPage() {
   if (!room) return <p>Room not found.</p>;
 
   return (
-    <div className="our_room">
-      <div className="booking-header">
-        <h1>{room.title}</h1>
+    <Fragment>
+      <div className="our_room">
+        <div className="booking-header">
+          <h1>{room.title}</h1>
 
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Room Photos */}
-          <div className="room-photos flex-1">
-            {room.photos.length > 0 ? (
-              room.photos.map((photo, index) => (
-                <Image key={index} src={photo} alt={room.title} width={800} height={450} />
-              ))
-            ) : (
-              <Image src={room.imgUrl} alt={room.title} width={800} height={450} />
-            )}
-          </div>
-
-          <div className="flex-1 p-4 bg-gray-50 rounded-xl shadow">
-            <p className="text-lg font-semibold mb-2">Price: ₦ {room.price}</p>
-            <p className="text-md mb-4">BED-SIZE: {room.bed ?? "Size not specified"}</p>
-
-            <div className="amenities-section">
-              <h4 className="text-lg font-medium mb-2">Amenities:</h4>
-              <ul className="extra-options-grid">
-                {room.amenities.map((amenity) => (
-                  <li
-                    key={amenity.id}
-                    className="room-amenities"
-                  >
-                    {amenity.name}
-                  </li>
+          <div className="flex flex-col lg:flex-row gap-6">
+            <div className="room-photos flex-1">
+              <Image
+                src={room.imgUrl}
+                alt={room.title}
+                width={800}
+                height={450}
+                className="rounded-xl mb-4 object-cover"
+              />
+              <div className="thumbnail-gallery grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[room.imgUrl, ...room.photos].map((photo, index) => (
+                  <Image
+                    key={index}
+                    src={photo}
+                    alt={`Room thumbnail ${index + 1}`}
+                    width={250}
+                    height={200}
+                    className="thumbnail-image rounded-xl border border-gray-300"
+                  />
                 ))}
-              </ul>
+              </div>
+            </div>
+            <div className="flex-1 p-4 bg-gray-50 rounded-xl shadow align-items-center justify-center ">
+            <div className="amenities-section">
+                <h4 className="text-lg font-medium mb-2">Amenities:</h4>
+                <ul className="extra-options-grid">
+                  {room.amenities.map((amenity) => (
+                    <li key={amenity.id} className="room-amenities">
+                      {amenity.name}
+                    </li>
+                  ))}
+                </ul>
+            </div>
+              <p className="text-lg font-semibold mb-2">Price: ₦ {room.price}</p>
+              <p className="text-md mb-4">BED-SIZE: {room.bed ?? "Size not specified"}</p>
+            </div>
+            <div className="flex">
+              <div className="mt-8">
+               <h2 className="text-2xl font-semibold mb-4">Room Description</h2>
+               <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+              {room.description}
+              </p>
+                </div>
+              </div>
+            <div>
+            </div>
             </div>
           </div>
-        </div>
-
-        <div className="mt-8">
-          <h2 className="text-2xl font-semibold mb-4">Room Description</h2>
-          <p className="text-gray-700 leading-relaxed">{room.description}</p>
-        </div>
-
-        <div className="mt-16">
+          <div className="booking-area">
           <BookingForm />
+          </div>
         </div>
-      </div>
-    </div>
+    </Fragment>
   );
 }
