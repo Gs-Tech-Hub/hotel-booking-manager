@@ -29,6 +29,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Script src="/js/jquery.min.js"  />
         <Script src="/js/bootstrap.bundle.min.js"  />
         <Script src="/js/custom-script.js"  />
+        <Script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js" />
+        <Script src="assets/js/plugins/jquery.meanmenu.js"/>
 
         {/* Header */}
         <header>

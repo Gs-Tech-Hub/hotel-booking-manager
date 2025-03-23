@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { useBookingStore } from "../../store/bookingStore";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import Image from "next/image";
+import { useState } from "react";
 
 interface FlutterwaveResponse {
   transaction_id: number;
@@ -22,6 +23,8 @@ function CheckoutPage() {
     updateBooking,
     paymentMethod,
   } = useBookingStore();
+
+  const [showIncompleteError, setShowIncompleteError] = useState(false);
 
   const vatRate = 0.1;
   const roomTotal = selectedRoom ? nights * (selectedRoom.priceOnline || 0) : 0;
@@ -66,6 +69,16 @@ function CheckoutPage() {
   };
 
   const handleConfirmBooking = () => {
+    const isGuestInfoComplete =
+      guestInfo.firstName && guestInfo.lastName && guestInfo.email && guestInfo.phone;
+
+    if (!isGuestInfoComplete) {
+      setShowIncompleteError(true);
+      return;
+    }
+
+    setShowIncompleteError(false);
+
     if (paymentMethod === "online") {
       initializePayment({ callback: config.callback, onClose: config.onClose });
     } else {
@@ -133,6 +146,10 @@ function CheckoutPage() {
             <button className="book-btn mt-4" onClick={handleConfirmBooking}>
               {paymentMethod === "online" ? "Confirm Payment" : "Confirm Booking"}
             </button>
+
+            {showIncompleteError && (
+              <p className="text-red-500 mt-2">Please fill in all guest information before proceeding.</p>
+            )}
           </div>
         </div>
       </div>
