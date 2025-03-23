@@ -11,7 +11,7 @@ export default function BannerCarousel({ images }: BannerCarouselProps) {
    return (
       <div
          id="myCarousel" 
-         className="carousel slide home_banner_area"
+         className="carousel slide"
          data-ride="carousel"
       >
        

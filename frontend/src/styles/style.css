@@ -401,7 +401,7 @@ button {
 /** banner section **/
 
 .banner_main {
-     position: absolute;
+     position: relative;
      top: 50;
      width: 100%;
      /* margin-bottom: 300px; */
@@ -409,7 +409,7 @@ button {
 
 .content_main {
    position: relative;
-   margin-top: 900px;
+   /* margin-top: 900px; */
 }
 
 .banner .carousel-indicators li {
