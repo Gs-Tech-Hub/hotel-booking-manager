@@ -56,6 +56,7 @@ function CheckoutPage() {
   };
 
   return (
+    <div className="our_room">
     <div className="booking-container">
       <h1 className="booking-header text-center">Checkout</h1>
       <div className="checkout-layout">
@@ -105,6 +106,7 @@ function CheckoutPage() {
           }}>Confirm Payment</button>
         </div>
       </div>
+    </div>
     </div>
   );
 }
