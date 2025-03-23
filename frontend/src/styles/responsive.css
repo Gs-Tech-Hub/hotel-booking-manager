@@ -163,3 +163,132 @@
         display: none;
     }
 }
+
+
+/* responsive.css - Optimized responsive rules with updated navigation and overflow prevention */
+
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  
+  @media (max-width: 1199px) {
+    .navbar-nav {
+      gap: 0.8rem;
+    }
+    .book_room h1 {
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+    }
+    .about_img {
+      margin: 0 auto;
+    }
+  }
+  
+  @media (max-width: 991px) {
+    .navigation.navbar-dark .navbar-nav .nav-link {
+      margin: 0 0.5rem;
+    }
+    .carousel-item img {
+      min-height: 500px;
+    }
+    .book_btn {
+      padding: 0.5rem 1rem;
+    }
+    .restaurant-content, .about-section {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+  
+  @media (max-width: 767px) {
+    .navigation.navbar-collapse {
+      position: absolute;
+      width: 100%;
+      background: #0f1521;
+      padding: 1.5rem;
+      z-index: 1000;
+    }
+    .navbar-toggler {
+      margin-top: 0;
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+    }
+    .menubar .container .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .menubar .logo {
+      margin-left: 1rem;
+    }
+    .menubar .navbar-collapse, 
+    .menubar .float-right, 
+    .menubar .header_social {
+      display: none;
+    }
+    .overlay-content h1 {
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+    }
+    .about_img img {
+      width: 90%;
+    }
+    .footer h3 {
+      font-size: 1.5rem;
+    }
+  }
+  
+  @media (max-width: 575px) {
+    .logo {
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    .book_room h1 {
+      font-size: clamp(1.3rem, 4vw, 1.8rem);
+    }
+    .room-card {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .room-info img {
+      width: 100%;
+    }
+    .restaurant-info h3 {
+      font-size: 1.6rem;
+    }
+    .restaurant-info p {
+      font-size: 1rem;
+    }
+  }
+  
+  @media (max-width: 767px) {
+    .extra-options-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .extra-options-grid {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  
+    .extra-option {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 10px;
+    }
+  
+    .extra-option .extra-price {
+      margin-top: 5px;
+      font-size: 14px;
+      color: #ff0909;
+      font-weight: bold;
+    }
+  }
+  .extra-option:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+  }
+    
