@@ -2,7 +2,8 @@
 
 # dependencies
 
-/node_modules
+/node_modules 
+/*.strapi /
 /.nuxt/
 /.pnp
 .pnp.*
@@ -39,6 +40,11 @@ yarn-error.log*
 # vercel
 .vercel
 
+/*.netlify/
+
+/*.next/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.gitignore
