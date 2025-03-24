@@ -118,7 +118,7 @@ export default function RoomDetailsPage() {
                 height={450}
                 className="rounded-xl mb-4 object-cover"
               />
-              <div className="thumbnail-gallery grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="thumbnail-gallery-scroll">
                 {[room.imgUrl, ...room.photos].map((photo, index) => (
                   <Image
                     key={index}
@@ -130,12 +130,11 @@ export default function RoomDetailsPage() {
                   />
                 ))}
               </div>
+
             </div>
-            <div className="p-4 bg-gray-50 rounded-xl shadow align-items-center justify-between flex-1 ">
-              <div>
+            <div className="room-details-card">
               <p className="text-lg font-semibold mb-2">Price: ₦ {room.price}</p>
-              <p className="text-md mb-4">BED-SIZE: {room.bed ?? "Size not specified"}</p>
-              
+              <p className="text-lg mb-4">BED-SIZE: {room.bed ?? "Size not specified"}</p>
               <div className="amenities-section">
                 <h4 className="text-lg font-medium mb-2">Amenities:</h4>
                 <ul className="extra-options-grid">
@@ -146,14 +145,11 @@ export default function RoomDetailsPage() {
                   ))}
                 </ul>
             </div>
-            </div>
-              <div className="mt-8">
+            <div className="">
                <h2 className="text-2xl font-semibold mb-4">Room Description</h2>
-               <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+               <p className="text-lg text-gray-700 leading-relaxed whitespace-pre-line">
               {room.description}
               </p>
-              </div>
-            <div>
               </div>
             </div>
             </div>

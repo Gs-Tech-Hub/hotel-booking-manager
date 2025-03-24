@@ -291,4 +291,67 @@ html, body {
     background-color: #f0f0f0;
     cursor: pointer;
   }
-    
+  
+
+  /* Stack room details and photos vertically on smaller screens */
+@media (max-width: 768px) {
+  .booking-header .flex {
+    flex-direction: column;
+  }
+
+  .thumbnail-gallery-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px 0;
+  }
+
+  .thumbnail-gallery-scroll img {
+    flex-shrink: 0;
+    width: 150px;
+    height: auto;
+  }
+
+  .room-details-container {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 768px) {
+    .room-card {
+      flex-direction: column;
+    }
+    .room-card img {
+      width: 100%;
+      height: auto;
+    }
+  }
+  
+   
+  .booking-header h1 {
+    text-align: center;
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .room-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .room-info img, 
+  .room-info .room-details {
+    order: initial; /* fallback */
+  }
+
+  .room-info .room-details {
+    order: -1; /* display details first on small screens */
+  }
+
+  .room-info img {
+    order: 1; /* image after details */
+    width: 100% !important;
+    height: auto !important;
+  }
+}
