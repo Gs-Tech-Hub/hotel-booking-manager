@@ -1,78 +1,110 @@
-import { create } from "zustand";
+// /store/bookingStore.ts
+import {create} from 'zustand';
+import { persist, PersistStorage } from 'zustand/middleware';
+import Cookies from 'js-cookie';
+
+interface GuestInfo {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  country?: string;
+}
 
 interface Amenity {
   id: number;
   name: string;
-  icon: string;
+  iconUrl?: string;
+  description?: string;
 }
 
-interface Room {
+interface RoomDetails {
   id: number;
   title: string;
-  imgUrl: string;
   description: string;
-  amenities: Amenity[];
-  price: number;
-  bed?: string;
   priceOnline: number;
-  discount: string;
-  availability: number;
+  priceAtHotel: number;
+  imgUrl: string;
+  capacity: number;
+  roomNumber?: string;
+  floor?: string;
+  amenities: Amenity[];
 }
 
-interface ExtraService {
+// Temporary fallback interface for backward compatibility
+interface Room extends Partial<RoomDetails> {
+  id: number;
+  title: string;
+  priceOnline: number;
+  imgUrl: string;
+  description?: string;
+  amenities?: Amenity[];
+}
+
+interface ExtraItem {
+  id: number;
   name: string;
   price: number;
+  type: 'food' | 'restaurant' | 'bar';
+  description?: string;
 }
 
-
-interface GuestInfo {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  specialRequests?: string;
-}
-
-interface BookingState {
-  checkIn: Date | null;
-  checkOut: Date | null;
+interface BookingStore {
+  bookingId: number | null;
+  checkIn: string | null;
+  checkOut: string | null;
   guests: number;
-  guestInfo: GuestInfo;
-  paymentMethod: "online" | "premise";
-  selectedRoom: Room | null;
-  selectedHotel: string;
-  totalPrice: number;
   nights: number;
-  extras: ExtraService[]; // Unopinionated array of selected extras
-  updateBooking: (booking: Partial<BookingState>) => void;
-  resetBooking: () => void; // New function to reset all booking data
+  selectedRoom: RoomDetails | Room | null;
+  extras: ExtraItem[];
+  guestInfo: GuestInfo;
+  customerId: number | null;
+  totalPrice: number;
+  paymentMethod: 'online' | 'premise';
+  updateBooking: (data: Partial<Omit<BookingStore, 'updateBooking' | 'resetBooking'>>) => void;
+  resetBooking: () => void;
 }
 
-// Omit function properties for initial state
-type BookingStateWithoutFunctions = Omit<BookingState, 'updateBooking' | 'resetBooking'>
-
-// Initial state for resetting
-const initialState: BookingStateWithoutFunctions = {
+const initialBookingState: Omit<BookingStore, 'updateBooking' | 'resetBooking'> = {
+  bookingId: null,
   checkIn: null,
   checkOut: null,
   guests: 1,
-  guestInfo: {
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    specialRequests: "",
-  },
-  paymentMethod: "online",
-  selectedRoom: null,
-  selectedHotel: "",
-  totalPrice: 0,
   nights: 1,
-  extras: [], // Empty array for extras
+  selectedRoom: null,
+  extras: [],
+  guestInfo: {},
+  customerId: null,
+  totalPrice: 0,
+  paymentMethod: 'online',
 };
 
-export const useBookingStore = create<BookingState>((set) => ({
-  ...initialState,
-  updateBooking: (booking) => set((state) => ({ ...state, ...booking })),
-  resetBooking: () => set(() => ({ ...initialState })), // Reset booking data
-}));
+const cookieStorage: PersistStorage<BookingStore> = {
+  getItem: (name) => {
+    const value = Cookies.get(name);
+    if (!value) return null;
+    return JSON.parse(value);
+  },
+  setItem: (name, value) => {
+    Cookies.set(name, JSON.stringify(value.state), { expires: 3 });
+  },
+  removeItem: (name) => {
+    Cookies.remove(name);
+  },
+};
+
+export const useBookingStore = create(
+  persist<BookingStore>(
+    (set) => ({
+      ...initialBookingState,
+      updateBooking: (data) => set((state) => ({ ...state, ...data })),
+      resetBooking: () => set(initialBookingState),
+    }),
+    {
+      name: 'booking-store',
+      storage: cookieStorage,
+    }
+  )
+);

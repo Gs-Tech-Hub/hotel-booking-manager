@@ -1,13 +1,21 @@
+// /components/CheckoutPage.tsx
 "use client";
 import { useRouter } from "next/navigation";
 import { useBookingStore } from "../../store/bookingStore";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getOrCreateCustomer, createBookingIfNotExists } from "../../utils/strapi";
 
 interface FlutterwaveResponse {
   transaction_id: number;
   status: string;
+}
+
+function formatDate(date: string | Date | null): string {
+  if (!date) return "N/A";
+  if (typeof date === "string") return new Date(date).toLocaleDateString();
+  return date.toLocaleDateString();
 }
 
 function CheckoutPage() {
@@ -22,20 +30,25 @@ function CheckoutPage() {
     nights,
     updateBooking,
     paymentMethod,
+    totalPrice,
+    bookingId,
   } = useBookingStore();
 
   const [showIncompleteError, setShowIncompleteError] = useState(false);
 
-  const vatRate = 0.1;
-  const roomTotal = selectedRoom ? nights * (selectedRoom.priceOnline || 0) : 0;
-  const extrasTotal = extras.reduce((sum, extra) => sum + (extra.price || 0), 0);
-  const vatAmount = (roomTotal + extrasTotal) * vatRate;
-  const grandTotal = roomTotal + extrasTotal + vatAmount;
+  useEffect(() => {
+    // Calculate totalPrice on mount or changes
+    const roomTotal = selectedRoom ? nights * (selectedRoom.priceOnline || 0) : 0;
+    const extrasTotal = extras.reduce((sum, extra) => sum + (extra.price || 0), 0);
+    const vatAmount = (roomTotal + extrasTotal) * 0.1;
+    const grandTotal = roomTotal + extrasTotal + vatAmount;
+    updateBooking({ totalPrice: grandTotal });
+  }, [selectedRoom, nights, extras]);
 
   const config = {
     public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "",
     tx_ref: `BOOKING_${Date.now()}`,
-    amount: grandTotal,
+    amount: totalPrice,
     currency: "NGN",
     payment_options: "card, mobilemoney, ussd",
     customer: {
@@ -44,14 +57,28 @@ function CheckoutPage() {
       name: `${guestInfo.firstName} ${guestInfo.lastName}`,
     },
     customizations: {
-      title: "Hotel Booking Payment",
+      title: "FMMM1 Hotel",
       description: "Payment for hotel room reservation",
       logo: "https://i.postimg.cc/j5qdbbvk/fmmm1-logo.png/50",
     },
-    callback: (response: FlutterwaveResponse) => {
-      const bookingId = `BOOKING_${response.transaction_id.toString()}`;
+    callback: async (response: FlutterwaveResponse) => {
+      const store = useBookingStore.getState();
+
+      await fetch("/api/payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          transaction_id: response.transaction_id,
+          status: response.status,
+          amount: store.totalPrice,
+          email: guestInfo.email,
+          bookingId: store.bookingId,
+          bookingStore: store,
+        }),
+      });
+
       router.push(
-        `/booking-confirmation?bookingId=${bookingId}&reference=${response.transaction_id}&email=${guestInfo.email}&amount=${grandTotal}&checkIn=${checkIn?.toLocaleDateString() || "N/A"}&checkOut=${checkOut?.toLocaleDateString() || "N/A"}&guests=${guests}&room=${selectedRoom?.title}&roomImage=${selectedRoom?.imgUrl}`
+        `/booking-confirmation?bookingId=${store.bookingId}&reference=${response.transaction_id}&email=${guestInfo.email}&amount=${store.totalPrice}&checkIn=${formatDate(checkIn)}&checkOut=${formatDate(checkOut)}&guests=${guests}&room=${selectedRoom?.title}&roomImage=${selectedRoom?.imgUrl}`
       );
       closePaymentModal();
     },
@@ -68,7 +95,7 @@ function CheckoutPage() {
     });
   };
 
-  const handleConfirmBooking = () => {
+  const handleConfirmBooking = async () => {
     const isGuestInfoComplete =
       guestInfo.firstName && guestInfo.lastName && guestInfo.email && guestInfo.phone;
 
@@ -79,11 +106,20 @@ function CheckoutPage() {
 
     setShowIncompleteError(false);
 
+    const customerId = await getOrCreateCustomer(guestInfo);
+    updateBooking({ customerId });
+
+    const createdBookingId = await createBookingIfNotExists({
+      ...useBookingStore.getState(),
+      customerId,
+    });
+    updateBooking({ bookingId: createdBookingId });
+
     if (paymentMethod === "online") {
       initializePayment({ callback: config.callback, onClose: config.onClose });
     } else {
       router.push(
-        `/booking-confirmation?email=${guestInfo.email}&amount=${grandTotal}&checkIn=${checkIn?.toLocaleDateString() || "N/A"}&checkOut=${checkOut?.toLocaleDateString() || "N/A"}&guests=${guests}&room=${selectedRoom?.title}&roomImage=${selectedRoom?.imgUrl}`
+        `/booking-confirmation?bookingId=${createdBookingId}&email=${guestInfo.email}&amount=${totalPrice}&checkIn=${formatDate(checkIn)}&checkOut=${formatDate(checkOut)}&guests=${guests}&room=${selectedRoom?.title}&roomImage=${selectedRoom?.imgUrl}`
       );
     }
   };
@@ -111,8 +147,8 @@ function CheckoutPage() {
               <div className="room-details">
                 <h2 className="room-name">{selectedRoom.title}</h2>
                 <p><strong>Nights:</strong> {nights}</p>
-                <p><strong>Check-in:</strong> {checkIn ? new Date(checkIn).toLocaleDateString() : "N/A"}</p>
-                <p><strong>Check-out:</strong> {checkOut ? new Date(checkOut).toLocaleDateString() : "N/A"}</p>
+                <p><strong>Check-in:</strong> {formatDate(checkIn)}</p>
+                <p><strong>Check-out:</strong> {formatDate(checkOut)}</p>
                 <p><strong>Occupancy:</strong> {guests} {guests > 1 ? "guests" : "guest"}</p>
                 <p className="price price-online"><strong>Price per Night:</strong> ${selectedRoom.priceOnline.toFixed(2)}</p>
               </div>
@@ -121,10 +157,7 @@ function CheckoutPage() {
 
           <div className="price-summary">
             <h2 className="room-name">Price Summary</h2>
-            <p><strong>Room Total:</strong> ${roomTotal.toFixed(2)}</p>
-            <p><strong>Extras Total:</strong> ${extrasTotal.toFixed(2)}</p>
-            <p><strong>VAT ({(vatRate * 100).toFixed(0)}%):</strong> ${vatAmount.toFixed(2)}</p>
-            <p className="total-price"><strong>Grand Total:</strong> ${grandTotal.toFixed(2)}</p>
+            <p><strong>Total Price:</strong> ${totalPrice.toFixed(2)}</p>
           </div>
 
           <div className="form-container">
