@@ -10,12 +10,11 @@ interface BannerCarouselProps {
 export default function BannerCarousel({ images }: BannerCarouselProps) {
    return (
       <div
-         id="myCarousel"
-         className="carousel slide home_banner_area position-relative"
+         id="myCarousel" 
+         className="carousel slide"
          data-ride="carousel"
       >
-         {/* Move Overlay outside container to cover the entire carousel */}
-         <Overlay />
+       
 
          <ol className="carousel-indicators">
             {images.map((_, index) => (
@@ -29,6 +28,8 @@ export default function BannerCarousel({ images }: BannerCarouselProps) {
          </ol>
 
          <div className="carousel-inner">
+         <div className="position-relative">
+         <Overlay />
             {images.map((image, index) => (
                <div
                   key={index}
@@ -39,11 +40,12 @@ export default function BannerCarousel({ images }: BannerCarouselProps) {
                      src={image.src}
                      alt={image.alt}
                      layout="responsive"
-                     width={400}
-                     height={200}
+                     width={500}
+                     height={300}
                   />
                </div>
             ))}
+         </div>
          </div>
 
          <a

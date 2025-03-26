@@ -103,7 +103,7 @@ export default function RoomSection({ rooms }: RoomSectionProps) {
 
             {/* "Explore More Rooms" Button */}
             <div className="row">
-               <div className="col-md-12 text-center mt-4">
+               <div className="col-md-12 text-center mb-4">
                   <Link href="/rooms">
                      <button className="btn btn-primary">Explore More Rooms</button>
                   </Link>

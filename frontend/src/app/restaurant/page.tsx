@@ -45,11 +45,10 @@ const addToCart = (item: MenuItem): void => {
           <h2>Welcome to Our Restaurant</h2>
           <p>Experience the finest dining with a wide selection of African meals and refreshing beverages in a clean and comfortable environment.</p>
           <Image src="/images/restaurant/restaurant-cover.jpg" alt="Restaurant Interior" width={800} height={400} className="cover-image" />
-          <Image src="/images/restaurant-cover.jpg" alt="Restaurant Interior" width={800} height={400} className="cover-image" />
           <div className="thumbnail-gallery">
-            <Image src="/images/restaurant/DSC_8115.jpg" alt="Thumbnail 1" width={250} height={200} className="thumbnail-image" />
-            <Image src="/images/restaurant/DSC_8116.jpg" alt="Thumbnail 2" width={250} height={200} className="thumbnail-image" />
-            <Image src="/images/restaurant/DSC_8110.jpg" alt="Thumbnail 3" width={250} height={200} className="thumbnail-image" />
+          <Image src="/images/restaurant/DSC_8119.jpg" alt="Thumbnail 3" width={250} height={200} className="thumbnail-image" />
+          <Image src="/images/restaurant/DSC_8115.jpg" alt="Thumbnail 1" width={250} height={200} className="thumbnail-image" />
+          <Image src="/images/restaurant/DSC_8116.jpg" alt="Thumbnail 2" width={250} height={200} className="thumbnail-image" />
           </div>
         </div>
       )}

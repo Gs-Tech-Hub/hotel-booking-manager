@@ -47,16 +47,24 @@ export default function Home() {
 
   useEffect(() => {
     const fetchAboutData = async () => {
+      let aboutData: AboutData = {
+        title: "About Us",
+        description: "FMMM-1 HOTEL, Your top choice for a memorable stay.",
+        image: "/facilities/bar.jpg", // Provide a placeholder image
+      };
+  
       try {
-        const data = await apiHandler.fetchData('about?populate=*');
-        setAboutData({
-          title: data.data.title,
-          description: data.data.blocks[2].body,
-          image: data.data.blocks[3].url
-        });
+        const data = await apiHandler.fetchData("about?populate=*");
+        aboutData = {
+          title: data.data.title || "Default Title",
+          description: data.data.blocks[2].body || "Default description.",
+          image: data.data.blocks[3].url || "/default-image.jpg",
+        };
       } catch (error) {
-        console.error('Error fetching about data:', error);
+        console.error("Error fetching about data:", error);
       }
+  
+      setAboutData(aboutData);
     };
 
     const fetchCarrouselImages = async () => {
@@ -149,7 +157,7 @@ export default function Home() {
     }
     if (roomsData.length === 0) {
       fetchRoomsData();
-    }
+    } 
     if (services.length === 0) {
       fetchServices();
     }
@@ -157,19 +165,22 @@ export default function Home() {
 
   return (
     <>
-      {/* Banner Section with Carousel */}
+      {/* Banner Section with Carousel
+      and only display the booking form 
+      when roomsData is available */}
+      
       <section className="banner_main">
-        <BannerCarousel images={carrouselImages} />  
-        <div className="container">
-          <BookingForm />
-         </div>      
-      </section>
+  <BannerCarousel images={carrouselImages} />  
+  <div className="container">
+    {roomsData.length > 0 && <BookingForm />}
+  </div>      
+</section>
 
-      {/* About Section */}
-       <AboutSection/>
-
+      <section className="content_main">
+          {/* About Section */}
+      <AboutSection aboutData={aboutData} />
       {/* Room Section */}
-    <RoomSection rooms={roomsData} />;
+      <RoomSection rooms={roomsData} />
 
       {/* Hotel information section */}
       <HotelInfo />
@@ -193,6 +204,9 @@ export default function Home() {
 
       {/* Contact Section */}
       {/* <ContactForm /> */}
+      </section>
+
+    
     </>
   );
 }

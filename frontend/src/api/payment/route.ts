@@ -1,44 +1,61 @@
-import { NextRequest, NextResponse } from "next/server";
-import axios from "axios";
+import { NextResponse } from "next/server";
 
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
-const PAYSTACK_VERIFY_URL = "https://api.paystack.co/transaction/verify/";
-
-export async function GET(req: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const { searchParams } = new URL(req.url);
-    const reference = searchParams.get("reference");
+    const data = await request.json();
+    const {
+      transaction_id,
+      status,
+      amount,
+      email,
+      bookingId,
+      bookingStore, // pass this from frontend in the request
+    } = data;
 
-    if (!reference) {
-      return NextResponse.json({ error: "Reference is required" }, { status: 400 });
-    }
-
-    // Call Paystack API to verify payment
-    const response = await axios.get(`${PAYSTACK_VERIFY_URL}${reference}`, {
+    // Save payment to Strapi
+    const paymentResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payments`, {
+      method: "POST",
       headers: {
-        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
       },
+      body: JSON.stringify({
+        data: {
+          transaction_id,
+          status,
+          amount,
+          email,
+        },
+      }),
     });
 
-    const transactionData = response.data.data;
+    const paymentData = await paymentResponse.json();
+    const paymentId = paymentData?.data?.id;
 
-    if (transactionData.status === "success") {
-      // Generate Booking ID (you can save this to a database)
-      const bookingId = `BOOKING_${transactionData.reference}`;
+    // Update booking with payment info and bookingStore data
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/boookings?/${bookingStore.bookingId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
+      },
+      body: JSON.stringify({
+        data: {
+          checkin: bookingStore.checkIn,
+          checkout: bookingStore.checkOut,
+          customer: bookingStore.customerId || null,
+          payment: paymentId || null,
+          food_item: bookingStore.foodItemId || null,
+          room: bookingStore.roomId,
+          restaurant: bookingStore.restaurantId || null,
+          bar_and_club: bookingStore.barAndClubId || null,
+        },
+      }),
+    });
 
-      return NextResponse.json({
-        status: "success",
-        bookingId,
-        reference: transactionData.reference,
-        email: transactionData.customer.email,
-        amount: transactionData.amount,
-        paymentMethod: transactionData.channel,
-        transactionDate: transactionData.transaction_date,
-      });
-    }
-
-    return NextResponse.json({ error: "Payment verification failed" }, { status: 400 });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.response?.data || "Payment verification failed" }, { status: 500 });
+    return NextResponse.json({ message: "Payment and booking update saved." });
+  } catch (error) {
+    console.error("Error in payment route:", error);
+    return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
   }
 }
