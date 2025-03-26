@@ -15,6 +15,12 @@
     },
     "serviceDescription": {
       "type": "text"
+    },
+    "boooking": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::boooking.boooking",
+      "inversedBy": "hotel_services"
     }
   }
 }
