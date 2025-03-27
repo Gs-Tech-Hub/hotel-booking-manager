@@ -582,6 +582,7 @@ export interface ApiBoookingBoooking extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     customer: Schema.Attribute.Relation<'oneToOne', 'api::customer.customer'>;
+    customerId: Schema.Attribute.String;
     food_items: Schema.Attribute.Relation<
       'oneToMany',
       'api::food-item.food-item'
@@ -597,6 +598,7 @@ export interface ApiBoookingBoooking extends Struct.CollectionTypeSchema {
       'api::boooking.boooking'
     > &
       Schema.Attribute.Private;
+    nights: Schema.Attribute.Integer;
     payment: Schema.Attribute.Relation<'oneToOne', 'api::payment.payment'>;
     publishedAt: Schema.Attribute.DateTime;
     restaurant: Schema.Attribute.Relation<
@@ -604,6 +606,7 @@ export interface ApiBoookingBoooking extends Struct.CollectionTypeSchema {
       'api::restaurant.restaurant'
     >;
     room: Schema.Attribute.Relation<'oneToOne', 'api::room.room'>;
+    totalPrice: Schema.Attribute.Integer;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
