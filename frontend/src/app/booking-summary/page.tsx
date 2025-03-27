@@ -8,13 +8,13 @@ import { useBookingStore } from "../../store/bookingStore";
 function BookingSummaryContent() {
   const router = useRouter();
   const {
-    checkIn,
-    checkOut,
+    checkin,
+    checkout,
     guests,
     selectedRoom,
     paymentMethod,
     extras,
-    totalPrice,
+    roomTotalPrice,
     updateBooking,
   } = useBookingStore();
 
@@ -26,12 +26,18 @@ function BookingSummaryContent() {
   }
 
   // Extra services list
-  const availableExtras = [
-    { name: "Breakfast", price: 4000 },
-    { name: "Lunch", price: 4000 },
-    { name: "Dinner", price: 4500 },
-    { name: "Laundry Service", price: 3000 },
-    { name: "Spa", price: 2500 },
+  const availableExtras: Array<{
+    id: number;
+    type: "service" | "restaurant" | "bar";
+    name: string;
+    price: number;
+  }> = [
+    { id: 1, type: "restaurant", name: "Breakfast", price: 4000 },
+    { id: 2, type: "restaurant", name: "Lunch", price: 4000 },
+    { id: 3, type: "restaurant", name: "Dinner", price: 4500 },
+    { id: 4, type: "service", name: "Laundry", price: 3000 },
+    { id: 5, type: "service", name: "Spa", price: 2500 },
+    { id: 6, type: "bar", name: "Wine", price: 10000 },
   ];
 
   // Toggle extra selection
@@ -46,7 +52,7 @@ function BookingSummaryContent() {
     (sum, extra) => (selectedExtras.includes(extra.name) ? sum + extra.price : sum),
     0
   );
-  const grandTotal = totalPrice + extraTotal;
+  const grandTotal = roomTotalPrice + extraTotal;
 
   // Proceed to checkout
   const handleCheckout = () => {
@@ -84,8 +90,9 @@ function BookingSummaryContent() {
           <div className="room-details">
             <h2 className="room-name">{selectedRoom.title}</h2>
             <p className="price price-online">
-              Room Price: ₦ {totalPrice.toFixed(2)}
+              Room Price: ₦ {roomTotalPrice.toFixed(2)}
             </p>
+
             <p className="payment-method">
               <strong>Payment Method:</strong> {paymentMethod === "online" ? "Pay Online" : "Pay at Hotel"}
             </p>
@@ -96,10 +103,10 @@ function BookingSummaryContent() {
       <div className="room-card mt-4">
         <h2 className="room-name">Stay Details</h2>
         <p>
-          <strong>Check-in:</strong> {checkIn ? checkIn.toLocaleDateString() : "N/A"}
+          <strong>Check-in:</strong> {checkin ? new Date(checkin).toLocaleDateString() : "N/A"}
         </p>
         <p>
-          <strong>Check-out:</strong> {checkOut ? checkOut.toLocaleDateString() : "N/A"}
+          <strong>Check-out:</strong> {checkout ? new Date(checkout).toLocaleDateString() : "N/A"}
         </p>
         <p>
           <strong>Guests:</strong> {guests}
@@ -126,7 +133,7 @@ function BookingSummaryContent() {
       <div className="room-card mt-4">
         <h2 className="room-name">Total Cost</h2>
         <p>
-          <strong>Room Price:</strong> ₦{totalPrice.toFixed(2)}
+          <strong>Room Price:</strong> ₦{roomTotalPrice.toFixed(2)}
         </p>
         <p>
           <strong>Extras Total:</strong> ₦{extraTotal.toFixed(2)}
