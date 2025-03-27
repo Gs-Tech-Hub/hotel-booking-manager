@@ -59,6 +59,15 @@
     },
     "guests": {
       "type": "integer"
+    },
+    "nights": {
+      "type": "integer"
+    },
+    "customerId": {
+      "type": "string"
+    },
+    "totalPrice": {
+      "type": "integer"
     }
   }
 }
