@@ -53,7 +53,7 @@ function CheckoutPage() {
     setVatAmount(vatAmount);
     setFinalTotal(grandTotal);
     updateBooking({ totalPrice: grandTotal });
-  }, [selectedRoom, nights, extras]);
+  }, [selectedRoom, nights, extras, roomTotalPrice, updateBooking]);
 
   const config = {
     public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "",
