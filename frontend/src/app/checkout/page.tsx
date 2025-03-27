@@ -5,7 +5,7 @@ import { useBookingStore } from "../../store/bookingStore";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { getOrCreateCustomer, createBookingIfNotExists } from "../../utils/strapi";
+import { strapiService } from "../../utils/strapi";
 
 interface FlutterwaveResponse {
   transaction_id: number;
@@ -54,7 +54,7 @@ function CheckoutPage() {
     customer: {
       email: guestInfo.email || "",
       phone_number: guestInfo.phone || "",
-      name: `${guestInfo.firstName} ${guestInfo.lastName}`,
+      name: `${guestInfo.FirstName} ${guestInfo.lastName}`,
     },
     customizations: {
       title: "FMMM1 Hotel",
@@ -63,19 +63,15 @@ function CheckoutPage() {
     },
     callback: async (response: FlutterwaveResponse) => {
       const store = useBookingStore.getState();
+      const transactionData = {
+        transactionId: response.transaction_id,
+        status: response.status,
+        amount: store.totalPrice,
+        email: guestInfo.email,
+        bookingId: store.bookingId,
+      }
 
-      await fetch("/api/payment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          transaction_id: response.transaction_id,
-          status: response.status,
-          amount: store.totalPrice,
-          email: guestInfo.email,
-          bookingId: store.bookingId,
-          bookingStore: store,
-        }),
-      });
+      await strapiService.createTransaction(transactionData);
 
       router.push(
         `/booking-confirmation?bookingId=${store.bookingId}&reference=${response.transaction_id}&email=${guestInfo.email}&amount=${store.totalPrice}&checkIn=${formatDate(checkIn)}&checkOut=${formatDate(checkOut)}&guests=${guests}&room=${selectedRoom?.title}&roomImage=${selectedRoom?.imgUrl}`
@@ -97,7 +93,7 @@ function CheckoutPage() {
 
   const handleConfirmBooking = async () => {
     const isGuestInfoComplete =
-      guestInfo.firstName && guestInfo.lastName && guestInfo.email && guestInfo.phone;
+      guestInfo.FirstName && guestInfo.lastName && guestInfo.email && guestInfo.phone;
 
     if (!isGuestInfoComplete) {
       setShowIncompleteError(true);
@@ -106,10 +102,10 @@ function CheckoutPage() {
 
     setShowIncompleteError(false);
 
-    const customerId = await getOrCreateCustomer(guestInfo);
+    const customerId = await strapiService.createOrGetCustomer(guestInfo);
     updateBooking({ customerId });
 
-    const createdBookingId = await createBookingIfNotExists({
+    const createdBookingId = await strapiService.createOrGetBooking({
       ...useBookingStore.getState(),
       customerId,
     });
@@ -164,7 +160,7 @@ function CheckoutPage() {
             <h2 className="room-name">Guest Information</h2>
             <form className="guest-form">
               <label>First Name:</label>
-              <input type="text" name="firstName" value={guestInfo.firstName || ""} onChange={handleChange} required />
+              <input type="text" name="FirstName" value={guestInfo.FirstName || ""} onChange={handleChange} required />
 
               <label>Last Name:</label>
               <input type="text" name="lastName" value={guestInfo.lastName || ""} onChange={handleChange} required />

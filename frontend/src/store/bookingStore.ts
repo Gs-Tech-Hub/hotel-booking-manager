@@ -4,7 +4,7 @@ import { persist, PersistStorage } from 'zustand/middleware';
 import Cookies from 'js-cookie';
 
 interface GuestInfo {
-  firstName?: string;
+  FirstName?: string;
   lastName?: string;
   email?: string;
   phone?: string;
@@ -47,7 +47,7 @@ interface ExtraItem {
   id: number;
   name: string;
   price: number;
-  type: 'food' | 'restaurant' | 'bar';
+  type: 'service' | 'restaurant' | 'bar';
   description?: string;
 }
 

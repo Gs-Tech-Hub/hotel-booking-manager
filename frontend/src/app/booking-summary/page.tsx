@@ -26,12 +26,18 @@ function BookingSummaryContent() {
   }
 
   // Extra services list
-  const availableExtras = [
-    { name: "Breakfast", price: 4000 },
-    { name: "Lunch", price: 4000 },
-    { name: "Dinner", price: 4500 },
-    { name: "Laundry Service", price: 3000 },
-    { name: "Spa", price: 2500 },
+  const availableExtras: Array<{
+    id: number;
+    type: "service" | "restaurant" | "bar";
+    name: string;
+    price: number;
+  }> = [
+    { id: 1, type: "restaurant", name: "Breakfast", price: 4000 },
+    { id: 2, type: "restaurant", name: "Lunch", price: 4000 },
+    { id: 3, type: "restaurant", name: "Dinner", price: 4500 },
+    { id: 4, type: "service", name: "Laundry", price: 3000 },
+    { id: 5, type: "service", name: "Spa", price: 2500 },
+    { id: 6, type: "bar", name: "Wine", price: 10000 },
   ];
 
   // Toggle extra selection
@@ -96,10 +102,10 @@ function BookingSummaryContent() {
       <div className="room-card mt-4">
         <h2 className="room-name">Stay Details</h2>
         <p>
-          <strong>Check-in:</strong> {checkIn ? checkIn.toLocaleDateString() : "N/A"}
+          <strong>Check-in:</strong> {checkIn ? new Date(checkIn).toLocaleDateString() : "N/A"}
         </p>
         <p>
-          <strong>Check-out:</strong> {checkOut ? checkOut.toLocaleDateString() : "N/A"}
+          <strong>Check-out:</strong> {checkOut ? new Date(checkOut).toLocaleDateString() : "N/A"}
         </p>
         <p>
           <strong>Guests:</strong> {guests}

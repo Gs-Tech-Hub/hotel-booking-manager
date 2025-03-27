@@ -586,6 +586,7 @@ export interface ApiBoookingBoooking extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::food-item.food-item'
     >;
+    guests: Schema.Attribute.Integer;
     hotel_services: Schema.Attribute.Relation<
       'oneToMany',
       'api::hotel-service.hotel-service'
