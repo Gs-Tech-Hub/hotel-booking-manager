@@ -10,15 +10,15 @@ import { useRouter } from "next/navigation";
 
 export default function BookingForm() {
   const router = useRouter();
-  const { checkIn, checkOut, guests, updateBooking } = useBookingStore();
-  const [localCheckIn, setLocalCheckIn] = useState<Date>(checkIn || new Date());
-  const [localCheckOut, setLocalCheckOut] = useState<Date>(checkOut || addDays(new Date(), 1));
+  const { checkin, checkout, guests, updateBooking } = useBookingStore();
+  const [localCheckIn, setLocalCheckIn] = useState<Date>(checkin ? new Date(checkin) : new Date());
+  const [localCheckOut, setLocalCheckOut] = useState<Date>(checkout ? new Date(checkout) : addDays(new Date(), 1));
   const [localGuests, setLocalGuests] = useState<number>(guests);
   const [showGuestDropdown, setShowGuestDropdown] = useState(false);
 
   // Sync Zustand state when local state changes
   useEffect(() => {
-    updateBooking({ checkIn: localCheckIn, checkOut: localCheckOut, guests: localGuests });
+    updateBooking({ checkin: localCheckIn.toISOString(), checkout: localCheckOut.toISOString(), guests: localGuests });
   }, [localCheckIn, localCheckOut, localGuests, updateBooking]);
 
   const handleCheckAvailability = (e: React.FormEvent) => {

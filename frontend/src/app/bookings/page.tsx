@@ -18,16 +18,18 @@ interface Room {
   imgUrl: string;
   description: string;
   price: number;
+  roomTotalPrice: number;
   amenities: Amenity[];
   bed?: string;
   priceOnline: number;
+  pricePremise: number;
   discount: string;
   availability: number;
 }
 
 export default function BookingPage() {
   const router = useRouter();
-  const { checkIn, checkOut, updateBooking } = useBookingStore();
+  const { checkin, checkout, updateBooking } = useBookingStore();
   const [nights, setNights] = useState(1);
   const [rooms, setRooms] = useState<Room[]>([]);
 
@@ -35,12 +37,13 @@ export default function BookingPage() {
     baseUrl: process.env.NEXT_PUBLIC_API_URL || "",
   });
 
-  useEffect(() => {
-    if (checkIn && checkOut) {
-      const days = differenceInDays(checkOut, checkIn);
-      setNights(days > 0 ? days : 1);
-    }
-  }, [checkIn, checkOut]);
+    useEffect(() => {
+      if (checkin && checkout) {
+        const days = differenceInDays(checkout, checkin);
+        setNights(days > 0 ? days : 1);
+      }
+    }, [checkin, checkout]);
+    
 
   useEffect(() => {
   const fetchRooms = async () => {
@@ -76,9 +79,8 @@ export default function BookingPage() {
           title: room.title,
           description,
           imgUrl: room.imgUrl ?? "", // Ensure imgUrl is always a string
-          price: room.price,
+          pricePremise: room.price,
           priceOnline,
-          pricePremise,
           discount,
           availability,
           amenities,
@@ -96,12 +98,12 @@ export default function BookingPage() {
 }, [apiHandler,]);
 
   const handleSelectPayment = (room: Room, paymentType: "online" | "premise") => {
-    const totalPrice = paymentType === "online" ? nights * room.priceOnline : nights * room.price;
+    const roomTotalPrice = paymentType === "online" ? nights * room.priceOnline : nights * room.pricePremise;
 
     updateBooking({
       paymentMethod: paymentType,
       selectedRoom: room,
-      totalPrice,
+      roomTotalPrice: roomTotalPrice,
       nights,
     });
 
@@ -159,7 +161,7 @@ export default function BookingPage() {
                 className="book-btn premise"
                 onClick={() => handleSelectPayment(room, "premise")}
               >
-                Pay at Hotel - ₦ {nights * room.price}
+                Pay at Hotel - ₦ {nights * room.pricePremise}
               </a>
             </div>
           </div>
