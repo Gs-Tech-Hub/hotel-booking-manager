@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react';
+// import { useState } from 'react';
 
 type ApiHandlerProps = {
   baseUrl: string;
@@ -21,7 +21,7 @@ type DeleteDataParams = {
 };
 
 const ApiHandler = ({ baseUrl }: ApiHandlerProps) => {
-  const [error, setError] = useState<Error | null>(null);
+  // const [error, setError] = useState<Error | null>(null);
 
   const fetchWithRetry = async (url: string, options: RequestInit = {}, retries = 5, delay = 1000): Promise<any> => {
     let attempt = 0;
@@ -35,7 +35,7 @@ const ApiHandler = ({ baseUrl }: ApiHandlerProps) => {
       } catch (error: unknown) {
         attempt++;
         if (attempt >= retries) {
-          setError(error instanceof Error ? error : new Error('An unknown error occurred'));
+          // setError(error instanceof Error ? error : new Error('An unknown error occurred'));
           throw error;
         }
         const waitTime = Math.min(delay * Math.pow(2, attempt), 10000); // Max 10s delay
@@ -53,7 +53,7 @@ const ApiHandler = ({ baseUrl }: ApiHandlerProps) => {
     return fetchWithRetry(`${baseUrl}/${endpoint}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      body: JSON.stringify({ data }), 
     });
   };
 
@@ -61,7 +61,7 @@ const ApiHandler = ({ baseUrl }: ApiHandlerProps) => {
     return fetchWithRetry(`${baseUrl}/${endpoint}/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedData),
+      body: JSON.stringify({ updatedData }), 
     });
   };
 
@@ -69,7 +69,7 @@ const ApiHandler = ({ baseUrl }: ApiHandlerProps) => {
     return fetchWithRetry(`${baseUrl}/${endpoint}/${id}`, { method: 'DELETE' });
   };
 
-  return { fetchData, createData, updateData, deleteData, error };
+  return { fetchData, createData, updateData, deleteData };
 };
 
 export default ApiHandler;

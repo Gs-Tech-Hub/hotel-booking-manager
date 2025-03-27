@@ -1,63 +1,74 @@
-interface GuestInfo {
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    phone?: string;
+
+import qs from "qs";
+import  ApiHandler  from "@/utils/apiHandler";
+
+const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
+
+const apiHandlerInstance = ApiHandler({ baseUrl });
+
+export const strapiService = {
+  async fetch(endpoint: string, params?: Record<string, string | number | boolean>) {
+    const queryString = params ? '?' + new URLSearchParams(params as Record<string, string>).toString() : '';
+    const result = await apiHandlerInstance.fetchData(`${endpoint}${queryString}`);
+
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
+
+  async post(endpoint: string, body: any) {
+    const result = await apiHandlerInstance.createData({ endpoint, data: body });
+
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
+
+  buildUrl(endpoint: string, params?: Record<string, string | number | boolean>) {
+    const url = new URL(`${baseUrl}/${endpoint}`);
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        url.searchParams.append(key, String(value));
+      });
+    }
+    return url.toString();
+  },
+
+  // Helper functions following apiHandler structure for on-the-fly creation
+  async createBooking(bookingData: any) {
+    const booking = await this.post("boookings", bookingData);
+    return booking;
+  },
+
+  async createTransaction(transactionData: any) {
+    const transaction = await this.post("transactions", transactionData);
+    return transaction;
+  },
+
+  async createOrGetCustomer(customerData: any) {
+    const query = qs.stringify({
+      filters: {
+        email: {
+          $eq: customerData.email,
+        },
+      },
+    });
+    const existing = await this.fetch(`customers?${query}`);
+
+    if (existing && existing.length > 0) {
+      return existing[0].id;
+    }
+    const customer = await this.createCustomer(customerData);
+    console.log(customerData);
+    return customer.id;
+  },
+  
+  async createCustomer(customerData: any) {
+    const customer = await this.post("customers", customerData);
+    return customer;
+  },
+
+  async createOrGetBooking(bookingData: any) {
+    // Optionally, check if a booking exists or just create
+    const booking = await this.createBooking(bookingData);
+    return booking.id;
   }
-export const getOrCreateCustomer = async (guestInfo: GuestInfo) => {
-    const existing = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/customers?filters[email][$eq]=${guestInfo.email}`,
-      {
-        headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}` },
-      }
-    );
-    const existingData = await existing.json();
-  
-    if (existingData.data.length > 0) {
-      return existingData.data[0];
-    } else {
-      const created = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/customers`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
-        },
-        body: JSON.stringify({
-            data: {
-              FirstName: guestInfo.firstName,
-              lastName: guestInfo.lastName,
-              email: guestInfo.email,
-              phone: guestInfo.phone ? parseInt(guestInfo.phone, 10) : null,
-            },
-          }),
-      });
-      const newCustomer = await created.json();
-      console.log('newCustomer', newCustomer);
-      return existingData.data[0];
-    }
-  };
-  
-  export const createBookingIfNotExists = async (store: any) => {
-    if (!store.bookingId) {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/boookings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`,
-        },
-        body: JSON.stringify({
-          data: {
-            checkin: store.checkIn,
-            checkout: store.checkOut,
-            room: store.selectedRoom?.documentId,
-            customer: store.customerId,
-          },
-        }),
-      });
-      const result = await res.json();
-      console.log('result', result);
-      return result.data;
-    }
-    return store.bookingId;
-  };
-  
+};
