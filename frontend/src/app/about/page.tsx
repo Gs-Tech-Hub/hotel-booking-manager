@@ -1,4 +1,5 @@
 "use client";
+import Loader from "@/components/loader";
 import ApiHandler from "@/utils/apiHandler";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -22,6 +23,8 @@ interface AboutData {
 
 export default function AboutPage() {
    const [aboutData, setAboutData] = useState<AboutData | null>(null);
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState<string | null>(null);
 
    const apiHandler = ApiHandler({
       baseUrl: process.env.NEXT_PUBLIC_API_URL || "",
@@ -33,7 +36,9 @@ export default function AboutPage() {
             const data = await apiHandler.fetchData("about?populate=*");
             setAboutData(data.data);
          } catch (error) {
-            console.error("Error fetching about data:", error);
+            setError((error as Error).message);
+         } finally { 
+            setLoading(false);
          }
       };
       fetchAboutData();
@@ -41,6 +46,8 @@ export default function AboutPage() {
 
    return (
       <div className="about titlepage text-center container-fluid">
+         {loading && <Loader />}
+         {error && <p className="error-message">Error: Could Not Get About Data, Please try again</p>}
          {aboutData && (
             <>
                <div className="">

@@ -25,7 +25,8 @@ interface RoomDetails {
   title: string;
   description: string;
   priceOnline: number;
-  priceAtHotel: number;
+  pricePremise: number;
+  roomTotalPrice: number;
   imgUrl: string;
   capacity: number;
   roomNumber?: string;
@@ -38,6 +39,7 @@ interface Room extends Partial<RoomDetails> {
   id: number;
   title: string;
   priceOnline: number;
+  pricePremise: number;
   imgUrl: string;
   description?: string;
   amenities?: Amenity[];
@@ -53,8 +55,8 @@ interface ExtraItem {
 
 interface BookingStore {
   bookingId: number | null;
-  checkIn: string | null;
-  checkOut: string | null;
+  checkin: string | null;
+  checkout: string | null;
   guests: number;
   nights: number;
   selectedRoom: RoomDetails | Room | null;
@@ -62,6 +64,7 @@ interface BookingStore {
   guestInfo: GuestInfo;
   customerId: number | null;
   totalPrice: number;
+  roomTotalPrice: number;
   paymentMethod: 'online' | 'premise';
   updateBooking: (data: Partial<Omit<BookingStore, 'updateBooking' | 'resetBooking'>>) => void;
   resetBooking: () => void;
@@ -69,8 +72,8 @@ interface BookingStore {
 
 const initialBookingState: Omit<BookingStore, 'updateBooking' | 'resetBooking'> = {
   bookingId: null,
-  checkIn: null,
-  checkOut: null,
+  checkin: null,
+  checkout: null,
   guests: 1,
   nights: 1,
   selectedRoom: null,
@@ -78,6 +81,7 @@ const initialBookingState: Omit<BookingStore, 'updateBooking' | 'resetBooking'> 
   guestInfo: {},
   customerId: null,
   totalPrice: 0,
+  roomTotalPrice: 0,
   paymentMethod: 'online',
 };
 

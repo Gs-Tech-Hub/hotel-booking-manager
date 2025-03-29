@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useBookingStore } from "../../store/bookingStore";
 import { differenceInDays } from "date-fns";
 import ApiHandler from "@/utils/apiHandler";
+import Loader from "@/components/loader";
 
 interface Amenity {
   id: number;
@@ -18,29 +19,35 @@ interface Room {
   imgUrl: string;
   description: string;
   price: number;
+  roomTotalPrice: number;
   amenities: Amenity[];
   bed?: string;
   priceOnline: number;
+  pricePremise: number;
   discount: string;
   availability: number;
 }
 
 export default function BookingPage() {
   const router = useRouter();
-  const { checkIn, checkOut, updateBooking } = useBookingStore();
+  const { checkin, checkout, updateBooking } = useBookingStore();
   const [nights, setNights] = useState(1);
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
 
   const apiHandler = ApiHandler({
     baseUrl: process.env.NEXT_PUBLIC_API_URL || "",
   });
 
-  useEffect(() => {
-    if (checkIn && checkOut) {
-      const days = differenceInDays(checkOut, checkIn);
-      setNights(days > 0 ? days : 1);
-    }
-  }, [checkIn, checkOut]);
+    useEffect(() => {
+      if (checkin && checkout) {
+        const days = differenceInDays(checkout, checkin);
+        setNights(days > 0 ? days : 1);
+      }
+    }, [checkin, checkout]);
+    
 
   useEffect(() => {
   const fetchRooms = async () => {
@@ -76,9 +83,8 @@ export default function BookingPage() {
           title: room.title,
           description,
           imgUrl: room.imgUrl ?? "", // Ensure imgUrl is always a string
-          price: room.price,
+          pricePremise: room.price,
           priceOnline,
-          pricePremise,
           discount,
           availability,
           amenities,
@@ -88,7 +94,9 @@ export default function BookingPage() {
 
       setRooms(formattedRooms);
     } catch (error) {
-      console.error("Error fetching room data:", error);
+      setError((error as Error).message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -96,12 +104,12 @@ export default function BookingPage() {
 }, [apiHandler,]);
 
   const handleSelectPayment = (room: Room, paymentType: "online" | "premise") => {
-    const totalPrice = paymentType === "online" ? nights * room.priceOnline : nights * room.price;
+    const roomTotalPrice = paymentType === "online" ? nights * room.priceOnline : nights * room.pricePremise;
 
     updateBooking({
       paymentMethod: paymentType,
       selectedRoom: room,
-      totalPrice,
+      roomTotalPrice: roomTotalPrice,
       nights,
     });
 
@@ -111,7 +119,10 @@ export default function BookingPage() {
   return (
     <div className="our_room">
     <div className="booking-container">
+    {loading && <Loader />}
+    {error && <p className="error-message">Error: Could Not Get booking Data, Please try again, or check your internet</p>}
       <h2 className="booking-header">
+        
         Book Your Stay for{" "}
         <span className="highlight-text">
           {nights} night{nights > 1 ? "s" : ""}
@@ -159,7 +170,7 @@ export default function BookingPage() {
                 className="book-btn premise"
                 onClick={() => handleSelectPayment(room, "premise")}
               >
-                Pay at Hotel - ₦ {nights * room.price}
+                Pay at Hotel - ₦ {nights * room.pricePremise}
               </a>
             </div>
           </div>

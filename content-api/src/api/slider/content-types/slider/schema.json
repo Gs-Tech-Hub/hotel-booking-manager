@@ -1,11 +1,10 @@
 {
-  "kind": "singleType",
-  "collectionName": "carrousels",
+  "kind": "collectionType",
+  "collectionName": "sliders",
   "info": {
-    "singularName": "carrousel",
-    "pluralName": "carrousels",
-    "displayName": "Carrousel",
-    "description": ""
+    "singularName": "slider",
+    "pluralName": "sliders",
+    "displayName": "slider"
   },
   "options": {
     "draftAndPublish": true
@@ -14,7 +13,7 @@
     "title": {
       "type": "string"
     },
-    "BannerSlider": {
+    "slides": {
       "type": "component",
       "repeatable": true,
       "component": "shared.slider"

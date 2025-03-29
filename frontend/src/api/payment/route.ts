@@ -8,7 +8,6 @@ export async function POST(request: Request) {
       status,
       amount,
       email,
-      bookingId,
       bookingStore, // pass this from frontend in the request
     } = data;
 

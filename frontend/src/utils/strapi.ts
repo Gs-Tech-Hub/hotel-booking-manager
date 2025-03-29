@@ -34,13 +34,14 @@ export const strapiService = {
 
   // Helper functions following apiHandler structure for on-the-fly creation
   async createBooking(bookingData: any) {
+    console.log(bookingData);
     const booking = await this.post("boookings", bookingData);
     return booking;
   },
 
-  async createTransaction(transactionData: any) {
-    const transaction = await this.post("transactions", transactionData);
-    return transaction;
+  async createTransaction(paymentData: any) {
+    const payment = await this.post("payments", paymentData);
+    return payment;
   },
 
   async createOrGetCustomer(customerData: any) {
@@ -54,11 +55,11 @@ export const strapiService = {
     const existing = await this.fetch(`customers?${query}`);
 
     if (existing && existing.length > 0) {
-      return existing[0].id;
+      return existing[0].documentId;;
     }
     const customer = await this.createCustomer(customerData);
     console.log(customerData);
-    return customer.id;
+    return customer.documentId;
   },
   
   async createCustomer(customerData: any) {
@@ -69,6 +70,6 @@ export const strapiService = {
   async createOrGetBooking(bookingData: any) {
     // Optionally, check if a booking exists or just create
     const booking = await this.createBooking(bookingData);
-    return booking.id;
+    return booking.documentId;
   }
 };

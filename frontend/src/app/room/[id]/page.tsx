@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import ApiHandler from "@/utils/apiHandler";
 import Image from "next/image";
 import BookingForm from "@/components/booking-form";
+import Loader from "@/components/loader";
 
 interface Amenity {
   id: number;
@@ -99,61 +100,62 @@ export default function RoomDetailsPage() {
     fetchRoomData();
   }, [documentId]);
 
-  if (loading) return <p>Loading room details...</p>;
-  if (error) return <p>Error: {error}</p>;
-  if (!room) return <p>Room not found.</p>;
-
   return (
     <Fragment>
       <div className="our_room">
         <div className="booking-header">
-          <h1>{room.title}</h1>
-
-          <div className="flex flex-col lg:flex-row gap-6 items-center">
-            <div className="room-photos flex-1">
-              <Image
-                src={room.imgUrl}
-                alt={room.title}
-                width={800}
-                height={450}
-                className="rounded-xl mb-4 object-cover"
-              />
-                        <div className="thumbnail-gallery-scroll">
-                {[room.imgUrl, ...room.photos].map((photo, index) => (
-                  <Image
-                    key={index}
-                    src={photo}
-                    alt={`Room thumbnail ${index + 1}`}
-                    width={250}
-                    height={200}
-                    className="thumbnail-image rounded-xl border border-gray-300"
-                  />
-                ))}
-              </div>
-
-            </div>
-            <div className="room-details-card">
-              <p className="text-lg font-semibold mb-2">Price: ₦ {room.price}</p>
-              <p className="text-lg mb-4">BED-SIZE: {room.bed ?? "Size not specified"}</p>
-              <div className="amenities-section">
-                <h4 className="text-lg font-medium mb-2">Amenities:</h4>
-                <ul className="extra-options-grid">
-                  {room.amenities.map((amenity) => (
-                    <li key={amenity.id} className="room-amenities">
-                      {amenity.name}
-                    </li>
+        {loading && <Loader />}
+        {error && <p className="error-message">Error: Could Not Get Room Data, Please try again or check your internet</p>}
+        {!room && <p>Room not found.</p>}
+        {room && (
+          <div>
+            <h1>{room.title}</h1>
+            <div className="flex flex-col lg:flex-row gap-6 items-center">
+              <div className="room-photos flex-1">
+                <Image
+                  src={room.imgUrl}
+                  alt={room.title}
+                  width={800}
+                  height={450}
+                  className="rounded-xl mb-4 object-cover"
+                />
+                <div className="thumbnail-gallery-scroll">
+                  {[room.imgUrl, ...room.photos].map((photo, index) => (
+                    <Image
+                      key={index}
+                      src={photo}
+                      alt={`Room thumbnail ${index + 1}`}
+                      width={250}
+                      height={200}
+                      className="thumbnail-image rounded-xl border border-gray-300"
+                    />
                   ))}
-                </ul>
-            </div>
-            <div className="">
-               <h2 className="text-2xl font-semibold mb-4">Room Description</h2>
-               <p className="text-lg text-gray-700 leading-relaxed whitespace-pre-line">
-              {room.description}
-              </p>
+                </div>
               </div>
-            </div>
+              <div className="room-details-card">
+                <p className="text-lg font-semibold mb-2">Price: ₦ {room.price}</p>
+                <p className="text-lg mb-4">BED-SIZE: {room.bed ?? "Size not specified"}</p>
+                <div className="amenities-section">
+                  <h4 className="text-lg font-medium mb-2">Amenities:</h4>
+                  <ul className="extra-options-grid">
+                    {room.amenities.map((amenity) => (
+                      <li key={amenity.id} className="room-amenities">
+                        {amenity.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="">
+                  <h2 className="text-2xl font-semibold mb-4">Room Description</h2>
+                  <p className="text-lg text-gray-700 leading-relaxed whitespace-pre-line">
+                    {room.description}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
+        )}
+      </div>
           <div className="booking-area">
           <BookingForm />
           </div>
