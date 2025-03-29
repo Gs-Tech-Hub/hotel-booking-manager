@@ -44,14 +44,21 @@
       "type": "string"
     },
     "roomPhotos": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
       "allowedTypes": [
         "images",
         "files",
         "videos",
         "audios"
-      ],
-      "type": "media",
-      "multiple": true
+      ]
+    },
+    "availability": {
+      "type": "integer"
+    },
+    "capacity": {
+      "type": "integer"
     }
   }
 }

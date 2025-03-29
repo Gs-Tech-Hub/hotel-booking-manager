@@ -617,7 +617,7 @@ export interface ApiCarrouselCarrousel extends Struct.SingleTypeSchema {
   collectionName: 'carrousels';
   info: {
     description: '';
-    displayName: 'carrousel';
+    displayName: 'Carrousel';
     pluralName: 'carrousels';
     singularName: 'carrousel';
   };
@@ -1078,8 +1078,10 @@ export interface ApiRoomRoom extends Struct.CollectionTypeSchema {
   };
   attributes: {
     amenities: Schema.Attribute.Relation<'oneToMany', 'api::amenity.amenity'>;
+    availability: Schema.Attribute.Integer;
     bed: Schema.Attribute.Relation<'oneToOne', 'api::bed.bed'>;
     boooking: Schema.Attribute.Relation<'oneToOne', 'api::boooking.boooking'>;
+    capacity: Schema.Attribute.Integer;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1136,6 +1138,35 @@ export interface ApiServiceService extends Struct.SingleTypeSchema {
         'shared.seo',
       ]
     >;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSliderSlider extends Struct.CollectionTypeSchema {
+  collectionName: 'sliders';
+  info: {
+    displayName: 'slider';
+    pluralName: 'sliders';
+    singularName: 'slider';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::slider.slider'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    slides: Schema.Attribute.Component<'shared.slider', true>;
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1675,6 +1706,7 @@ declare module '@strapi/strapi' {
       'api::restaurant.restaurant': ApiRestaurantRestaurant;
       'api::room.room': ApiRoomRoom;
       'api::service.service': ApiServiceService;
+      'api::slider.slider': ApiSliderSlider;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;
