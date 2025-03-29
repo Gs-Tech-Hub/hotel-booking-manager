@@ -42,7 +42,8 @@ export default function Home() {
   const [carrouselImages, setCarrouselImages] = useState<CarrouselImage[]>([]);
   const [roomsData, setRoomsData] = useState<any[]>([]);
   const [services, setServices] = useState<any[]>([]);
-  
+  const [error, setError] = useState<string | null>(null);
+
   const apiHandler = ApiHandler({ baseUrl: process.env.NEXT_PUBLIC_API_URL || '' });
 
   useEffect(() => {
@@ -61,7 +62,7 @@ export default function Home() {
           image: data.data.blocks[3].url || "/default-image.jpg",
         };
       } catch (error) {
-        console.error("Error fetching about data:", error);
+        setError((error as Error).message);
       }
   
       setAboutData(aboutData);
@@ -81,7 +82,7 @@ export default function Home() {
         console.log('Formatted images data:', formattedImages); // Log the formatted images data
         setCarrouselImages(formattedImages);
       } catch (error) {
-        console.error('Error fetching gallery images:', error);
+        setError((error as Error).message);
       }
     };
 
@@ -104,7 +105,7 @@ export default function Home() {
         setRoomsData(formattedRooms); // Update state with formatted room data
         console.log('Formatted rooms data:', formattedRooms); // Log the formatted rooms data
       } catch (error) {
-        console.error('Error fetching room data:', error);
+        setError((error as Error).message);
       }
     };
 
@@ -144,7 +145,7 @@ export default function Home() {
 
         setServices(formattedServices);
       } catch (error) {
-        console.error('Error fetching services:', error);
+        setError((error as Error).message);
       }
     };
 
@@ -168,6 +169,7 @@ export default function Home() {
       {/* Banner Section with Carousel
       and only display the booking form 
       when roomsData is available */}
+       {error && <p className="error-message">Error: Could Not Get Data, Please try again</p>}
       
       <section className="banner_main">
   <BannerCarousel images={carrouselImages} />  
