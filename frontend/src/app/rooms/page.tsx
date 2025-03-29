@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ApiHandler from "@/utils/apiHandler";
 import Image from "next/image";
 import Link from "next/link";
+import Loader from "@/components/loader";
 
 interface Amenity {
   id: number;
@@ -78,7 +79,7 @@ export default function RoomsPage() {
     fetchRoomsData();
   }, [apiHandler]);
 
-  if (loading) return <p className="">Fetching Rooms Data...</p>;
+  if (loading) return <Loader />;
   if (error) return <p>Error: Could Not Get Rooms Data, Please try again</p>;
 
   return (

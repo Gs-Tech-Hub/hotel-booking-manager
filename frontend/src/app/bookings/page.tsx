@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useBookingStore } from "../../store/bookingStore";
 import { differenceInDays } from "date-fns";
 import ApiHandler from "@/utils/apiHandler";
+import Loader from "@/components/loader";
 
 interface Amenity {
   id: number;
@@ -32,6 +33,9 @@ export default function BookingPage() {
   const { checkin, checkout, updateBooking } = useBookingStore();
   const [nights, setNights] = useState(1);
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
 
   const apiHandler = ApiHandler({
     baseUrl: process.env.NEXT_PUBLIC_API_URL || "",
@@ -90,7 +94,9 @@ export default function BookingPage() {
 
       setRooms(formattedRooms);
     } catch (error) {
-      console.error("Error fetching room data:", error);
+      setError((error as Error).message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -113,7 +119,10 @@ export default function BookingPage() {
   return (
     <div className="our_room">
     <div className="booking-container">
+    {loading && <Loader />}
+    {error && <p className="error-message">Error: Could Not Get booking Data, Please try again, or check your internet</p>}
       <h2 className="booking-header">
+        
         Book Your Stay for{" "}
         <span className="highlight-text">
           {nights} night{nights > 1 ? "s" : ""}

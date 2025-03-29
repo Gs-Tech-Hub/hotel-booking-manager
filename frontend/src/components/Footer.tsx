@@ -7,13 +7,13 @@ const Footer = () => {
     { icon: "fa-envelope", text: <a href="#">fmmm1hotel@gmail.com</a> },
   ];
 
-  const menuLinks = [
+  const menu = [
     { text: "Home", href: "#" },
-    { text: "About", href: "about.html" },
-    { text: "Our Room", href: "room.html" },
-    { text: "Gallery", href: "gallery.html" },
-    { text: "Blog", href: "blog.html" },
-    { text: "Contact Us", href: "contact.html" },
+    { text: "About", href: "/about" },
+    { text: "Our Room", href: "/rooms" },
+    // { text: "Gallery", href: "gallery.html" },
+    // { text: "Blog", href: "#" },
+    { text: "Contact Us", href: "/contact" },
   ];
 
   const socialIcons = [
@@ -39,9 +39,9 @@ const Footer = () => {
               </ul>
             </div>
             <div className="col-md-4">
-              <h3>Menu Link</h3>
+              <h3>Menu</h3>
               <ul className="link_menu">
-                {menuLinks.map((link, index) => (
+                {menu.map((link, index) => (
                   <li key={index} className={link.text === "Home" ? "active" : ""}>
                     <a href={link.href}>{link.text}</a>
                   </li>

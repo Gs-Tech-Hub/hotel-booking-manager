@@ -234,9 +234,9 @@ button {
 /*---------------------------- preloader area ----------------------------*/
 
 .loader_bg {
-     position: fixed;
      z-index: 9999999;
      background: #fff;
+     opacity: 0.6;
      width: 100%;
      height: 100%;
 }
@@ -244,13 +244,38 @@ button {
 .loader {
      height: 100%;
      width: 100%;
-     position: absolute;
+     position: relative;
      left: 0;
      top: 0;
      display: flex;
      justify-content: center;
      align-items: center;
 }
+
+/* Error message container */
+.error-message {
+  height: 100%;
+  position: relative;
+  margin-top: 300px;
+  color: #d9534f; /* Bootstrap-style red */
+  background-color: #f8d7da; /* Light red background */
+  border: 1px solid #f5c6cb; /* Red border */
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 5px;
+}
+
+/* Error icon */
+.error-message::before {
+  content: "⚠️"; /* Warning emoji */
+  font-size: 16px;
+}
+
 
 .loader img {
      width: 280px;
@@ -693,6 +718,7 @@ button {
  }
  
  .about-text {
+     background-color: rgb(41, 35, 35);
      flex: 1;
      max-width: 50%;
      text-align: left;
@@ -844,6 +870,27 @@ button {
   display: inline-block;
 }
 
+other-rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+other-rooms-grid .room-grid-item {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-left: 4px solid #ff0909;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.room-grid-item:hover {
+  transform: translateY(-5px);
+}
 
 /** end our_room section **/
 
@@ -1835,6 +1882,8 @@ ul.social_icon li a:hover {
   font-size: 18px;
   font-weight: bold;
 }
+
+
 
 /* Booking Buttons */
 .book-btn {

@@ -1,15 +1,16 @@
-"use client";
-
+'use client'
 import { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, addDays } from "date-fns";
 import { useBookingStore } from "../store/bookingStore";
-import { useRouter } from "next/navigation";
-
+import { useRouter, useParams } from "next/navigation";
 
 export default function BookingForm() {
   const router = useRouter();
+  const params = useParams();
+  const roomId = params?.id ?? null; // Get the room ID from the dynamic URL
+
   const { checkin, checkout, guests, updateBooking } = useBookingStore();
   const [localCheckIn, setLocalCheckIn] = useState<Date>(checkin ? new Date(checkin) : new Date());
   const [localCheckOut, setLocalCheckOut] = useState<Date>(checkout ? new Date(checkout) : addDays(new Date(), 1));
@@ -23,8 +24,12 @@ export default function BookingForm() {
 
   const handleCheckAvailability = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/bookings"); // Navigate to booking page
-  };
+    if (roomId) {
+      router.push(`/booking/${roomId}`); // Navigate to booking page
+    } else {
+      router.replace("/bookings");
+    }
+  };  
 
   return (
     <div className="booking_area">
