@@ -32,22 +32,18 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Script src="/js/bootstrap.bundle.min.js"  />
         <Script src="/js/custom-script.js"  />
         <Script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js" />
-        <Script id="chatwoot-widget" strategy="lazyOnload">
+     
+        <Script id="tawk-chat-widget" type="text/javascript">
           {`
-          (function(d,t) {
-            var BASE_URL="https://app.chatwoot.com";
-            var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-            g.src=BASE_URL+"/packs/js/sdk.js";
-            g.defer = true;
-            g.async = true;
-            s.parentNode.insertBefore(g,s);
-            g.onload=function(){
-              window.chatwootSDK.run({
-                websiteToken: '${process.env.CHATWOOT_TOKEN}',
-                baseUrl: BASE_URL
-              })
-            }
-          })(document,"script");
+          var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+          (function(){
+          var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+          s1.async=true;
+          s1.src='https://embed.tawk.to/67e9f5fee63eda190bc460af/1inkuhrd0';
+          s1.charset='UTF-8';
+          s1.setAttribute('crossorigin','*');
+          s0.parentNode.insertBefore(s1,s0);
+          })();
           `}
         </Script>
 
