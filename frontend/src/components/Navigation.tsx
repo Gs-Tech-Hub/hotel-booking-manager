@@ -102,6 +102,9 @@ export default function Navigation() {
                     <Link className="nav-link menu-link" href="/restaurant">Restaurant</Link>
                   </li>
                   <li className="nav-item">
+                    <Link className="nav-link menu-link" href="/gallery">Gallery</Link>
+                  </li>
+                  <li className="nav-item">
                     <Link className="nav-link menu-link" href="/contact">Contact Us</Link>
                   </li>
                 </ul>

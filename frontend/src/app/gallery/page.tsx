@@ -4,14 +4,14 @@ import Image from 'next/image';
 
 export default function Gallery() {
   const galleryImages = [
-    { id: 1, image: "gallery1.jpg" },
-    { id: 2, image: "gallery2.jpg" },
-    { id: 3, image: "gallery3.jpg" },
-    { id: 4, image: "gallery4.jpg" },
-    { id: 5, image: "gallery5.jpg" },
-    { id: 6, image: "gallery6.jpg" },
-    { id: 7, image: "gallery7.jpg" },
-    { id: 8, image: "gallery8.jpg" },
+    { id: 1, image: "gallery/gallery1.jpg" },
+    { id: 2, image: "gallery/gallery2.jpg" },
+    { id: 3, image: "gallery/gallery3.jpg" },
+    { id: 4, image: "gallery/gallery4.jpg" },
+    { id: 5, image: "gallery/gallery5.jpg" },
+    { id: 6, image: "gallery/gallery6.jpg" },
+    { id: 7, image: "gallery/gallery7.jpg" },
+    { id: 8, image: "gallery/gallery8.jpg" },
   ];
 
   return (

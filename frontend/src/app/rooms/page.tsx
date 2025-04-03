@@ -79,9 +79,6 @@ export default function RoomsPage() {
     fetchRoomsData();
   }, [apiHandler]);
 
-  if (loading) return <Loader />;
-  if (error) return <p>Error: Could Not Get Rooms Data, Please try again</p>;
-
   return (
     <div className="our_room">
       <div className="container">
@@ -92,6 +89,8 @@ export default function RoomsPage() {
               <p>Explore our luxurious rooms, designed for your comfort and relaxation.</p>
             </div>
           </div>
+          {loading && <Loader />}
+          {error && <div className="error-message">{error}</div>} 
         </div>
         <div className="row">
           {rooms.map((room) => (
@@ -105,7 +104,7 @@ export default function RoomsPage() {
                   </div>
                   <div className="bed_room">
                     <h3>{room.title}</h3>
-                    <p>{room.description}</p>
+                    {/* <p>{room.description}</p> */}
                     <p className="room-price">Price: ₦ {room.price}</p>
                     <p className="room-size">BED-SIZE: {room.bed ?? "Size not specified"}</p>
                     <div className="amenities-section" style={{ textAlign: "center" }}>

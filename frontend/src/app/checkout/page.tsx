@@ -1,4 +1,3 @@
-// /components/CheckoutPage.tsx
 "use client";
 import { useRouter } from "next/navigation";
 import { useBookingStore } from "../../store/bookingStore";
@@ -42,8 +41,8 @@ function CheckoutPage() {
   const [finalTotal, setFinalTotal] = useState(0);
   const [vatAmount, setVatAmount] = useState(0);
   const [extrasTotal, setExtrasTotal] = useState(0);
+  
   useEffect(() => {
-    // Calculate totalPrice on mount or changes
     const roomTotal = roomTotalPrice;
     const extrasTotal = extras.reduce((sum, extra) => sum + (extra.price || 0), 0);
     const vatAmount = (roomTotal + extrasTotal) * 0.1;
@@ -53,7 +52,42 @@ function CheckoutPage() {
     setVatAmount(vatAmount);
     setFinalTotal(grandTotal);
     updateBooking({ totalPrice: grandTotal });
-  }, [selectedRoom, nights, extras, roomTotalPrice, updateBooking]);
+  }, [selectedRoom, nights, extras, roomTotalPrice]);
+
+  const handlePaymentCallback = async (response: FlutterwaveResponse) => {
+    const store = useBookingStore.getState();
+    const transactionData = {
+      PaymentStatus: response.status,
+      totalPrice: response.amount || store.totalPrice,
+      transactionID: String(response.transaction_id),
+      paymentMethod: store.paymentMethod,
+    };
+
+    const paymentId = await strapiService.createTransaction(transactionData);
+    const customerId = await strapiService.createOrGetCustomer(guestInfo);
+    if (!customerId || !paymentId) {
+      alert("Error processing payment.");
+      return;
+    }
+
+    const createdBookingId = await strapiService.createOrGetBooking({
+      checkin,
+      checkout,
+      guests,
+      nights,
+      totalPrice,
+      customer: customerId,
+      room: selectedRoom?.documentId,
+      payment: paymentId,
+    });
+    
+    updateBooking({ bookingId: createdBookingId });
+    
+    router.push(
+      `/booking-confirmation?bookingId=${createdBookingId}&reference=${response.transaction_id}&email=${guestInfo.email}&amount=${store.totalPrice}&checkIn=${formatDate(checkin)}&checkOut=${formatDate(checkout)}&guests=${guests}&room=${selectedRoom?.title}&roomImage=${selectedRoom?.imgUrl}`
+    );
+    closePaymentModal();
+  };
 
   const config = {
     public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "",
@@ -71,25 +105,8 @@ function CheckoutPage() {
       description: "Payment for hotel room reservation",
       logo: "https://i.postimg.cc/j5qdbbvk/fmmm1-logo.png/50",
     },
-    callback: async (response: FlutterwaveResponse) => {
-      const store = useBookingStore.getState();
-      // Update transactionData with amount from Flutterwave response
-      const transactionData = {
-        PaymentStatus: response.status,
-        totalPrice: response.amount || store.totalPrice, // Get amount from response, fallback to store
-        transactionID: store.bookingId,
-        paymentMethod: store.paymentMethod,
-      }
-      await strapiService.createTransaction(transactionData);
-
-      router.push(
-        `/booking-confirmation?bookingId=${store.bookingId}&reference=${response.transaction_id}&email=${guestInfo.email}&amount=${store.totalPrice}&checkIn=${formatDate(checkin)}&checkOut=${formatDate(checkout)}&guests=${guests}&room=${selectedRoom?.title}&roomImage=${selectedRoom?.imgUrl}`
-      );
-      closePaymentModal();
-    },
-    onClose: () => {
-      alert("Payment was not completed.");
-    },
+    callback: handlePaymentCallback,
+    onClose: () => alert("Payment was not completed."),
   };
 
   const initializePayment = useFlutterwave(config);
@@ -101,55 +118,51 @@ function CheckoutPage() {
   };
 
   const handleConfirmBooking = async () => {
-    const isGuestInfoComplete =
-      guestInfo.FirstName && guestInfo.lastName && guestInfo.email && guestInfo.phone;
-
-    if (!isGuestInfoComplete) {
+    if (!guestInfo.FirstName || !guestInfo.lastName || !guestInfo.email || !guestInfo.phone) {
       setShowIncompleteError(true);
       return;
     }
-
     setShowIncompleteError(false);
 
-    const customerId = await strapiService.createOrGetCustomer(guestInfo);
-    if (!customerId) {
-      alert("Error: Could not create or retrieve customer.");
-      return;
-    }
-    const createdBookingId = await strapiService.createOrGetBooking({
-      checkin,
-      checkout,
-      guests,
-      nights,
-      totalPrice,
-      customer: customerId, 
-      room: selectedRoom?.id, // Assuming room ID is available
-      // hotel_services: extras.map(extra => extra.id), // Mapping extra services
-    });
-    
-    updateBooking({ bookingId: createdBookingId });
-
     if (paymentMethod === "online") {
-      initializePayment({ callback: config.callback, onClose: config.onClose });
+      initializePayment({ callback: handlePaymentCallback, onClose: config.onClose });
     } else {
+      const customerId = await strapiService.createOrGetCustomer(guestInfo);
+      if (!customerId) {
+        alert("Error: Could not create or retrieve customer.");
+        return;
+      }
+      const createdBookingId = await strapiService.createOrGetBooking({
+        checkin,
+        checkout,
+        guests,
+        nights,
+        totalPrice,
+        customer: customerId,
+        room: selectedRoom?.id,
+      });
+      updateBooking({ bookingId: createdBookingId });
+      
       router.push(
         `/booking-confirmation?bookingId=${createdBookingId}&email=${guestInfo.email}&amount=${totalPrice}&checkIn=${formatDate(checkin)}&checkOut=${formatDate(checkout)}&guests=${guests}&room=${selectedRoom?.title}&roomImage=${selectedRoom?.imgUrl}`
       );
     }
   };
 
-  if (!selectedRoom || !guestInfo) {
-    return <h2 className="text-center">No booking selected. Please return to the booking page.</h2>;
-  }
+ 
 
   return (
     <div className="our_room">
       <div className="booking-container">
         <h1 className="booking-header text-center">Checkout</h1>
         <div className="checkout-layout">
+        {(!selectedRoom || !guestInfo) ? (
+          <h2 className="text-center">No booking selected. Please return to the booking page.</h2>
+        ) : (
+          <>
           <div className="room-card">
             <div className="room-info">
-              {selectedRoom.imgUrl && (
+              {selectedRoom?.imgUrl && (
                 <Image
                   src={selectedRoom.imgUrl}
                   alt={selectedRoom.title}
@@ -159,12 +172,12 @@ function CheckoutPage() {
                 />
               )}
               <div className="room-details">
-                <h2 className="room-name">{selectedRoom.title}</h2>
+                <h2 className="room-name">{selectedRoom?.title}</h2>
                 <p><strong>Nights:</strong> {nights}</p>
                 <p><strong>Check-in:</strong> {formatDate(checkin)}</p>
                 <p><strong>Check-out:</strong> {formatDate(checkout)}</p>
                 <p><strong>Occupancy:</strong> {guests} {guests > 1 ? "guests" : "guest"}</p>
-                <p className="price price-online"><strong>Price per Night:</strong> ₦ {(paymentMethod === "online" ? selectedRoom.priceOnline : selectedRoom.pricePremise).toFixed(2)}</p>
+                <p className="price price-online"><strong>Price per Night:</strong> ₦ {(paymentMethod === "online" ? selectedRoom?.priceOnline : selectedRoom?.pricePremise)?.toFixed(2)}</p>
               </div>
             </div>
           </div>
@@ -200,9 +213,11 @@ function CheckoutPage() {
             {showIncompleteError && (
               <p className="text-red-500 mt-2">Please fill in all guest information before proceeding.</p>
             )}
-          </div>
-        </div>
+          </div>   
+          </>
+        )}
       </div>
+    </div>
     </div>
   );
 }
