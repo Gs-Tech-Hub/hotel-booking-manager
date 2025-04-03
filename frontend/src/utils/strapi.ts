@@ -41,7 +41,7 @@ export const strapiService = {
 
   async createTransaction(paymentData: any) {
     const payment = await this.post("payments", paymentData);
-    return payment;
+    return payment.documentId;
   },
 
   async createOrGetCustomer(customerData: any) {
@@ -68,7 +68,6 @@ export const strapiService = {
   },
 
   async createOrGetBooking(bookingData: any) {
-    // Optionally, check if a booking exists or just create
     const booking = await this.createBooking(bookingData);
     return booking.documentId;
   }

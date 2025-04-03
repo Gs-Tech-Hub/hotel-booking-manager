@@ -76,10 +76,12 @@ export default function BookingPage() {
         const priceOnline = room.price * 0.9; // 10% discount for online booking
         const pricePremise = room.price; // Regular price for paying at hotel
         const discount = `Save ${Math.round(100 - (priceOnline / pricePremise) * 100)}% when booking online!`;
-        const availability = 5; // Hardcoded availability
+        const availability = room.availability; //removed Hardcoded values
+        const capacity = room.capacity;
 
         return {
           id: room.id,
+          documentId: room.documentId ?? "",
           title: room.title,
           description,
           imgUrl: room.imgUrl ?? "", // Ensure imgUrl is always a string
@@ -89,6 +91,7 @@ export default function BookingPage() {
           availability,
           amenities,
           bed,
+          capacity,
         };
       });
 
@@ -118,17 +121,15 @@ export default function BookingPage() {
 
   return (
     <div className="our_room">
-    <div className="booking-container">
-    {loading && <Loader />}
     {error && <p className="error-message">Error: Could Not Get booking Data, Please try again, or check your internet</p>}
       <h2 className="booking-header">
-        
         Book Your Stay for{" "}
         <span className="highlight-text">
           {nights} night{nights > 1 ? "s" : ""}
         </span>
       </h2>
-
+      <div className="booking-container">
+      {loading && <Loader />}
       <div className="space-y-8">
         {rooms.map((room) => (
           <div key={room.id} className="room-card mt-4 p-4 border rounded-lg shadow">

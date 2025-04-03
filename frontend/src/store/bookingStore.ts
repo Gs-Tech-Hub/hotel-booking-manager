@@ -22,6 +22,7 @@ interface Amenity {
 
 interface RoomDetails {
   id: number;
+  documentId: string;
   title: string;
   description: string;
   priceOnline: number;

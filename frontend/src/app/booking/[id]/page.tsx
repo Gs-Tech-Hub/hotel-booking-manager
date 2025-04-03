@@ -65,7 +65,7 @@ export default function BookingPage() {
           pricePremise: room.price,
           priceOnline: room.price * 0.9,
           discount: `Save ${Math.round(100 - ((room.price * 0.9) / room.price) * 100)}% when booking online!`,
-          availability: 5,
+          availability: room.availability,
           amenities: room.amenities.map((amenity: any) => ({
             id: amenity.id,
             name: amenity.name,
@@ -108,13 +108,11 @@ export default function BookingPage() {
   return (
     <div className="our_room">
       <div className="booking-container">
-        {loading && <Loader />}
-        {error && <p className="error-message">Error: Could Not Get Data, Please Try Again</p>}
-  
         <h2 className="booking-header">
           Book Your Stay for <span className="highlight-text">{nights} night{nights > 1 ? "s" : ""}</span>
         </h2>
-  
+        {loading && <Loader />}
+        {error && <p className="error-message">Error: Could Not Get Data, Please Try Again</p>}
         <div className="space-y-8">
           {rooms.length > 0 && (
             <>
