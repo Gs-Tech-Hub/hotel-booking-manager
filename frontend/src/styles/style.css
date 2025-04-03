@@ -1585,23 +1585,23 @@ ul.social_icon li a:hover {
    
        .main_btn {
           display: inline-block;
-          background: #4d8eff;
+          background: #ff0909;
           padding: 0px 34px;
           color: #fff;
           font-family: "Roboto", sans-serif;
-          font-size: 14px;
+          font-size: 18px;
           font-weight: 500;
           line-height: 48px;
           border-radius: 0px;
           outline: none !important;
           box-shadow: none !important;
           text-align: center;
-          border: 1px solid #4d8eff;
+          border: 1px solid #ff0909;
           cursor: pointer;
           transition: all 300ms linear 0s; }
           .main_btn:hover {
             background: transparent;
-            color: #4d8eff; }
+            color: #ff0909; }
         
    /* End Booking Area css */
 
