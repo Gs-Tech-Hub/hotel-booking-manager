@@ -36,7 +36,7 @@ function BookingSummaryContent() {
     { id: 2, type: "restaurant", name: "Lunch", price: 4000 },
     { id: 3, type: "restaurant", name: "Dinner", price: 4500 },
     { id: 4, type: "service", name: "Laundry", price: 3000 },
-    { id: 5, type: "service", name: "Spa", price: 2500 },
+    { id: 5, type: "service", name: "Swimming Pool", price: 2500 },
     { id: 6, type: "bar", name: "Wine", price: 10000 },
   ];
 

@@ -23,7 +23,7 @@ const rules = [
   {
     icon: FaKey, 
     title: "Loss of Key", 
-    description: "Losing your sensor card key attracts a fine of N20,000. Locking it inside the room attracts a fine of N1,000. Deposit your key at reception when going out or checking out."
+    description: "Losing or Damage of your sensor card key attracts a fine of N50,000. Locking it inside the room attracts a fine of N5,000. Deposit your key at reception when going out or checking out."
   },
   {
     icon: FaExclamationTriangle, 

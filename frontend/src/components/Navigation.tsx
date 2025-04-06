@@ -42,7 +42,19 @@ export default function Navigation() {
               <li>
                 <a href="#">Contact Us: +234 704 523 2697</a>
               </li>
+              <li>
+                <a href="#"> <i className="fab fa-facebook"></i></a>
+              </li>
+              <li>
+                <a href="#"> <i className="fab fa-twitter"></i></a>
+              </li>
+              <li>
+                <a href="#"> <i className="fab fa-instagram"></i></a>
+              </li>
             </ul>
+          </div>
+          <div>
+            
           </div>
           <div className="float-right gap-5">
             <select>
@@ -105,8 +117,14 @@ export default function Navigation() {
                     <Link className="nav-link menu-link" href="/gallery">Gallery</Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link menu-link" href="/contact">Contact Us</Link>
+                    <Link className="nav-link menu-link" href="/club">Club</Link>
                   </li>
+                  <li className="nav-item">
+                    <Link className="nav-link menu-link" href="/job-application">Jobs</Link>
+                  </li>
+                  {/* <li className="nav-item">
+                    <Link className="nav-link menu-link" href="/contact">Contact Us</Link>
+                  </li> */}
                 </ul>
               </div>
             </nav>

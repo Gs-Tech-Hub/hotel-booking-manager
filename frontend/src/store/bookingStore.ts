@@ -67,6 +67,10 @@ interface BookingStore {
   totalPrice: number;
   roomTotalPrice: number;
   paymentMethod: 'online' | 'premise';
+  stayDate: string | null;
+  stayStartTime: string;
+  stayEndTime: string;
+  stayPrice: number;
   updateBooking: (data: Partial<Omit<BookingStore, 'updateBooking' | 'resetBooking'>>) => void;
   resetBooking: () => void;
 }
@@ -84,6 +88,10 @@ const initialBookingState: Omit<BookingStore, 'updateBooking' | 'resetBooking'> 
   totalPrice: 0,
   roomTotalPrice: 0,
   paymentMethod: 'online',
+  stayDate: null,
+  stayStartTime: '',
+  stayEndTime: '',
+  stayPrice: 0,
 };
 
 const cookieStorage: PersistStorage<BookingStore> = {
