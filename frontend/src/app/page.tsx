@@ -10,6 +10,7 @@ import HotelInfo from '@/components/hotel-info';
 import Restaurant from '@/components/restaurant-section';
 import HotelFacilities from '@/components/facilities';
 import MapSection from '@/components/map-section';
+import ShortStayPromo from '@/components/short-stay';
 
 interface AboutData {
   title: string;
@@ -200,6 +201,9 @@ export default function Home() {
 
       {/* Service Section */}
       <ServiceSection services={services} />
+
+      {/* Short Stay Section */}
+      <ShortStayPromo />
 
       {/*  Map view section  */}
       <MapSection />

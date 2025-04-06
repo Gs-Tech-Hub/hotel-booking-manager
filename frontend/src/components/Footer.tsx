@@ -11,8 +11,8 @@ const Footer = () => {
     { text: "Home", href: "#" },
     { text: "About", href: "/about" },
     { text: "Our Room", href: "/rooms" },
-    // { text: "Gallery", href: "gallery.html" },
-    // { text: "Blog", href: "#" },
+    { text: "Gallery", href: "/gallery" },
+    { text: "Work with Us", href: "/job-application" },
     { text: "Contact Us", href: "/contact" },
   ];
 

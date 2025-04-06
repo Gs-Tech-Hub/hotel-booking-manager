@@ -213,7 +213,11 @@ function CheckoutPage() {
             {showIncompleteError && (
               <p className="text-red-500 mt-2">Please fill in all guest information before proceeding.</p>
             )}
-          </div>   
+
+            <p className="mt-4 text-sm">
+              By submitting this form you accept our <a href="/policies" className="text-blue-600 hover:underline">terms and conditions and policies</a>
+            </p>
+            </div>   
           </>
         )}
       </div>
