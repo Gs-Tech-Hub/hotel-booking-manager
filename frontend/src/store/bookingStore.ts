@@ -46,6 +46,16 @@ interface Room extends Partial<RoomDetails> {
   amenities?: Amenity[];
 }
 
+interface MenuItem {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+}
+
+export type MenuType = 'Breakfast' | 'Lunch' | 'Dinner';
+
+
 interface ExtraItem {
   id: number;
   name: string;
@@ -71,11 +81,15 @@ interface BookingStore {
   stayStartTime: string;
   stayEndTime: string;
   stayPrice: number;
+  selectedMenus: { item: MenuItem; menuType: MenuType }[];
+  removeSelectedMenu: (itemId: number) => void; // Function to remove selected menu
+  selectedMenuType: MenuType; // Add selected menu type here
   updateBooking: (data: Partial<Omit<BookingStore, 'updateBooking' | 'resetBooking'>>) => void;
+  updateSelectedMenu: (item: MenuItem, menuType: MenuType) => void; // Function to update selected menu
   resetBooking: () => void;
 }
 
-const initialBookingState: Omit<BookingStore, 'updateBooking' | 'resetBooking'> = {
+const initialBookingState: Omit<BookingStore, 'updateBooking' | 'updateSelectedMenu' | 'resetBooking'> = {
   bookingId: null,
   checkin: null,
   checkout: null,
@@ -92,6 +106,9 @@ const initialBookingState: Omit<BookingStore, 'updateBooking' | 'resetBooking'> 
   stayStartTime: '',
   stayEndTime: '',
   stayPrice: 0,
+  selectedMenus: [], // Initialize with empty array
+  removeSelectedMenu: () => {}, // Placeholder function
+  selectedMenuType: 'Lunch', // Default to 'Lunch'
 };
 
 const cookieStorage: PersistStorage<BookingStore> = {
@@ -113,6 +130,16 @@ export const useBookingStore = create(
     (set) => ({
       ...initialBookingState,
       updateBooking: (data) => set((state) => ({ ...state, ...data })),
+      updateSelectedMenu: (item, menuType) => set((state) => ({
+        ...state,
+        selectedMenus: [...state.selectedMenus, { item, menuType }],
+      })),
+      removeSelectedMenu: (itemId: number) => set((state) => ({
+        ...state,
+        selectedMenus: state.selectedMenus.filter(
+          (menu) => menu.item.id !== itemId
+        ),
+      })),
       resetBooking: () => set(initialBookingState),
     }),
     {
