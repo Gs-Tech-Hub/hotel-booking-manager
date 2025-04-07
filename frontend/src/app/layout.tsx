@@ -1,5 +1,6 @@
 'use client';
 
+import { CurrencyProvider } from '@/context/currencyContext';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Inter } from 'next/font/google';
@@ -46,7 +47,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           })();
           `}
         </Script>
-
+        <CurrencyProvider>
         {/* Header */}
         <header>
           <Navigation />
@@ -55,9 +56,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         {/* Main Content */}
         <main>{children}</main>
         
-        {/* Chatwoot Widget Script */}
         {/* Footer */}
         <Footer />
+        </CurrencyProvider>
+  
       </body>
     </html>
   );

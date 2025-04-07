@@ -4,6 +4,8 @@ import { Suspense, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useBookingStore } from "../../store/bookingStore";
+import { formatPrice } from '@/utils/priceHandler';
+import { useCurrency } from '@/context/currencyContext';
 
 function BookingSummaryContent() {
   const router = useRouter();
@@ -19,6 +21,7 @@ function BookingSummaryContent() {
   } = useBookingStore();
 
   const [selectedExtras, setSelectedExtras] = useState<string[]>((extras || []).map(extra => extra.name));
+  const { currency } = useCurrency();
 
   // Handle case where no room is selected
   if (!selectedRoom) {
@@ -90,7 +93,7 @@ function BookingSummaryContent() {
           <div className="room-details">
             <h2 className="room-name">{selectedRoom.title}</h2>
             <p className="price price-online">
-              Room Price: ₦ {roomTotalPrice.toFixed(2)}
+              Room Price: {formatPrice(roomTotalPrice, currency)}
             </p>
 
             <p className="payment-method">
@@ -124,7 +127,7 @@ function BookingSummaryContent() {
                 onChange={() => toggleExtra(extra.name)}
               />
               <span className="extra-name">{extra.name}</span>
-              <span className="extra-price">₦{extra.price}</span>
+              <span className="extra-price">{formatPrice(extra.price, currency)}</span>
             </label>
           ))}
         </div>
@@ -133,13 +136,13 @@ function BookingSummaryContent() {
       <div className="room-card mt-4">
         <h2 className="room-name">Total Cost</h2>
         <p>
-          <strong>Room Price:</strong> ₦{roomTotalPrice.toFixed(2)}
+          <strong>Room Price:</strong> {formatPrice(roomTotalPrice, currency)}
         </p>
         <p>
-          <strong>Extras Total:</strong> ₦{extraTotal.toFixed(2)}
+          <strong>Extras Total:</strong> {formatPrice(extraTotal, currency)}
         </p>
         <p className="total-price">
-          <strong>Grand Total:</strong> ₦{grandTotal.toFixed(2)}
+          <strong>Grand Total:</strong> {formatPrice(grandTotal, currency)}
         </p>
       </div>
 

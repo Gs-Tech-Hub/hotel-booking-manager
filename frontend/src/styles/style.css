@@ -850,6 +850,7 @@ button {
   padding: 0;
   margin: 0;
   list-style: none;
+  align-items: center;
 }
 
 .room-details-card .room-amenities {
@@ -2254,5 +2255,96 @@ ul.social_icon li a:hover {
      }
    }
    
-   
+   /* Cart Section Styles */
+.cart-section {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cart-items {
+  margin-bottom: 1rem;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.cart-item-details {
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+}
+
+.cart-item-name {
+  font-weight: 500;
+}
+
+.cart-item-price {
+  color: #555;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: #ff4d4d;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 0.5rem;
+}
+
+.remove-btn:hover {
+  color: #ff0000;
+}
+
+.cart-total {
+  margin-top: 1rem;
+  text-align: right;
+  font-size: 1.1rem;
+}
+
+/* Checkout Section Styles */
+.checkout-section {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background-color: #f0f8ff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.checkout-section h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.checkout-section label {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.checkout-section select,
+.checkout-section input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+
+.checkout-btn:hover {
+  background-color: #45a049;
+}
+
+.checkout-btn.disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
 /*--------------------------------------------------------------------- End of File ---------------------------------------------------------------------*/

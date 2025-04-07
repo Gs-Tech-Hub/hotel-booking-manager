@@ -1,11 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useCurrency } from '@/context/currencyContext'; // 👈 Add this
+
 
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const { currency, setCurrency } = useCurrency();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,7 +43,8 @@ export default function Navigation() {
           <div className="float-left">
             <ul className="list header_social">
               <li>
-                <a href="#">Contact Us: +234 704 523 2697</a>
+                <a href="#"> <i className="fas fa-phone"></i>+234 704 523 2697
+                </a>
               </li>
               <li>
                 <a href="#"> <i className="fab fa-facebook"></i></a>
@@ -57,11 +61,16 @@ export default function Navigation() {
             
           </div>
           <div className="float-right gap-5">
-            <select>
-              <option value="NGN">NGN</option>
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-            </select>
+          <select
+          value={currency}
+          onChange={(e) => setCurrency(e.target.value as any)}
+          className="border p-1 rounded"
+        >
+          <option value="NGN">NGN</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+        </select>
+
             <select>
               <option value="ENG">ENG</option>
               <option value="FRA">DUT</option>

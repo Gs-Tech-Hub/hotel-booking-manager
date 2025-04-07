@@ -6,6 +6,8 @@ import { useBookingStore } from "../../../store/bookingStore";
 import { differenceInDays } from "date-fns";
 import ApiHandler from "@/utils/apiHandler";
 import Loader from "@/components/loader";
+import { formatPrice } from '@/utils/priceHandler';
+import { useCurrency } from '@/context/currencyContext';
 
 interface Amenity {
   id: number;
@@ -40,6 +42,8 @@ export default function BookingPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const { currency } = useCurrency();
+
   const apiHandler = ApiHandler({
     baseUrl: process.env.NEXT_PUBLIC_API_URL || "",
   });
@@ -63,7 +67,7 @@ export default function BookingPage() {
           description: room.description.map((block: any) => block.children.map((child: any) => child.text).join(" ")).join(" "),
           imgUrl: room.imgUrl ?? "",
           pricePremise: room.price,
-          priceOnline: room.price * 0.9,
+          priceOnline: room.price,
           discount: `Save ${Math.round(100 - ((room.price * 0.9) / room.price) * 100)}% when booking online!`,
           availability: room.availability,
           amenities: room.amenities.map((amenity: any) => ({
@@ -138,11 +142,25 @@ export default function BookingPage() {
                     <p className="room-availability text-sm text-gray-500">
                       {rooms[0].availability} rooms left
                     </p>
-                    <ul className="room-amenities text-sm mt-2">
-                      {rooms[0].amenities.map((amenity, index) => (
-                        <li key={index}>• {amenity.name}</li>
-                      ))}
-                    </ul>
+                    {/* <ul className="room-amenities text-sm mt-2">
+                      {rooms[0].amenities.map((amenity, index) =>  (
+                                    <li
+                                       key={amenity.id}
+                                       style={{ marginRight: "10px" }}
+                                    >
+                                       {amenity.icon ? (
+                                          <Image
+                                             src={amenity.icon}
+                                             alt={amenity.name}
+                                             width={20}
+                                             height={20}
+                                          />
+                                       ) : (
+                                          <span>Icon</span>
+                                       )}
+                                    </li>
+                                 ))}
+                    </ul> */}
                   </div>
                 </div>
                 <div className="room-pricing mt-4">
@@ -151,14 +169,15 @@ export default function BookingPage() {
                     className="book-btn online"
                     onClick={() => handleSelectPayment(rooms[0], "online")}
                   >
-                    Pay Online - ₦ {nights * rooms[0].priceOnline}
+                    Pay Online - {formatPrice(nights * rooms[0].priceOnline, currency)}
+
                   </a>
-                  <a
+                  {/* <a
                     className="book-btn premise"
                     onClick={() => handleSelectPayment(rooms[0], "premise")}
                   >
                     Pay at Hotel - ₦ {nights * rooms[0].pricePremise}
-                  </a>
+                  </a> */}
                 </div>
               </div>
   
@@ -190,11 +209,25 @@ export default function BookingPage() {
                           <p className="room-availability text-sm text-gray-500">
                             {room.availability} rooms left
                           </p>
-                          <ul className="room-amenities text-sm mt-2">
-                            {room.amenities.map((amenity, index) => (
-                              <li key={index}>• {amenity.name}</li>
-                            ))}
-                          </ul>
+                          {/* <ul className="room-amenities text-sm mt-2">
+                           {room.amenities.map((amenity) => (
+                                    <li
+                                       key={amenity.id}
+                                       style={{ marginRight: "10px" }}
+                                    >
+                                       {amenity.icon ? (
+                                          <Image
+                                             src={amenity.icon}
+                                             alt={amenity.name}
+                                             width={20}
+                                             height={20}
+                                          />
+                                       ) : (
+                                          <span>Icon</span>
+                                       )}
+                                    </li>
+                                 ))}
+                          </ul> */}
                         </div>
                       </div>
                       <div className="room-pricing mt-4">
@@ -203,14 +236,14 @@ export default function BookingPage() {
                           className="book-btn online"
                           onClick={() => handleSelectPayment(room, "online")}
                         >
-                          Pay Online - ₦ {nights * room.priceOnline}
+                          Pay Online - {formatPrice(nights * room.priceOnline, currency)}
                         </a>
-                        <a
+                        {/* <a
                           className="book-btn premise"
                           onClick={() => handleSelectPayment(room, "premise")}
                         >
                           Pay at Hotel - ₦ {nights * room.pricePremise}
-                        </a>
+                        </a> */}
                       </div>
                     </div>
                   ))}

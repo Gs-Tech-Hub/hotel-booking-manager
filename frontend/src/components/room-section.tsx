@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { formatPrice } from '@/utils/priceHandler';
+import { useCurrency } from '@/context/currencyContext';
 
 interface Amenity {
    id: number;
@@ -11,6 +13,7 @@ interface Amenity {
 
 interface Room {
    id: number;
+   documentId: string;
    title: string;
    imgUrl: string;
    description: string;
@@ -25,6 +28,7 @@ interface RoomSectionProps {
 
 export default function RoomSection({ rooms }: RoomSectionProps) {
    const displayedRooms = rooms.slice(0, 3); // Show only the first 3 rooms
+   const { currency } = useCurrency();
 
    return (
       <div className="our_room">
@@ -58,7 +62,7 @@ export default function RoomSection({ rooms }: RoomSectionProps) {
                         <div className="bed_room">
                            <h3>{room.title}</h3>
                            <p>{room.description}</p>
-                           <p className="room-price">Price: ₦ {room.price}</p>
+                           <p className="room-price">Price: {formatPrice(room.price, currency)}</p>
                            <p className="room-size">
                               BED-SIZE:{" "}
                               {room.bed ? room.bed : "Size not specified"}
@@ -95,6 +99,11 @@ export default function RoomSection({ rooms }: RoomSectionProps) {
                                  ))}
                               </ul>
                            </div>
+                           <div className="mt-4">
+                           <Link href={`/room/${room.documentId}`} passHref>
+                              <button className="book_btn">Book Now</button>
+                           </Link>
+                        </div>
                         </div>
                      </div>
                   </div>

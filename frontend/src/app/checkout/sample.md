@@ -5,8 +5,6 @@ import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { strapiService } from "../../utils/strapi";
-import { formatPrice } from '@/utils/priceHandler';
-import { useCurrency } from '@/context/currencyContext';
 
 interface FlutterwaveResponse {
   transaction_id: number;
@@ -43,9 +41,7 @@ function CheckoutPage() {
   const [finalTotal, setFinalTotal] = useState(0);
   const [vatAmount, setVatAmount] = useState(0);
   const [extrasTotal, setExtrasTotal] = useState(0);
-  const { currency } = useCurrency();
-
-
+  
   useEffect(() => {
     const roomTotal = roomTotalPrice;
     const extrasTotal = extras.reduce((sum, extra) => sum + (extra.price || 0), 0);
@@ -63,7 +59,7 @@ function CheckoutPage() {
     const transactionData = {
       PaymentStatus: response.status,
       totalPrice: response.amount || store.totalPrice,
-      transactionID: String(response.transaction_id),
+      transactionID: store.bookingId,
       paymentMethod: store.paymentMethod,
     };
 
@@ -81,7 +77,7 @@ function CheckoutPage() {
       nights,
       totalPrice,
       customer: customerId,
-      room: selectedRoom?.documentId,
+      room: selectedRoom?.id,
       payment: paymentId,
     });
     
@@ -181,17 +177,17 @@ function CheckoutPage() {
                 <p><strong>Check-in:</strong> {formatDate(checkin)}</p>
                 <p><strong>Check-out:</strong> {formatDate(checkout)}</p>
                 <p><strong>Occupancy:</strong> {guests} {guests > 1 ? "guests" : "guest"}</p>
-                <p className="price price-online"><strong>Price per Night:</strong>  {formatPrice(paymentMethod === 'online' ? selectedRoom?.priceOnline : selectedRoom?.pricePremise, currency)} </p>
+                <p className="price price-online"><strong>Price per Night:</strong> ₦ {(paymentMethod === "online" ? selectedRoom?.priceOnline : selectedRoom?.pricePremise)?.toFixed(2)}</p>
               </div>
             </div>
           </div>
 
           <div className="price-summary">
             <h2 className="room-name">Price Summary</h2>
-            <p><strong>Room Total Price:</strong> { formatPrice(roomTotalPrice, currency)}</p>
-            <p><strong>Extra Services:</strong> {formatPrice( extrasTotal, currency)}</p>
-            <p><strong>VAT ({VAT_RATE}%):</strong> { formatPrice(vatAmount, currency)}</p>
-            <h3><strong>Final Total:</strong> {formatPrice(finalTotal, currency)}</h3>
+            <p><strong>Room Total Price:</strong> ₦{roomTotalPrice.toFixed(2)}</p>
+            <p><strong>Extra Services:</strong> ₦{extrasTotal.toFixed(2)}</p>
+            <p><strong>VAT ({VAT_RATE}%):</strong> ₦{vatAmount.toFixed(2)}</p>
+            <h3><strong>Final Total:</strong> ₦{finalTotal.toFixed(2)}</h3>
           </div>
 
           <div className="form-container">
@@ -217,11 +213,7 @@ function CheckoutPage() {
             {showIncompleteError && (
               <p className="text-red-500 mt-2">Please fill in all guest information before proceeding.</p>
             )}
-
-            <p className="mt-4 text-sm">
-              By submitting this form you accept our <a href="/policies" className="text-blue-600 hover:underline">terms and conditions and policies</a>
-            </p>
-            </div>   
+          </div>   
           </>
         )}
       </div>

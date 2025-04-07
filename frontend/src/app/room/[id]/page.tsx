@@ -5,10 +5,13 @@ import ApiHandler from "@/utils/apiHandler";
 import Image from "next/image";
 import BookingForm from "@/components/booking-form";
 import Loader from "@/components/loader";
+import { formatPrice } from '@/utils/priceHandler';
+import { useCurrency } from '@/context/currencyContext';
 
 interface Amenity {
   id: number;
   name: string;
+  icon: string;
 }
 
 interface Room {
@@ -38,6 +41,8 @@ export default function RoomDetailsPage() {
   const [room, setRoom] = useState<Room | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { currency } = useCurrency();
+
   const apiHandler = ApiHandler({ baseUrl: process.env.NEXT_PUBLIC_API_URL || "" });
 
   useEffect(() => {
@@ -52,27 +57,27 @@ export default function RoomDetailsPage() {
       setError(null);
 
       try {
-        const data = await apiHandler.fetchData(`rooms/${documentId}?populate=*`);
+        const data = await apiHandler.fetchData(`rooms/${documentId}?populate[roomPhotos][populate]=*&populate[amenities][populate]=*&populate[bed][populate]=*`);
 
         if (!data || !data.data) {
           throw new Error("Room not found");
         }
 
-        const roomData = data.data;
+         const roomData = data.data;
+         console.log("roomData:", roomData);
 
-        const formattedRoom: Room = {
+         const formattedRoom: Room = {
           id: roomData.id,
           documentId: roomData.documentId,
           title: roomData.title ?? "Untitled Room",
           imgUrl: roomData.imgUrl ?? "/default-room.jpg",
           description: extractDescription(roomData.description),
           price: roomData.price ?? 0,
-          amenities: Array.isArray(roomData.amenities)
-            ? roomData.amenities.map((amenity: any) => ({
-                id: amenity.id,
-                name: amenity.name ?? "Unknown Amenity",
-              }))
-            : [],
+          amenities: roomData.amenities.map((amenity: any) => ({
+            id: amenity.id,
+            name: amenity.name,
+            icon: amenity.icon ? amenity.icon.formats.thumbnail.url : '', // Get the icon URL from the amenity data
+          })) || [],
           bed:
             roomData.bed && typeof roomData.bed.type === "string" && typeof roomData.bed.size === "number"
               ? `${roomData.bed.type} (Size: ${roomData.bed.size} cm)`
@@ -87,7 +92,7 @@ export default function RoomDetailsPage() {
             : [],
         };
 
-        console.log("Mapped room photos:", formattedRoom.photos);
+        console.log("Mapped room photos:", formattedRoom.amenities);
 
         setRoom(formattedRoom);
       } catch (error) {
@@ -133,17 +138,31 @@ export default function RoomDetailsPage() {
                 </div>
               </div>
               <div className="room-details-card">
-                <p className="text-lg font-semibold mb-2">Price: ₦ {room.price}</p>
+                <p className="text-lg font-semibold mb-2">Price: {formatPrice(room.price, currency)}</p>
                 <p className="text-lg mb-4">BED-SIZE: {room.bed ?? "Size not specified"}</p>
+                <div className="container">
                 <div className="amenities-section">
                   <h4 className="text-lg font-medium mb-2">Amenities:</h4>
-                  <ul className="extra-options-grid">
-                    {room.amenities.map((amenity) => (
-                      <li key={amenity.id} className="room-amenities">
-                        {amenity.name}
-                      </li>
-                    ))}
+                  <ul>
+                  {room.amenities.map((amenity) => (
+                                    <li
+                                       key={amenity.id}
+                                       style={{ marginRight: "10px" }}
+                                    >
+                                       {amenity.icon ? (
+                                          <Image
+                                             src={amenity.icon}
+                                             alt={amenity.name}
+                                             width={20}
+                                             height={20}
+                                          />
+                                       ) : (
+                                          <span>Icon</span>
+                                       )}
+                                    </li>
+                                 ))}
                   </ul>
+                </div>
                 </div>
                 <div className="">
                   <h2 className="text-2xl font-semibold mb-4">Room Description</h2>
