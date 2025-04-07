@@ -6,6 +6,9 @@ import { useBookingStore } from "../../store/bookingStore";
 import { differenceInDays } from "date-fns";
 import ApiHandler from "@/utils/apiHandler";
 import Loader from "@/components/loader";
+import { formatPrice } from '@/utils/priceHandler';
+import { useCurrency } from '@/context/currencyContext';
+
 
 interface Amenity {
   id: number;
@@ -35,7 +38,8 @@ export default function BookingPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+  const { currency } = useCurrency();
+
 
   const apiHandler = ApiHandler({
     baseUrl: process.env.NEXT_PUBLIC_API_URL || "",
@@ -73,7 +77,7 @@ export default function BookingPage() {
         const bed = room.bed ? `${room.bed.type} (Size: ${room.bed.size} cm)` : "No bed information";
 
         // Dynamic price calculation
-        const priceOnline = room.price * 0.9; // 10% discount for online booking
+        const priceOnline = room.price; // 10% discount for online booking
         const pricePremise = room.price; // Regular price for paying at hotel
         const discount = `Save ${Math.round(100 - (priceOnline / pricePremise) * 100)}% when booking online!`;
         const availability = room.availability; //removed Hardcoded values
@@ -165,14 +169,14 @@ export default function BookingPage() {
                 className="book-btn online"
                 onClick={() => handleSelectPayment(room, "online")}
               >
-                Pay Online - ₦ {nights * room.priceOnline}
+                Pay Online - { formatPrice(nights * room.priceOnline, currency)}
               </a>
-              <a
+              {/* <a
                 className="book-btn premise"
                 onClick={() => handleSelectPayment(room, "premise")}
               >
                 Pay at Hotel - ₦ {nights * room.pricePremise}
-              </a>
+              </a> */}
             </div>
           </div>
         ))}

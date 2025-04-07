@@ -5,6 +5,8 @@ import ApiHandler from "@/utils/apiHandler";
 import Image from "next/image";
 import Link from "next/link";
 import Loader from "@/components/loader";
+import { formatPrice } from '@/utils/priceHandler';
+import { useCurrency } from '@/context/currencyContext';
 
 interface Amenity {
   id: number;
@@ -41,6 +43,8 @@ export default function RoomsPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { currency } = useCurrency();
+
 
   const apiHandler = ApiHandler({ baseUrl: process.env.NEXT_PUBLIC_API_URL || "" });
 
@@ -95,7 +99,6 @@ export default function RoomsPage() {
         <div className="row">
           {rooms.map((room) => (
             <div key={room.documentId} className="col-md-4 col-sm-6">
-              <Link href={`/room/${room.documentId}`} passHref>
                 <div id="serv_hover" className="room" style={{ cursor: "pointer" }}>
                   <div className="room_img">
                     <figure>
@@ -105,7 +108,7 @@ export default function RoomsPage() {
                   <div className="bed_room">
                     <h3>{room.title}</h3>
                     {/* <p>{room.description}</p> */}
-                    <p className="room-price">Price: ₦ {room.price}</p>
+                    <p className="room-price">Price: {formatPrice(room.price, currency)}</p>
                     <p className="room-size">BED-SIZE: {room.bed ?? "Size not specified"}</p>
                     <div className="amenities-section" style={{ textAlign: "center" }}>
                       <h4 style={{ marginTop: "10px" }}>Amenities:</h4>
@@ -121,9 +124,13 @@ export default function RoomsPage() {
                         ))}
                       </ul>
                     </div>
+                    <div className="mt-4">
+                      <Link href={`/room/${room.documentId}`} passHref>
+                        <button className="book_btn">Book Now</button>
+                      </Link>
+                    </div>
                   </div>
                 </div>
-              </Link>
             </div>
           ))}
         </div>

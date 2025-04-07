@@ -92,6 +92,7 @@ export default function Home() {
         const data = await apiHandler.fetchData('rooms?populate[amenities][populate]=*&populate[bed][populate]=*'); // Fetching from the correct endpoint
         const formattedRooms = data.data.map((room: any) => ({
           id: room.id,
+          documentId: room.documentId,
           title: room.title,
           imgUrl: room.imgUrl,
           description: renderDescription(room.description), // Use renderDescription to format the description
