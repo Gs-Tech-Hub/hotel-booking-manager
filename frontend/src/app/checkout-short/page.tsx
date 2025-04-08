@@ -2,7 +2,6 @@
 import { useRouter } from "next/navigation";
 import { useBookingStore } from "../../store/bookingStore";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
-import Image from "next/image";
 import { useState, useEffect } from "react";
 import { strapiService } from "../../utils/strapi";
 import { formatPrice } from '@/utils/priceHandler';
@@ -12,6 +11,7 @@ interface FlutterwaveResponse {
   transaction_id: number;
   status: string;
   amount: number;
+  
 }
 
 const VAT_RATE = 7.5; // VAT percentage
@@ -153,8 +153,8 @@ function CheckoutPage() {
           <h5>Short Stay Details</h5>
           <p><strong>Date:</strong> {stayDate}</p>
           <p><strong>Time:</strong> {stayStartTime} - {stayEndTime}</p>
-          {/* <p><strong>Duration:</strong> {SLOT_DURATION_HOURS} hours</p> */}
-          <p><strong>Total Price:</strong> {formatPrice(stayPrice, currency)}</p>
+            <p><strong>Extra Services:</strong> {formatPrice( extrasTotal, currency)}</p>
+            <p><strong>VAT ({VAT_RATE}%):</strong> { formatPrice(vatAmount, currency)}</p>          <p><strong>Total Price:</strong> {formatPrice(finalTotal, currency)}</p>
         </div>
     
       {extras && extras.length > 0 && (
