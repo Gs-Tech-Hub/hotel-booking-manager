@@ -142,7 +142,7 @@ function BookingSummaryContent() {
             {selectedMenus.length > 0 ? (
           <div className="meal-summary mt-3">
                 <h5>Selected Meals</h5>
-                {selectedMenus.map(({ item, menuType }, index) => (
+                {selectedMenus.map(({ item, menuType }) => (
                   <div key={item.id} className="d-flex align-items-center mb-3">
                     <div>
                       <p><strong>{item.name}</strong> ({menuType})</p>

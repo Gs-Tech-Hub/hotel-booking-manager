@@ -42,7 +42,7 @@ export default function MenuListModal({ isOpen, onClose }: MenuListModalProps) {
       return;
     }
 
-    const menuTypes = cart.map(({ menuType }) => menuType).join(', ');
+     cart.map(({ menuType }) => menuType).join(', ');
     setCart([]);
     onClose(); // Close after order
   };

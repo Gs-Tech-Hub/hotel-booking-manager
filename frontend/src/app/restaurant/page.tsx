@@ -41,9 +41,8 @@ export default function RestaurantSection() {
       return;
     }
 
-    const menuTypes = cart.map(({ menuType }) => menuType).join(', ');
+   cart.map(({ menuType }) => menuType).join(', ');
     setCart([]); // Reset cart after checkout
-    // redirect to checkout use nextjs link
     router.push(`/booking-summary`);
   };
 
