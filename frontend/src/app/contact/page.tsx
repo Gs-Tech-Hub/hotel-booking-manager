@@ -1,7 +1,8 @@
 'use client'
 import { FormEvent, useState } from 'react'
 import Image from 'next/image';
-import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaWhatsapp } from 'react-icons/fa';
+import Link from 'next/link';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -98,12 +99,18 @@ export default function Contact() {
                   </span>
                 </div>
                 <div className="info-item">
-                  <FaPhoneAlt className="info-icon" />
+               <Link href="https://w.app/rq1arl">
+                  <FaWhatsapp className="info-icon" />
                   <span>+234 704 523 2697</span>
+               </Link>
+                </div>
+                <div className="info-item">
+                  <FaPhoneAlt className="info-icon" />
+                  <span>  0704 523 2697</span>
                 </div>
                 <div className="info-item">
                   <FaEnvelope className="info-icon" />
-                  <span> fmmm1hotel@gmail.com</span>
+                  <span> fmmmhotels@gmail.com</span>
                 </div>
                 <p>We are here to answer any questions or help with reservations. Feel free to reach out using the form or the details above!</p>
               </div>
