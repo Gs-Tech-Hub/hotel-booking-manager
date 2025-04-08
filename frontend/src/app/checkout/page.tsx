@@ -35,7 +35,8 @@ function CheckoutPage() {
     nights,
     paymentMethod,
     totalPrice,
-    roomTotalPrice,
+    roomTotalPrice, 
+    selectedMenus,
     updateBooking,
   } = useBookingStore();
 
@@ -48,7 +49,8 @@ function CheckoutPage() {
 
   useEffect(() => {
     const roomTotal = roomTotalPrice;
-    const extrasTotal = extras.reduce((sum, extra) => sum + (extra.price || 0), 0);
+    const menuTotal = selectedMenus.reduce((sum, { item }) => sum + item.price, 0);
+    const extrasTotal = extras.reduce((sum, extra) => sum + (extra.price || 0), 0) + menuTotal;
     const vatAmount = (roomTotal + extrasTotal) * 0.1;
     const grandTotal = roomTotal + extrasTotal + vatAmount;
 
