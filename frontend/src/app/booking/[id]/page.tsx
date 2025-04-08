@@ -142,25 +142,6 @@ export default function BookingPage() {
                     <p className="room-availability text-sm text-gray-500">
                       {rooms[0].availability} rooms left
                     </p>
-                    {/* <ul className="room-amenities text-sm mt-2">
-                      {rooms[0].amenities.map((amenity, index) =>  (
-                                    <li
-                                       key={amenity.id}
-                                       style={{ marginRight: "10px" }}
-                                    >
-                                       {amenity.icon ? (
-                                          <Image
-                                             src={amenity.icon}
-                                             alt={amenity.name}
-                                             width={20}
-                                             height={20}
-                                          />
-                                       ) : (
-                                          <span>Icon</span>
-                                       )}
-                                    </li>
-                                 ))}
-                    </ul> */}
                   </div>
                 </div>
                 <div className="room-pricing mt-4">
@@ -209,25 +190,6 @@ export default function BookingPage() {
                           <p className="room-availability text-sm text-gray-500">
                             {room.availability} rooms left
                           </p>
-                          {/* <ul className="room-amenities text-sm mt-2">
-                           {room.amenities.map((amenity) => (
-                                    <li
-                                       key={amenity.id}
-                                       style={{ marginRight: "10px" }}
-                                    >
-                                       {amenity.icon ? (
-                                          <Image
-                                             src={amenity.icon}
-                                             alt={amenity.name}
-                                             width={20}
-                                             height={20}
-                                          />
-                                       ) : (
-                                          <span>Icon</span>
-                                       )}
-                                    </li>
-                                 ))}
-                          </ul> */}
                         </div>
                       </div>
                       <div className="room-pricing mt-4">
