@@ -20,7 +20,7 @@ export default function Restaurant() {
               <li><i className="fas fa-wine-glass-alt"></i> Premium Wine Selection</li>
               <li><i className="fas fa-music"></i> Live Music & Entertainment</li>
             </ul>
-            <a href="#" className="book-btn">Reserve a Table</a>
+            <a href="/restaurant" className="book-btn">Reserve a Table</a>
           </div>
         </div>
       </div>
