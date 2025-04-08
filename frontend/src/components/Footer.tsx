@@ -4,7 +4,7 @@ const Footer = () => {
   const contactInfo = [
     { icon: "fa-map-marker", text: "Address" },
     { icon: "fa-mobile", text: "+234 704 523 2697" },
-    { icon: "fa-envelope", text: <a href="#">fmmm1hotel@gmail.com</a> },
+    { icon: "fa-envelope", text: <a href="#">fmmmhotels@gmail.com</a> },
   ];
 
   const menu = [
