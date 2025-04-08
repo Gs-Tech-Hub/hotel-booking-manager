@@ -97,6 +97,12 @@ export default function BookingPage() {
 
   
   const handleSelectPayment = (room: Room, paymentType: "online" | "premise") => {
+
+    if (room.availability === 0) {
+      alert("Sorry, this room is no longer available.");
+      return; // Prevent further action if the room is unavailable
+    }
+    
     const roomTotalPrice = paymentType === "online" ? nights * room.priceOnline : nights * room.pricePremise;
     updateBooking({
         paymentMethod: paymentType,
