@@ -2382,5 +2382,95 @@ ul.social_icon li a:hover {
   cursor: pointer;
 }
 
+/* About Us */
+
+.about-container {
+  font-family: 'Segoe UI', sans-serif;
+  color: #1a1a1a;
+}
+
+.cover-image-wrapper {
+  position: relative;
+  height: 60vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.cover-image {
+  object-fit: cover;
+  filter: brightness(0.6);
+}
+
+.cover-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cover-title {
+  font-size: 3rem;
+  color: #ff0909;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.content-section {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .content-section {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.text-stack {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.text-block h3 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #ff0909;
+}
+
+.text-block h4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #ff0909;
+}
+
+.text-block p {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+.side-image {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.media-image {
+  border-radius: 12px;
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
 
 /*--------------------------------------------------------------------- End of File ---------------------------------------------------------------------*/
