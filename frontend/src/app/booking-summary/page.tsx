@@ -7,6 +7,7 @@ import { useBookingStore } from "../../store/bookingStore";
 import { formatPrice } from '@/utils/priceHandler';
 import { useCurrency } from '@/context/currencyContext';
 import MenuListModal from "@/components/menuListModal";  // Assuming this is your modal component
+import Link from "next/link";
 
 function BookingSummaryContent() {
   const router = useRouter();
@@ -29,8 +30,21 @@ function BookingSummaryContent() {
 
   // Handle case where no room is selected
   if (!selectedRoom) {
-    return <h2 className="text-center">No booking details found.</h2>;
+    return (
+      <div className="our_room">
+        <div className="booking-container">
+          <h1 className="booking-header text-center">Booking Summary</h1>
+          <Link href={"/rooms"}>
+          <div className="room-card mt-4">
+          <h2 className="text-center">No booking details found.</h2>
+          <p className="text-center">Please select a room to proceed.</p>
+          </div>
+          </Link>
+        </div>
+      </div>
+    );
   }
+  
 
   // Extra services list
   const availableExtras: Array<{

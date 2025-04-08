@@ -1,5 +1,10 @@
 'use client';
 import React, { useState } from 'react';
+import { formatPrice } from '@/utils/priceHandler';
+import { useCurrency } from '@/context/currencyContext';
+import { useRouter } from "next/navigation";
+import { useBookingStore } from "../../store/bookingStore";
+
 
 const PRICE_PER_HOUR = 7500;
 const SLOT_DURATION_HOURS = 2;
@@ -25,14 +30,27 @@ const addHoursToTime = (time: string, hoursToAdd: number): string => {
 };
 
 const AppointmentBooking: React.FC = () => {
+  const router = useRouter();
+  const {
+      updateBooking,
+    } = useBookingStore();
+
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedStartTime, setSelectedStartTime] = useState<string>('');
+  const { currency } = useCurrency();
 
   const startTimes = generateStartTimes();
   const selectedEndTime = selectedStartTime ? addHoursToTime(selectedStartTime, SLOT_DURATION_HOURS) : '';
 
   const handleCheckout = () => {
-    alert(`Booking confirmed!\n\nDate: ${selectedDate}\nTime: ${selectedStartTime} - ${selectedEndTime}\nPrice: $${PRICE_PER_HOUR * SLOT_DURATION_HOURS}`);
+    updateBooking({
+      paymentMethod: 'online',
+      stayDate: selectedDate,
+      stayStartTime: selectedStartTime,
+      stayEndTime: selectedEndTime,
+      stayPrice: PRICE_PER_HOUR * SLOT_DURATION_HOURS,
+    });
+    router.push("/checkout-short");
   };
 
   return (
@@ -79,7 +97,7 @@ const AppointmentBooking: React.FC = () => {
               <p><strong>Date:</strong> {selectedDate}</p>
               <p><strong>Time:</strong> {selectedStartTime} - {selectedEndTime}</p>
               <p><strong>Duration:</strong> {SLOT_DURATION_HOURS} hours</p>
-              <p><strong>Total Price:</strong> ₦{PRICE_PER_HOUR * SLOT_DURATION_HOURS}</p>
+              <p><strong>Total Price:</strong>{formatPrice(PRICE_PER_HOUR * SLOT_DURATION_HOURS, currency)}</p>
               <button className="book-btn mt-4" onClick={handleCheckout}>
                 Proceed to Checkout
               </button>
