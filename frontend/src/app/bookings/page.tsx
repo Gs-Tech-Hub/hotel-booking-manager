@@ -142,7 +142,7 @@ export default function BookingPage() {
     paymentType: "online" | "premise"
   ) => {
     if (room.roomsLeft === 0) {
-      alert("Sorry, this room is no longer available.");
+      alert("Sorry, this room is not available at the moment Please try another room.");
       return;
     }
 

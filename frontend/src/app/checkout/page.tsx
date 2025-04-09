@@ -94,12 +94,14 @@ function CheckoutPage() {
     );
     closePaymentModal();
   };
+  const convertedAmount = formatPrice(finalTotal, currency);
+  const totalAmount = Number(convertedAmount.replace(/[^0-9.]/g, ""));
 
   const config = {
     public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "",
     tx_ref: `BOOKING_${Date.now()}`,
-    amount: totalPrice,
-    currency: "NGN",
+    amount: totalAmount,
+    currency: currency, 
     payment_options: "card, mobilemoney, ussd",
     customer: {
       email: guestInfo.email || "",
