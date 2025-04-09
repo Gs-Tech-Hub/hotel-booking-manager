@@ -35,7 +35,6 @@ function countOverlappingBookings({
 }
 
 export async function getRoomsLeft({
-  roomId,
   availableRooms,
   startDate,
   endDate,
