@@ -3,7 +3,6 @@
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Suspense, useRef } from "react";
-import dynamic from "next/dynamic";
 
 const BookingConfirmationContent = () => {
   const searchParams = useSearchParams();
