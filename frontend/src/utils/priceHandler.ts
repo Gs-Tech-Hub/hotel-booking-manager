@@ -1,12 +1,13 @@
 type CurrencyCode = 'USD' | 'NGN' | 'EUR' | string;
 
-const currencyRates: Record<string, number> = {
-  USD: 1,
-  NGN: 1510, // Example rate
-  EUR: 0.85,
-  // Add more as needed
-};
+const BASE_CURRENCY = 'NGN'; // All currencyRates are relative to this
 
+const currencyRates: Record<string, number> = {
+  NGN: 1,      // Base currency
+  USD: 1510,   // 1 USD = 1510 NGN
+  EUR: 1620,   // 1 EUR = 1620 NGN (example)
+  // Add more
+};
 const currencySymbols: Record<string, string> = {
   USD: '$',
   NGN: '₦',
@@ -17,6 +18,7 @@ const currencySymbols: Record<string, string> = {
 function formatNumberWithCommas(number: number): string {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
+
 
 function convertCurrency(
   amount: number,
@@ -37,27 +39,36 @@ function convertCurrency(
     throw new Error(`Unsupported currency: ${from} or ${to}`);
   }
 
-  const amountInUSD = amount / fromRate;
-  return amountInUSD * toRate;
+  // Convert from `fromCurrency` to NGN, then from NGN to `toCurrency`
+  const amountInNGN = from === BASE_CURRENCY ? amount : amount * fromRate;
+  return to === BASE_CURRENCY ? amountInNGN : amountInNGN / toRate;
 }
 
-function formatPrice(amount: number, currency: CurrencyCode = 'USD'): string {
-    const normalized = currency.toUpperCase();
-    const symbol = currencySymbols[normalized] || '';
-  
-    try {
-      return new Intl.NumberFormat('en-NG', {
-        style: 'currency',
-        currency: normalized,
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(amount);
-    } catch {
-      const formattedAmount = formatNumberWithCommas(Number(amount.toFixed(2)));
-      return `${symbol}${formattedAmount}`;
-    }
+
+function formatPrice(
+  amount: number,
+  currency: CurrencyCode = 'NGN',
+  fromCurrency: CurrencyCode = BASE_CURRENCY
+): string {
+  const normalizedCurrency = currency.toUpperCase();
+  const symbol = currencySymbols[normalizedCurrency] || '';
+
+  try {
+    const convertedAmount = convertCurrency(amount, fromCurrency, normalizedCurrency);
+
+    return new Intl.NumberFormat('en-NG', {
+      style: 'currency',
+      currency: normalizedCurrency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(convertedAmount);
+  } catch {
+    const fallbackAmount = convertCurrency(amount, fromCurrency, normalizedCurrency);
+    const formattedAmount = formatNumberWithCommas(Number(fallbackAmount.toFixed(2)));
+    return `${symbol}${formattedAmount}`;
   }
-  
+}
+
 
 export {
   formatNumberWithCommas,

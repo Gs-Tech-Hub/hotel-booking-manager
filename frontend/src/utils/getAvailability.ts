@@ -45,6 +45,7 @@ export async function getRoomsLeft({
     const result = await apiHandlerInstance.fetchData(`boookings?${query}`);
 
     const existingBookings: Booking[] = result?.data?.map((b: any) => ({
+     roomId: b.roomId,
       checkin: b.checkin,
       checkout: b.checkout,
     })) || [];
