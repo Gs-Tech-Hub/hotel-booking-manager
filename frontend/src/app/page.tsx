@@ -100,7 +100,7 @@ export default function Home() {
           amenities: room.amenities.map((amenity: any) => ({
             id: amenity.id,
             name: amenity.name,
-            icon: amenity.icon ? amenity.icon.formats.thumbnail.url : '', // Get the icon URL from the amenity data
+            icon: amenity.icon ? amenity.icon.url : '', // Get the icon URL from the amenity data
           })) || [], // Default to an empty array if no amenities
           bed: room.bed ? `${room.bed.type} (Size: ${room.bed.size} cm)` : 'No bed information', // Extract bed information
         }));

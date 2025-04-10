@@ -93,7 +93,7 @@ export default function BookingPage() {
           const amenities = room.amenities.map((amenity: any) => ({
             id: amenity.id,
             name: amenity.name,
-            icon: amenity.icon?.formats?.thumbnail?.url || "",
+            icon: amenity.icon.url || "",
           }));
 
           const bed = room.bed
