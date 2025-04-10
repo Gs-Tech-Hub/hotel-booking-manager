@@ -78,7 +78,7 @@ export default function RoomDetailsPage() {
           amenities: roomData.amenities.map((amenity: any) => ({
             id: amenity.id,
             name: amenity.name,
-            icon: amenity.icon ? amenity.icon.formats.thumbnail.url : '',
+            icon: amenity.icon ? amenity.icon.url : '',
           })) || [],
           bed:
             roomData.bed && typeof roomData.bed.type === "string" && typeof roomData.bed.size === "number"

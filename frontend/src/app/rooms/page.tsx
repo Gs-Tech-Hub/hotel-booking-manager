@@ -64,7 +64,7 @@ export default function RoomsPage() {
             ? room.amenities.map((amenity: any): Amenity => ({
                 id: amenity.id,
                 name: amenity.name ?? "Unknown Amenity",
-                icon: amenity.icon ? amenity.icon.formats.thumbnail.url : "",
+                icon: amenity.icon ? amenity.icon.url : "",
               }))
             : [],
           bed: room.bed

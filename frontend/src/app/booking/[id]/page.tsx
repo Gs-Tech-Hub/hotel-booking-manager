@@ -96,7 +96,7 @@ export default function BookingPage() {
           amenities: room.amenities?.map((amenity: any) => ({
             id: amenity.id,
             name: amenity.name,
-            icon: amenity.icon?.formats?.thumbnail?.url || "",
+            icon: amenity.icon.url || "",
           })) || [],
           bed: room.bed ? `${room.bed.type} (Size: ${room.bed.size} cm)` : "No bed information",
           roomsLeft: roomsLeftMap[room.documentId ?? room.id] ?? 0,
