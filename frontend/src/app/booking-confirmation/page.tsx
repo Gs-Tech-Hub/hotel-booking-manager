@@ -5,7 +5,6 @@ import Image from "next/image";
 import { Suspense, useRef } from "react";
 import {formatPrice} from "@/utils/priceHandler";
 import { useCurrency } from "@/context/currencyContext";
-import { format } from "path";
 
 const BookingConfirmationContent = () => {
   const searchParams = useSearchParams();
