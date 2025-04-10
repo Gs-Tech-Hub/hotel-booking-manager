@@ -55,7 +55,7 @@ function BookingSummaryContent() {
   }> = [
     { id: 1, type: "service", name: "Laundry", price: 3000 },
     { id: 2, type: "service", name: "Swimming Pool", price: 2500 },
-    { id: 3, type: "bar", name: "Wine", price: 10000 },
+    // { id: 3, type: "bar", name: "Wine", price: 10000 },
   ];
 
   // Toggle extra selection

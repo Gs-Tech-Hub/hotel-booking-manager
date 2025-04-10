@@ -68,7 +68,7 @@ export default function Navigation() {
         >
           <option value="NGN">NGN</option>
           <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
+          {/* <option value="EUR">EUR</option> */}
         </select>
 
             <select>
