@@ -1,27 +1,49 @@
-'use client'
-import { useState } from 'react';
+'use client';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { formatPrice } from '@/utils/priceHandler';
 import { useCurrency } from '@/context/currencyContext';
-import { allMenuItems } from '@/data/menuData';
 import MenuList from '@/components/menuList';
+import ApiHandler from '@/utils/apiHandler';
 
 interface MenuItem {
   id: number;
   name: string;
   price: number;
-  image: string;
 }
 
 type MenuType = 'Breakfast' | 'Lunch' | 'Dinner';
+
 export default function RestaurantSection() {
   const router = useRouter();
-  const [cart, setCart] = useState<{ item: MenuItem, menuType: MenuType }[]>([]);
+  const [cart, setCart] = useState<{ item: MenuItem; menuType: MenuType }[]>([]);
   const [selectedImage, setSelectedImage] = useState('/images/restaurant/restaurant-cover.jpg');
-
   const [activeTab, setActiveTab] = useState('description');
   const { currency } = useCurrency();
+  
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const apiHandler = ApiHandler({ baseUrl: process.env.NEXT_PUBLIC_API_URL || '' });
+
+
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        const res = await apiHandler.fetchData('food-items?pagination[pageSize]=50');
+        // console.log("food:", res);
+        setMenuItems(res.data);
+      } catch (err) {
+        setError('Failed to load menu items.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMenuItems();
+  }, []);
 
   const addToCart = (item: MenuItem, menuType: MenuType): void => {
     setCart([...cart, { item, menuType }]);
@@ -43,7 +65,6 @@ export default function RestaurantSection() {
       return;
     }
 
-   cart.map(({ menuType }) => menuType).join(', ');
     setCart([]); // Reset cart after checkout
     router.push(`/booking-summary`);
   };
@@ -51,35 +72,79 @@ export default function RestaurantSection() {
   return (
     <div className="restaurant-page">
       <div className="tabs">
-        <button onClick={() => setActiveTab('description')} className={activeTab === 'description' ? 'active' : ''}>View Our Restaurant</button>
-        <button onClick={() => setActiveTab('order')} className={activeTab === 'order' ? 'active' : ''}>Place Order</button>
+        <button
+          onClick={() => setActiveTab('description')}
+          className={activeTab === 'description' ? 'active' : ''}
+        >
+          View Our Restaurant
+        </button>
+        <button
+          onClick={() => setActiveTab('order')}
+          className={activeTab === 'order' ? 'active' : ''}
+        >
+          Place Order
+        </button>
       </div>
-      
+
       {activeTab === 'description' && (
         <div className="description-section">
           <h2>Welcome to Our Restaurant</h2>
-          <p>Experience the finest dining with a wide selection of African meals and refreshing beverages in a clean and comfortable environment.</p>
-          <Image src={selectedImage} alt="Restaurant View" width={800} height={400} className="cover-image" />
+          <p>
+            Experience the finest dining with a wide selection of African meals and refreshing
+            beverages in a clean and comfortable environment.
+          </p>
+          <Image
+            src={selectedImage}
+            alt="Restaurant View"
+            width={800}
+            height={400}
+            className="cover-image"
+          />
           <div className="thumbnail-gallery">
-            <Image src="/images/restaurant/DSC_8119.jpg" alt="Thumbnail 3" width={250} height={200} className="thumbnail-image" onClick={() => setSelectedImage('/images/restaurant/DSC_8119.jpg')} />
-            <Image src="/images/restaurant/DSC_8115.jpg" alt="Thumbnail 1" width={250} height={200} className="thumbnail-image" onClick={() => setSelectedImage('/images/restaurant/DSC_8115.jpg')} />
-            <Image src="/images/restaurant/DSC_8116.jpg" alt="Thumbnail 2" width={250} height={200} className="thumbnail-image" onClick={() => setSelectedImage('/images/restaurant/DSC_8116.jpg')} />
+            <Image
+              src="/images/restaurant/DSC_8119.jpg"
+              alt="Thumbnail 3"
+              width={250}
+              height={200}
+              className="thumbnail-image"
+              onClick={() => setSelectedImage('/images/restaurant/DSC_8119.jpg')}
+            />
+            <Image
+              src="/images/restaurant/DSC_8115.jpg"
+              alt="Thumbnail 1"
+              width={250}
+              height={200}
+              className="thumbnail-image"
+              onClick={() => setSelectedImage('/images/restaurant/DSC_8115.jpg')}
+            />
+            <Image
+              src="/images/restaurant/DSC_8116.jpg"
+              alt="Thumbnail 2"
+              width={250}
+              height={200}
+              className="thumbnail-image"
+              onClick={() => setSelectedImage('/images/restaurant/DSC_8116.jpg')}
+            />
           </div>
         </div>
       )}
-      
+
       {activeTab === 'order' && (
         <div>
           <h2 className="section-title">Our Menu</h2>
-          <div className="menu-list">
-            <MenuList 
-              items={allMenuItems} 
-              addToCart={addToCart} 
-              currency={currency} 
-              formatPrice={formatPrice} 
-            />
-          </div>
-          
+          {loading && <p>Loading menu...</p>}
+          {error && <p className="text-danger">{error}</p>}
+          {!loading && !error && (
+            <div className="menu-list">
+              <MenuList
+                items={menuItems}
+                addToCart={addToCart}
+                currency={currency}
+                formatPrice={formatPrice}
+              />
+            </div>
+          )}
+
           {/* Cart Section */}
           <div className="cart-section">
             <h3>Your Order</h3>
@@ -93,7 +158,9 @@ export default function RestaurantSection() {
                       <div className="cart-item-details">
                         <span className="cart-item-name">{cartItem.item.name}</span>
                         <span className="cart-item-menu-type">{cartItem.menuType}</span>
-                        <span className="cart-item-price">{formatPrice(cartItem.item.price, currency)}</span>
+                        <span className="cart-item-price">
+                          {formatPrice(cartItem.item.price, currency)}
+                        </span>
                       </div>
                       <button className="remove-btn" onClick={() => removeFromCart(index)}>
                         <span>×</span>
@@ -107,11 +174,11 @@ export default function RestaurantSection() {
               </>
             )}
           </div>
-          
+
           {/* Checkout Section */}
-          <div className="checkout-section">
-            <button 
-              className={`checkout-btn ${cart.length === 0 ? 'disabled' : ''}`} 
+          <div className="checkout-section ">
+            <button
+              className={`checkout-btn ${cart.length === 0 ? 'disabled' : ''}`}
               onClick={handleCheckout}
               disabled={cart.length === 0}
             >
