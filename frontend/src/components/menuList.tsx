@@ -7,7 +7,6 @@ export interface MenuItem {
   id: number;
   name: string;
   price: number;
-  image: string;
 }
 
 interface MenuListProps {
@@ -21,6 +20,8 @@ const MenuList: React.FC<MenuListProps> = ({ items, addToCart, currency, formatP
   const [menuTypeSelections, setMenuTypeSelections] = useState<{ [id: number]: MenuType }>({});
   const { updateSelectedMenu } = useBookingStore();
 
+  if (!items || !Array.isArray(items)) return <p>No menu items available.</p>;
+
   const handleMenuTypeChange = (itemId: number, newType: MenuType) => {
     setMenuTypeSelections(prev => ({
       ...prev,
@@ -30,14 +31,10 @@ const MenuList: React.FC<MenuListProps> = ({ items, addToCart, currency, formatP
 
   const handleAddToCart = (item: MenuItem) => {
     const selectedType = menuTypeSelections[item.id] || 'Lunch';
-  
-    console.log('Selected Item:', item);
-    console.log('Selected Menu Type:', selectedType);
-  
+
     addToCart(item, selectedType);
     updateSelectedMenu(item, selectedType);
   };
-  
 
   return (
     <div className="menu-list">
@@ -54,17 +51,13 @@ const MenuList: React.FC<MenuListProps> = ({ items, addToCart, currency, formatP
                   id={`menuType-${item.id}`}
                   value={menuTypeSelections[item.id] || 'Lunch'}
                   onChange={e => handleMenuTypeChange(item.id, e.target.value as MenuType)}
-                  className=""
                 >
                   <option value="Breakfast">Breakfast</option>
                   <option value="Lunch">Lunch</option>
                   <option value="Dinner">Dinner</option>
                 </select>
               </div>
-              <button
-                className="add-btn"
-                onClick={() => handleAddToCart(item)}
-              >
+              <button className="add-btn" onClick={() => handleAddToCart(item)}>
                 Add to Cart
               </button>
             </div>
