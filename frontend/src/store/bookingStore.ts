@@ -4,12 +4,12 @@ import { persist, PersistStorage } from 'zustand/middleware';
 import Cookies from 'js-cookie';
 
 interface GuestInfo {
-  FirstName?: string;
+  firstName?: string;
   lastName?: string;
   email?: string;
   phone?: string;
   street?: string;
-  zip?: string;
+  zip?: number;
   state?: string;
   city?: string;
   country?: string;

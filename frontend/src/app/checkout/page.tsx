@@ -117,7 +117,7 @@ function CheckoutPage() {
   };
 
   const handleConfirmBooking = () => {
-    if (!guestInfo.FirstName || !guestInfo.lastName || !guestInfo.email || !guestInfo.phone) {
+    if (!guestInfo.firstName || !guestInfo.lastName || !guestInfo.email || !guestInfo.phone || !guestInfo.street || !guestInfo.city || !guestInfo.state || !guestInfo.zip) {
       setShowIncompleteError(true);
       return;
     }
@@ -143,12 +143,12 @@ function CheckoutPage() {
         {
           display_name: "Full Name",
           variable_name: "full_name",
-          value: `${guestInfo.FirstName} ${guestInfo.lastName}`,
+          value: `${guestInfo.firstName} ${guestInfo.lastName}`,
         },
         {
           display_name: "Phone Number",
           variable_name: "phone_number",
-          value: guestInfo.phone || "",
+          value: guestInfo.phone ?? "",
         },
       ],
     },
@@ -201,8 +201,8 @@ function CheckoutPage() {
                     <label>First Name:</label>
                     <input
                         type="text"
-                        name="FirstName"
-                        value={guestInfo.FirstName || ""}
+                        name="firstName"
+                        value={guestInfo.firstName || ""}
                         onChange={e =>
                         updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
                         }
@@ -277,7 +277,7 @@ function CheckoutPage() {
 
                     <label>Zip Code:</label>
                     <input
-                        type="text"
+                        type="number"
                         name="zip"
                         value={guestInfo.zip || ""}
                         onChange={e =>

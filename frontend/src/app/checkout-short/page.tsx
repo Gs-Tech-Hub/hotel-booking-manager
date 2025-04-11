@@ -110,7 +110,7 @@ function CheckoutPage() {
   };
 
   const handleConfirmBooking = () => {
-    if (!guestInfo.FirstName || !guestInfo.lastName || !guestInfo.email || !guestInfo.phone) {
+    if (!guestInfo.firstName || !guestInfo.lastName || !guestInfo.email || !guestInfo.phone) {
       setShowIncompleteError(true);
       return;
     }
@@ -132,7 +132,7 @@ function CheckoutPage() {
         {
           display_name: "Full Name",
           variable_name: "full_name",
-          value: `${guestInfo.FirstName} ${guestInfo.lastName}`,
+          value: `${guestInfo.firstName} ${guestInfo.lastName}`,
         },
         {
           display_name: "Phone Number",
@@ -185,18 +185,94 @@ function CheckoutPage() {
         <div className="form-container">
           <h2 className="room-name">Guest Information</h2>
           <form className="guest-form">
-            <label>First Name:</label>
-            <input type="text" name="FirstName" value={guestInfo.FirstName || ""} onChange={handleChange} required />
+                    <label>First Name:</label>
+                    <input
+                        type="text"
+                        name="FirstName"
+                        value={guestInfo.firstName || ""}
+                        onChange={e =>
+                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
+                        }
+                        required
+                    />
 
-            <label>Last Name:</label>
-            <input type="text" name="lastName" value={guestInfo.lastName || ""} onChange={handleChange} required />
+                    <label>Last Name:</label>
+                    <input
+                        type="text"
+                        name="lastName"
+                        value={guestInfo.lastName || ""}
+                        onChange={e =>
+                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
+                        }
+                        required
+                    />
 
-            <label>Email:</label>
-            <input type="email" name="email" value={guestInfo.email || ""} onChange={handleChange} required />
+                    <label>Email:</label>
+                    <input
+                        type="email"
+                        name="email"
+                        value={guestInfo.email || ""}
+                        onChange={e =>
+                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
+                        }
+                        required
+                    />
 
-            <label>Phone:</label>
-            <input type="text" name="phone" value={guestInfo.phone || ""} onChange={handleChange} required />
-          </form>
+                    <label>Phone:</label>
+                    <input
+                        type="text"
+                        name="phone"
+                        value={guestInfo.phone || ""}
+                        onChange={e =>
+                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
+                        }
+                        required
+                    />
+
+                    <label>Street Address:</label>
+                    <input
+                        type="text"
+                        name="street"
+                        value={guestInfo.street || ""}
+                        onChange={e =>
+                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
+                        }
+                        required
+                    />
+
+                    <label>City:</label>
+                    <input
+                        type="text"
+                        name="city"
+                        value={guestInfo.city || ""}
+                        onChange={e =>
+                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
+                        }
+                        required
+                    />
+
+                    <label>State:</label>
+                    <input
+                        type="text"
+                        name="state"
+                        value={guestInfo.state || ""}
+                        onChange={e =>
+                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
+                        }
+                        required
+                    />
+
+                    <label>Zip Code:</label>
+                    <input
+                        type="number"
+                        name="zip"
+                        value={guestInfo.zip || ""}
+                        onChange={e =>
+                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
+                        }
+                        required
+                    />
+                    </form>
 
           {paymentMethod === "online" ? (
             <PaystackButton {...paystackConfig} className="book-btn mt-4" text="Confirm Payment" />
