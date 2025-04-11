@@ -9,7 +9,6 @@ interface MenuItem {
   id: number;
   name: string;
   price: number;
-  image: string;
 }
 
 type MenuType = 'Breakfast' | 'Lunch' | 'Dinner';
