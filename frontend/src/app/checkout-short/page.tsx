@@ -86,12 +86,6 @@ function CheckoutPage() {
     );
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateBooking({
-      guestInfo: { ...guestInfo, [e.target.name]: e.target.value },
-    });
-  };
-
   const handleOfflineBooking = async () => {
     const customerId = await strapiService.createOrGetCustomer(guestInfo);
     if (!customerId) {
@@ -110,7 +104,7 @@ function CheckoutPage() {
   };
 
   const handleConfirmBooking = () => {
-    if (!guestInfo.firstName || !guestInfo.lastName || !guestInfo.email || !guestInfo.phone) {
+    if (!guestInfo.firstName || !guestInfo.lastName || !guestInfo.email || !guestInfo.phone || !stayDate || !stayStartTime || !stayEndTime ) {
       setShowIncompleteError(true);
       return;
     }
