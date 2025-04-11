@@ -4,7 +4,8 @@
   "info": {
     "singularName": "special-info",
     "pluralName": "special-infos",
-    "displayName": "Special-info"
+    "displayName": "Special-offer",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -13,10 +14,10 @@
     "discount": {
       "type": "integer"
     },
-    "vat": {
-      "type": "integer"
+    "promoStart": {
+      "type": "date"
     },
-    "promo": {
+    "promoEnd": {
       "type": "date"
     }
   }

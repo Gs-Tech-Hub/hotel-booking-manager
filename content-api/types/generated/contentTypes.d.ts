@@ -897,6 +897,7 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
       Schema.Attribute.Private;
     defaultSeo: Schema.Attribute.Component<'shared.seo', false>;
     favicon: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
+    isVatActive: Schema.Attribute.Boolean;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1224,7 +1225,8 @@ export interface ApiSliderSlider extends Struct.CollectionTypeSchema {
 export interface ApiSpecialInfoSpecialInfo extends Struct.CollectionTypeSchema {
   collectionName: 'special_infos';
   info: {
-    displayName: 'Special-info';
+    description: '';
+    displayName: 'Special-offer';
     pluralName: 'special-infos';
     singularName: 'special-info';
   };
@@ -1242,12 +1244,12 @@ export interface ApiSpecialInfoSpecialInfo extends Struct.CollectionTypeSchema {
       'api::special-info.special-info'
     > &
       Schema.Attribute.Private;
-    promo: Schema.Attribute.Date;
+    promoEnd: Schema.Attribute.Date;
+    promoStart: Schema.Attribute.Date;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    vat: Schema.Attribute.Integer;
   };
 }
 
