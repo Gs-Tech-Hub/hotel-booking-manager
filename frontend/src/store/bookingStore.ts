@@ -8,7 +8,9 @@ interface GuestInfo {
   lastName?: string;
   email?: string;
   phone?: string;
-  address?: string;
+  street?: string;
+  zip?: string;
+  state?: string;
   city?: string;
   country?: string;
 }

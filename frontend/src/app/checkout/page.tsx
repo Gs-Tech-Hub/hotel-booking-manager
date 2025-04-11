@@ -8,7 +8,7 @@ import { formatPrice } from '@/utils/priceHandler';
 import { useCurrency } from '@/context/currencyContext';
 import dynamic from "next/dynamic";
 
-const VAT_RATE = 7.5;
+// const VAT_RATE = 0.02;
 
 const PaystackButton = dynamic(() =>
   import("react-paystack").then((mod) => mod.PaystackButton),
@@ -48,8 +48,8 @@ function CheckoutPage() {
     const roomTotal = roomTotalPrice;
     const menuTotal = selectedMenus.reduce((sum, { item }) => sum + item.price, 0);
     const extrasTotal = extras.reduce((sum, extra) => sum + (extra.price || 0), 0) + menuTotal;
-    const vatAmount = (roomTotal + extrasTotal) * 0.1;
-    const grandTotal = roomTotal + extrasTotal + vatAmount;
+    // const vatAmount = (roomTotal + extrasTotal) * VAT_RATE;
+    const grandTotal = roomTotal + extrasTotal;
 
     setExtrasTotal(extrasTotal);
     setVatAmount(vatAmount);
@@ -191,22 +191,102 @@ function CheckoutPage() {
                 <h2 className="room-name">Price Summary</h2>
                 <p><strong>Room Total Price:</strong> {formatPrice(roomTotalPrice, currency)}</p>
                 <p><strong>Extra Services:</strong> {formatPrice(extrasTotal, currency)}</p>
-                <p><strong>VAT ({VAT_RATE}%):</strong> {formatPrice(vatAmount, currency)}</p>
+                {/* <p><strong>VAT ({VAT_RATE}%):</strong> {formatPrice(vatAmount, currency)}</p> */}
                 <h3><strong>Final Total:</strong> {formatPrice(finalTotal, currency)}</h3>
               </div>
 
               <div className="form-container">
                 <h2 className="room-name">Guest Information</h2>
                 <form className="guest-form">
-                  <label>First Name:</label>
-                  <input type="text" name="FirstName" value={guestInfo.FirstName || ""} onChange={e => updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })} required />
-                  <label>Last Name:</label>
-                  <input type="text" name="lastName" value={guestInfo.lastName || ""} onChange={e => updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })} required />
-                  <label>Email:</label>
-                  <input type="email" name="email" value={guestInfo.email || ""} onChange={e => updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })} required />
-                  <label>Phone:</label>
-                  <input type="text" name="phone" value={guestInfo.phone || ""} onChange={e => updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })} required />
-                </form>
+                    <label>First Name:</label>
+                    <input
+                        type="text"
+                        name="FirstName"
+                        value={guestInfo.FirstName || ""}
+                        onChange={e =>
+                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
+                        }
+                        required
+                    />
+
+                    <label>Last Name:</label>
+                    <input
+                        type="text"
+                        name="lastName"
+                        value={guestInfo.lastName || ""}
+                        onChange={e =>
+                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
+                        }
+                        required
+                    />
+
+                    <label>Email:</label>
+                    <input
+                        type="email"
+                        name="email"
+                        value={guestInfo.email || ""}
+                        onChange={e =>
+                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
+                        }
+                        required
+                    />
+
+                    <label>Phone:</label>
+                    <input
+                        type="text"
+                        name="phone"
+                        value={guestInfo.phone || ""}
+                        onChange={e =>
+                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
+                        }
+                        required
+                    />
+
+                    <label>Street Address:</label>
+                    <input
+                        type="text"
+                        name="street"
+                        value={guestInfo.street || ""}
+                        onChange={e =>
+                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
+                        }
+                        required
+                    />
+
+                    <label>City:</label>
+                    <input
+                        type="text"
+                        name="city"
+                        value={guestInfo.city || ""}
+                        onChange={e =>
+                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
+                        }
+                        required
+                    />
+
+                    <label>State:</label>
+                    <input
+                        type="text"
+                        name="state"
+                        value={guestInfo.state || ""}
+                        onChange={e =>
+                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
+                        }
+                        required
+                    />
+
+                    <label>Zip Code:</label>
+                    <input
+                        type="text"
+                        name="zip"
+                        value={guestInfo.zip || ""}
+                        onChange={e =>
+                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
+                        }
+                        required
+                    />
+                    </form>
+
 
                 {paymentMethod === "online" ? (
                   <PaystackButton {...paystackConfig} className="book-btn mt-4" text="Confirm Payment" />

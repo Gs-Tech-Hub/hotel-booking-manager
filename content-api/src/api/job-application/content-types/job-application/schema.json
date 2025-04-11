@@ -1,0 +1,64 @@
+{
+  "kind": "collectionType",
+  "collectionName": "job_applications",
+  "info": {
+    "singularName": "job-application",
+    "pluralName": "job-applications",
+    "displayName": "Job-Application"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+    "attributes": {
+      "fullName": {
+        "type": "string",
+        "required": true
+      },
+      "email": {
+        "type": "email",
+        "required": true
+      },
+      "phone": {
+        "type": "string",
+        "required": true
+      },
+      "address": {
+        "type": "text"
+      },
+      "dob": {
+        "type": "date"
+      },
+      "gender": {
+        "type": "enumeration",
+        "enum": ["Male", "Female", "Other"]
+      },
+      "position": {
+        "type": "string",
+        "required": true
+      },
+      "otherPosition": {
+        "type": "string"
+      },
+  
+      "skills": {
+        "type": "text"
+      },
+      "resume": {
+        "type": "media",
+        "multiple": false,
+        "required": true,
+        "allowedTypes": ["files"]
+      },
+      "coverLetter": {
+        "type": "media",
+        "multiple": false,
+        "allowedTypes": ["files"]
+      },
+      "jobExperience": {
+        "displayName": "Job-experience",
+        "type": "component",
+        "repeatable": true,
+        "component": "shared.job-experience"
+      }
+  }
+}
