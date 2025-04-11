@@ -35,8 +35,8 @@ export default function RestaurantSection() {
         const res = await apiHandler.fetchData('food-items?pagination[pageSize]=50');
         // console.log("food:", res);
         setMenuItems(res.data);
-      } catch (err) {
-        setError('Failed to load menu items.');
+      } catch (error) {
+        setError((error as Error).message);
       } finally {
         setLoading(false);
       }
