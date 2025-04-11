@@ -536,6 +536,7 @@ export interface ApiBarAndClubBarAndClub extends Struct.CollectionTypeSchema {
 export interface ApiBedBed extends Struct.CollectionTypeSchema {
   collectionName: 'beds';
   info: {
+    description: '';
     displayName: 'bed';
     pluralName: 'beds';
     singularName: 'bed';
@@ -544,6 +545,7 @@ export interface ApiBedBed extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    bedSize: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -678,6 +680,7 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
 export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
   collectionName: 'customers';
   info: {
+    description: '';
     displayName: 'customer';
     pluralName: 'customers';
     singularName: 'customer';
@@ -686,12 +689,12 @@ export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    address: Schema.Attribute.Text;
+    city: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     email: Schema.Attribute.Email;
-    FirstName: Schema.Attribute.String;
+    firstName: Schema.Attribute.String;
     lastName: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -699,11 +702,15 @@ export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
       'api::customer.customer'
     > &
       Schema.Attribute.Private;
+    nationality: Schema.Attribute.String;
     phone: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    state: Schema.Attribute.String;
+    street: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    zip: Schema.Attribute.Integer;
   };
 }
 
@@ -930,6 +937,46 @@ export interface ApiHotelServiceHotelService
     name: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     serviceDescription: Schema.Attribute.Text;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiJobApplicationJobApplication
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'job_applications';
+  info: {
+    displayName: 'Job-Application';
+    pluralName: 'job-applications';
+    singularName: 'job-application';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    address: Schema.Attribute.Text;
+    coverLetter: Schema.Attribute.Media<'files'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    dob: Schema.Attribute.Date;
+    email: Schema.Attribute.Email & Schema.Attribute.Required;
+    fullName: Schema.Attribute.String & Schema.Attribute.Required;
+    gender: Schema.Attribute.Enumeration<['Male', 'Female', 'Other']>;
+    jobExperience: Schema.Attribute.Component<'shared.job-experience', true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::job-application.job-application'
+    > &
+      Schema.Attribute.Private;
+    otherPosition: Schema.Attribute.String;
+    phone: Schema.Attribute.String & Schema.Attribute.Required;
+    position: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    resume: Schema.Attribute.Media<'files'> & Schema.Attribute.Required;
+    skills: Schema.Attribute.Text;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1171,6 +1218,36 @@ export interface ApiSliderSlider extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSpecialInfoSpecialInfo extends Struct.CollectionTypeSchema {
+  collectionName: 'special_infos';
+  info: {
+    displayName: 'Special-info';
+    pluralName: 'special-infos';
+    singularName: 'special-info';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    discount: Schema.Attribute.Integer;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::special-info.special-info'
+    > &
+      Schema.Attribute.Private;
+    promo: Schema.Attribute.Date;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    vat: Schema.Attribute.Integer;
   };
 }
 
@@ -1700,6 +1777,7 @@ declare module '@strapi/strapi' {
       'api::food-type.food-type': ApiFoodTypeFoodType;
       'api::global.global': ApiGlobalGlobal;
       'api::hotel-service.hotel-service': ApiHotelServiceHotelService;
+      'api::job-application.job-application': ApiJobApplicationJobApplication;
       'api::menu-category.menu-category': ApiMenuCategoryMenuCategory;
       'api::payment-detail.payment-detail': ApiPaymentDetailPaymentDetail;
       'api::payment.payment': ApiPaymentPayment;
@@ -1707,6 +1785,7 @@ declare module '@strapi/strapi' {
       'api::room.room': ApiRoomRoom;
       'api::service.service': ApiServiceService;
       'api::slider.slider': ApiSliderSlider;
+      'api::special-info.special-info': ApiSpecialInfoSpecialInfo;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

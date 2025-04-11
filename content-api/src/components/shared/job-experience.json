@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_shared_job_experiences",
+  "info": {
+    "displayName": "Job-experience"
+  },
+  "options": {},
+  "attributes": {
+    "company": {
+      "type": "string",
+      "required": true
+    },
+    "role": {
+      "type": "string",
+      "required": true
+    },
+    "duration": {
+      "type": "string"
+    },
+    "responsibilities": {
+      "type": "text"
+    } 
+}
+}

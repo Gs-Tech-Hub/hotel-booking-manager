@@ -1,5 +1,18 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface SharedJobExperience extends Struct.ComponentSchema {
+  collectionName: 'components_shared_job_experiences';
+  info: {
+    displayName: 'Job-experience';
+  };
+  attributes: {
+    company: Schema.Attribute.String & Schema.Attribute.Required;
+    duration: Schema.Attribute.String;
+    responsibilities: Schema.Attribute.Text;
+    role: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface SharedMedia extends Struct.ComponentSchema {
   collectionName: 'components_shared_media';
   info: {
@@ -68,6 +81,7 @@ export interface SharedSlider extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'shared.job-experience': SharedJobExperience;
       'shared.media': SharedMedia;
       'shared.quote': SharedQuote;
       'shared.rich-text': SharedRichText;

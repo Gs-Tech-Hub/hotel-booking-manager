@@ -4,7 +4,8 @@
   "info": {
     "singularName": "bed",
     "pluralName": "beds",
-    "displayName": "bed"
+    "displayName": "bed",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -15,6 +16,9 @@
     },
     "size": {
       "type": "integer"
+    },
+    "bedSize": {
+      "type": "string"
     }
   }
 }

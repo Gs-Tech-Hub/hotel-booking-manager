@@ -1,0 +1,23 @@
+{
+  "kind": "collectionType",
+  "collectionName": "special_infos",
+  "info": {
+    "singularName": "special-info",
+    "pluralName": "special-infos",
+    "displayName": "Special-info"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "discount": {
+      "type": "integer"
+    },
+    "vat": {
+      "type": "integer"
+    },
+    "promo": {
+      "type": "date"
+    }
+  }
+}
