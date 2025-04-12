@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "booking_items",
+  "info": {
+    "singularName": "booking-item",
+    "pluralName": "booking-items",
+    "displayName": "Booking-item",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "quantity": {
+      "type": "integer"
+    },
+    "food_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::food-item.food-item"
+    },
+    "drinks": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::drink.drink"
+    },
+    "boookings": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::boooking.boooking"
+    },
+    "food_type": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::food-type.food-type"
+    },
+    "drink_type": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::drink-type.drink-type"
+    }
+  }
+}

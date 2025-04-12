@@ -561,11 +561,54 @@ export interface ApiBedBed extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiBookingItemBookingItem extends Struct.CollectionTypeSchema {
+  collectionName: 'booking_items';
+  info: {
+    description: '';
+    displayName: 'Booking-item';
+    pluralName: 'booking-items';
+    singularName: 'booking-item';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    boookings: Schema.Attribute.Relation<'oneToMany', 'api::boooking.boooking'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    drink_type: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::drink-type.drink-type'
+    >;
+    drinks: Schema.Attribute.Relation<'oneToMany', 'api::drink.drink'>;
+    food_items: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::food-item.food-item'
+    >;
+    food_type: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::food-type.food-type'
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::booking-item.booking-item'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    quantity: Schema.Attribute.Integer;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiBoookingBoooking extends Struct.CollectionTypeSchema {
   collectionName: 'boookings';
   info: {
     description: '';
-    displayName: 'boooking';
+    displayName: 'booking';
     pluralName: 'boookings';
     singularName: 'boooking';
   };
@@ -577,6 +620,10 @@ export interface ApiBoookingBoooking extends Struct.CollectionTypeSchema {
       'oneToOne',
       'api::bar-and-club.bar-and-club'
     >;
+    booking_items: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::booking-item.booking-item'
+    >;
     bookingId: Schema.Attribute.String;
     checkin: Schema.Attribute.Date;
     checkout: Schema.Attribute.Date;
@@ -585,6 +632,7 @@ export interface ApiBoookingBoooking extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     customer: Schema.Attribute.Relation<'oneToOne', 'api::customer.customer'>;
     customerId: Schema.Attribute.String;
+    drinks: Schema.Attribute.Relation<'oneToMany', 'api::drink.drink'>;
     food_items: Schema.Attribute.Relation<
       'oneToMany',
       'api::food-item.food-item'
@@ -594,6 +642,7 @@ export interface ApiBoookingBoooking extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::hotel-service.hotel-service'
     >;
+    isShortRest: Schema.Attribute.Boolean;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -608,6 +657,8 @@ export interface ApiBoookingBoooking extends Struct.CollectionTypeSchema {
       'api::restaurant.restaurant'
     >;
     room: Schema.Attribute.Relation<'oneToOne', 'api::room.room'>;
+    timeIn: Schema.Attribute.Time;
+    timeOut: Schema.Attribute.Time;
     totalPrice: Schema.Attribute.Integer;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -754,6 +805,7 @@ export interface ApiDrinkDrink extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    boooking: Schema.Attribute.Relation<'manyToOne', 'api::boooking.boooking'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1072,6 +1124,34 @@ export interface ApiPaymentPayment extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     totalPrice: Schema.Attribute.Integer;
     transactionID: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPromoCouponPromoCoupon extends Struct.CollectionTypeSchema {
+  collectionName: 'promo_coupons';
+  info: {
+    displayName: 'promo-coupon';
+    pluralName: 'promo-coupons';
+    singularName: 'promo-coupon';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    couponCode: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::promo-coupon.promo-coupon'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1768,6 +1848,7 @@ declare module '@strapi/strapi' {
       'api::author.author': ApiAuthorAuthor;
       'api::bar-and-club.bar-and-club': ApiBarAndClubBarAndClub;
       'api::bed.bed': ApiBedBed;
+      'api::booking-item.booking-item': ApiBookingItemBookingItem;
       'api::boooking.boooking': ApiBoookingBoooking;
       'api::carrousel.carrousel': ApiCarrouselCarrousel;
       'api::category.category': ApiCategoryCategory;
@@ -1783,6 +1864,7 @@ declare module '@strapi/strapi' {
       'api::menu-category.menu-category': ApiMenuCategoryMenuCategory;
       'api::payment-detail.payment-detail': ApiPaymentDetailPaymentDetail;
       'api::payment.payment': ApiPaymentPayment;
+      'api::promo-coupon.promo-coupon': ApiPromoCouponPromoCoupon;
       'api::restaurant.restaurant': ApiRestaurantRestaurant;
       'api::room.room': ApiRoomRoom;
       'api::service.service': ApiServiceService;
