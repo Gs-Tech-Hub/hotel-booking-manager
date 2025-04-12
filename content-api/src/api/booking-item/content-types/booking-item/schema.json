@@ -14,11 +14,6 @@
     "quantity": {
       "type": "integer"
     },
-    "food_items": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::food-item.food-item"
-    },
     "drinks": {
       "type": "relation",
       "relation": "oneToMany",
@@ -38,6 +33,11 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::drink-type.drink-type"
+    },
+    "food_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::food-item.food-item"
     }
   }
 }

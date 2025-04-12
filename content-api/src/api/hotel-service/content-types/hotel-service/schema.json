@@ -4,7 +4,8 @@
   "info": {
     "singularName": "hotel-service",
     "pluralName": "hotel-services",
-    "displayName": "hotel-service"
+    "displayName": "hotel-service",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -21,6 +22,9 @@
       "relation": "manyToOne",
       "target": "api::boooking.boooking",
       "inversedBy": "hotel_services"
+    },
+    "price": {
+      "type": "integer"
     }
   }
 }

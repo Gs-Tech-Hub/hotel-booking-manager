@@ -969,6 +969,7 @@ export interface ApiHotelServiceHotelService
   extends Struct.CollectionTypeSchema {
   collectionName: 'hotel_services';
   info: {
+    description: '';
     displayName: 'hotel-service';
     pluralName: 'hotel-services';
     singularName: 'hotel-service';
@@ -988,6 +989,7 @@ export interface ApiHotelServiceHotelService
     > &
       Schema.Attribute.Private;
     name: Schema.Attribute.String;
+    price: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
     serviceDescription: Schema.Attribute.Text;
     updatedAt: Schema.Attribute.DateTime;
