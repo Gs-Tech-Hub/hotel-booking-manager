@@ -596,6 +596,10 @@ export interface ApiBookingItemBookingItem extends Struct.CollectionTypeSchema {
       'api::booking-item.booking-item'
     > &
       Schema.Attribute.Private;
+    menu_category: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::menu-category.menu-category'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     quantity: Schema.Attribute.Integer;
     updatedAt: Schema.Attribute.DateTime;
