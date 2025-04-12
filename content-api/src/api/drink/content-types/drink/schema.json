@@ -35,6 +35,12 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::drink-type.drink-type"
+    },
+    "boooking": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::boooking.boooking",
+      "inversedBy": "drinks"
     }
   }
 }

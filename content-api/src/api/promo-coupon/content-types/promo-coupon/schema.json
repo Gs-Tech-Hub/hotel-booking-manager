@@ -1,0 +1,17 @@
+{
+  "kind": "collectionType",
+  "collectionName": "promo_coupons",
+  "info": {
+    "singularName": "promo-coupon",
+    "pluralName": "promo-coupons",
+    "displayName": "promo-coupon"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "couponCode": {
+      "type": "string"
+    }
+  }
+}
