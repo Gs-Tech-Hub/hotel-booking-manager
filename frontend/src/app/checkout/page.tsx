@@ -1,17 +1,16 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useBookingStore } from "../../store/bookingStore";
+import { useBookingStore} from "../../store/bookingStore";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { strapiService } from "../../utils/strapi";
-import { formatPrice } from '@/utils/priceHandler';
-import { useCurrency } from '@/context/currencyContext';
+import { formatPrice } from "@/utils/priceHandler";
+import { useCurrency } from "@/context/currencyContext";
 import dynamic from "next/dynamic";
+import Loader from "@/components/loader"; // Assuming this is a loading spinner component
 
-// const VAT_RATE = 0.02;
-
-const PaystackButton = dynamic(() =>
-  import("react-paystack").then((mod) => mod.PaystackButton),
+const PaystackButton = dynamic(
+  () => import("react-paystack").then((mod) => mod.PaystackButton),
   { ssr: false }
 );
 
@@ -36,28 +35,44 @@ function CheckoutPage() {
     roomTotalPrice,
     selectedMenus,
     updateBooking,
+    resetBooking,
   } = useBookingStore();
 
   const [showIncompleteError, setShowIncompleteError] = useState(false);
   const [finalTotal, setFinalTotal] = useState(0);
   const [vatAmount, setVatAmount] = useState(0);
   const [extrasTotal, setExtrasTotal] = useState(0);
+
+  const [isBooking, setIsBooking] = useState(false);
+  const [bookingError, setBookingError] = useState(false);
+
   const { currency } = useCurrency();
 
   useEffect(() => {
     const roomTotal = roomTotalPrice;
-    const menuTotal = selectedMenus.reduce((sum, { item }) => sum + item.price, 0);
-    const extrasTotal = extras.reduce((sum, extra) => sum + (extra.price || 0), 0) + menuTotal;
-    // const vatAmount = (roomTotal + extrasTotal) * VAT_RATE;
-    const grandTotal = roomTotal + extrasTotal;
+
+    const menuTotal = selectedMenus.reduce(
+      (sum, { item, count }) => sum + item.price * count,
+      0
+    );
+
+    const extrasTotal = menuTotal + extras.reduce(
+      (sum, extra) => sum + (extra.price || 0),
+      0
+    );
+    
+    const grandTotal = roomTotal + extrasTotal + menuTotal;
 
     setExtrasTotal(extrasTotal);
     setVatAmount(vatAmount);
     setFinalTotal(grandTotal);
     updateBooking({ totalPrice: grandTotal });
-  }, [selectedRoom, nights, extras, roomTotalPrice]);
+  }, [selectedRoom, nights, extras, roomTotalPrice, selectedMenus]);
 
   const handlePaymentSuccess = async (reference: { reference: string }) => {
+    setIsBooking(true);
+    setBookingError(false);
+
     const store = useBookingStore.getState();
 
     const transactionData = {
@@ -67,29 +82,85 @@ function CheckoutPage() {
       paymentMethod: store.paymentMethod,
     };
 
-    const paymentId = await strapiService.createTransaction(transactionData);
-    const customerId = await strapiService.createOrGetCustomer(guestInfo);
-    if (!customerId || !paymentId) {
-      alert("Error processing payment.");
-      return;
+    try {
+      const paymentId = await strapiService.createTransaction(transactionData);
+      const customerId = await strapiService.createOrGetCustomer(guestInfo);
+
+      if (!customerId || !paymentId) throw new Error("Failed to get customer or payment ID");
+
+      if (!Array.isArray(selectedMenus) || selectedMenus.length === 0) throw new Error("Invalid selectedMenus");
+
+      const bookingItemPayloads = selectedMenus.map(({ item, count, menuType }) => {
+        let foodItemId = null;
+        let drinkItemId = null;
+
+        if (item?.type === "food") foodItemId = item.documentId;
+        else if (item?.type === "drink") drinkItemId = item.documentId;
+
+        return {
+          quantity: count,
+          food_items: foodItemId,
+          drinks: drinkItemId,
+          menu_category: menuType.documentId,
+        };
+      });
+
+      const bookingItemIds = await Promise.all(
+        bookingItemPayloads.map((payload) => strapiService.createBookingItem(payload))
+      );
+
+      const createdBookingId = await strapiService.createOrGetBooking({
+        checkin,
+        checkout,
+        guests,
+        nights,
+        totalPrice: store.totalPrice,
+        customer: customerId,
+        room: selectedRoom?.documentId,
+        payment: paymentId,
+        booking_items: {
+          connect: bookingItemIds.map((id) => ({ id })),
+        },
+        hotel_services: {
+          connect: extras.map((extra) => ({ id: extra.id })),
+        },
+      });
+
+      updateBooking({ bookingId: createdBookingId });
+
+      // Prepare extras and menu details
+      const extraServices = extras.map((extra) => extra.name).join(",");
+      const foodItems = selectedMenus
+        .filter(({ item }) => item?.type === "food")
+        .map(({ item, count }) => `${item.name} (x${count})`)
+        .join(",");
+      const drinkItems = selectedMenus
+        .filter(({ item }) => item?.type === "drink")
+        .map(({ item, count }) => `${item.name} (x${count})`)
+        .join(",");
+
+      router.push(
+        `/booking-confirmation?bookingId=${createdBookingId}` +
+          `&reference=${reference.reference}` +
+          `&email=${encodeURIComponent(store.guestInfo.email ?? "")}` +
+          `&amount=${store.totalPrice}` +
+          `&currency=${currency}` +
+          `&checkIn=${formatDate(checkin)}` +
+          `&checkOut=${formatDate(checkout)}` +
+          `&guests=${guests}` +
+          `&room=${encodeURIComponent(selectedRoom?.title ?? "")}` +
+          `&roomImage=${encodeURIComponent(selectedRoom?.imgUrl ?? "")}` +
+          `&extras=${encodeURIComponent(extraServices)}` +
+          `&foods=${encodeURIComponent(foodItems)}` +
+          `&drinks=${encodeURIComponent(drinkItems)}`
+      );
+    } catch (err) {
+      console.error("Booking flow error:", err);
+      setBookingError(true);
+    } finally {
+      setIsBooking(false);
+      resetBooking();
     }
-
-    const createdBookingId = await strapiService.createOrGetBooking({
-      checkin,
-      checkout,
-      guests,
-      nights,
-      totalPrice,
-      customer: customerId,
-      room: selectedRoom?.documentId,
-      payment: paymentId,
-    });
-
-    updateBooking({ bookingId: createdBookingId });
-
-    router.push(
-        `/booking-confirmation?bookingId=${createdBookingId}&reference=${reference.reference}&email=${guestInfo.email}&amount=${store.totalPrice}&currency=${currency}&checkIn=${formatDate(checkin)}&checkOut=${formatDate(checkout)}&guests=${guests}&room=${selectedRoom?.title}&roomImage=${selectedRoom?.imgUrl}`
-      );      
   };
 
   const handleOfflineBooking = async () => {
@@ -117,7 +188,16 @@ function CheckoutPage() {
   };
 
   const handleConfirmBooking = () => {
-    if (!guestInfo.firstName || !guestInfo.lastName || !guestInfo.email || !guestInfo.phone || !guestInfo.street || !guestInfo.city || !guestInfo.state || !guestInfo.zip) {
+    if (
+      !guestInfo.firstName ||
+      !guestInfo.lastName ||
+      !guestInfo.email ||
+      !guestInfo.phone ||
+      !guestInfo.street ||
+      !guestInfo.city ||
+      !guestInfo.state ||
+      !guestInfo.zip
+    ) {
       setShowIncompleteError(true);
       return;
     }
@@ -161,6 +241,18 @@ function CheckoutPage() {
       <div className="booking-container">
         <h1 className="booking-header text-center">Checkout</h1>
         <div className="checkout-layout">
+          {isBooking && (
+            <div className="loader-overlay">
+              <Loader />
+            </div>
+          )}
+
+          {bookingError && (
+            <div className="mt-4 text-red-600 text-center">
+              We couldn’t complete your booking. Please contact customer service with your payment reference.
+            </div>
+          )}
+
           {(!selectedRoom || !guestInfo) ? (
             <h2 className="text-center">No booking selected. Please return to the booking page.</h2>
           ) : (
@@ -182,7 +274,10 @@ function CheckoutPage() {
                     <p><strong>Check-in:</strong> {formatDate(checkin)}</p>
                     <p><strong>Check-out:</strong> {formatDate(checkout)}</p>
                     <p><strong>Occupancy:</strong> {guests} {guests > 1 ? "guests" : "guest"}</p>
-                    <p className="price price-online"><strong>Price per Night:</strong> {formatPrice(paymentMethod === 'online' ? selectedRoom?.priceOnline : selectedRoom?.pricePremise, currency)}</p>
+                    <p className="price price-online">
+                      <strong>Price per Night:</strong>{" "}
+                      {formatPrice(paymentMethod === "online" ? selectedRoom?.priceOnline : selectedRoom?.pricePremise, currency)}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -191,102 +286,116 @@ function CheckoutPage() {
                 <h2 className="room-name">Price Summary</h2>
                 <p><strong>Room Total Price:</strong> {formatPrice(roomTotalPrice, currency)}</p>
                 <p><strong>Extra Services:</strong> {formatPrice(extrasTotal, currency)}</p>
-                {/* <p><strong>VAT ({VAT_RATE}%):</strong> {formatPrice(vatAmount, currency)}</p> */}
                 <h3><strong>Final Total:</strong> {formatPrice(finalTotal, currency)}</h3>
               </div>
 
               <div className="form-container">
                 <h2 className="room-name">Guest Information</h2>
                 <form className="guest-form">
-                    <label>First Name:</label>
-                    <input
-                        type="text"
-                        name="firstName"
-                        value={guestInfo.firstName || ""}
-                        onChange={e =>
-                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
-                        }
-                        required
-                    />
+                  <label>First Name:</label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={guestInfo.firstName || ""}
+                    onChange={(e) =>
+                      updateBooking({
+                        guestInfo: { ...guestInfo, [e.target.name]: e.target.value },
+                      })
+                    }
+                    required
+                  />
 
-                    <label>Last Name:</label>
-                    <input
-                        type="text"
-                        name="lastName"
-                        value={guestInfo.lastName || ""}
-                        onChange={e =>
-                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
-                        }
-                        required
-                    />
+                  <label>Last Name:</label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={guestInfo.lastName || ""}
+                    onChange={(e) =>
+                      updateBooking({
+                        guestInfo: { ...guestInfo, [e.target.name]: e.target.value },
+                      })
+                    }
+                    required
+                  />
 
-                    <label>Email:</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={guestInfo.email || ""}
-                        onChange={e =>
-                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
-                        }
-                        required
-                    />
+                  <label>Email:</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={guestInfo.email || ""}
+                    onChange={(e) =>
+                      updateBooking({
+                        guestInfo: { ...guestInfo, [e.target.name]: e.target.value },
+                      })
+                    }
+                    required
+                  />
 
-                    <label>Phone:</label>
-                    <input
-                        type="text"
-                        name="phone"
-                        value={guestInfo.phone || ""}
-                        onChange={e =>
-                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
-                        }
-                        required
-                    />
+                  <label>Phone:</label>
+                  <input
+                    type="text"
+                    name="phone"
+                    value={guestInfo.phone || ""}
+                    onChange={(e) =>
+                      updateBooking({
+                        guestInfo: { ...guestInfo, [e.target.name]: e.target.value },
+                      })
+                    }
+                    required
+                  />
 
-                    <label>Street Address:</label>
-                    <input
-                        type="text"
-                        name="street"
-                        value={guestInfo.street || ""}
-                        onChange={e =>
-                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
-                        }
-                        required
-                    />
+                  <label>Street Address:</label>
+                  <input
+                    type="text"
+                    name="street"
+                    value={guestInfo.street || ""}
+                    onChange={(e) =>
+                      updateBooking({
+                        guestInfo: { ...guestInfo, [e.target.name]: e.target.value },
+                      })
+                    }
+                    required
+                  />
 
-                    <label>City:</label>
-                    <input
-                        type="text"
-                        name="city"
-                        value={guestInfo.city || ""}
-                        onChange={e =>
-                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
-                        }
-                        required
-                    />
+                  <label>City:</label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={guestInfo.city || ""}
+                    onChange={(e) =>
+                      updateBooking({
+                        guestInfo: { ...guestInfo, [e.target.name]: e.target.value },
+                      })
+                    }
+                    required
+                  />
 
-                    <label>State:</label>
-                    <input
-                        type="text"
-                        name="state"
-                        value={guestInfo.state || ""}
-                        onChange={e =>
-                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
-                        }
-                        required
-                    />
+                  <label>State:</label>
+                  <input
+                    type="text"
+                    name="state"
+                    value={guestInfo.state || ""}
+                    onChange={(e) =>
+                      updateBooking({
+                        guestInfo: { ...guestInfo, [e.target.name]: e.target.value },
+                      })
+                    }
+                    required
+                  />
 
-                    <label>Zip Code:</label>
-                    <input
-                        type="number"
-                        name="zip"
-                        value={guestInfo.zip || ""}
-                        onChange={e =>
-                        updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })
-                        }
-                        required
-                    />
-                    </form>
-
+                  <label>Zip Code:</label>
+                  <input
+                    type="number"
+                    name="zip"
+                    value={guestInfo.zip || ""}
+                    onChange={(e) =>
+                      updateBooking({
+                        guestInfo: { ...guestInfo, [e.target.name]: e.target.value },
+                      })
+                    }
+                    required
+                  />
+                </form>
 
                 {paymentMethod === "online" ? (
                   <PaystackButton {...paystackConfig} className="book-btn mt-4" text="Confirm Payment" />
@@ -301,7 +410,10 @@ function CheckoutPage() {
                 )}
 
                 <p className="mt-4 text-sm">
-                  By submitting this form you accept our <a href="/policies" className="text-blue-600 hover:underline">terms and conditions and policies</a>
+                  By submitting this form you accept our{" "}
+                  <a href="/policies" className="text-blue-600 hover:underline">
+                    terms and conditions and policies
+                  </a>
                 </p>
               </div>
             </>

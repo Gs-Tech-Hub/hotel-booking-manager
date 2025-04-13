@@ -1,17 +1,18 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatPrice } from '@/utils/priceHandler';
 import { useCurrency } from '@/context/currencyContext';
-import { allMenuItems } from '@/data/menuData';
 import MenuList from '@/components/menuList';
+import ApiHandler from '@/utils/apiHandler';
+import { MenuType } from '@/store/bookingStore';
 
 interface MenuItem {
   id: number;
+  documentId: string;
   name: string;
   price: number;
+  type: 'food' | 'drink';
 }
-
-type MenuType = 'Breakfast' | 'Lunch' | 'Dinner';
 
 interface MenuListModalProps {
   isOpen: boolean;
@@ -19,75 +20,170 @@ interface MenuListModalProps {
 }
 
 export default function MenuListModal({ isOpen, onClose }: MenuListModalProps) {
-  const [cart, setCart] = useState<{ item: MenuItem; menuType: MenuType }[]>([]);
+  const [activeTab, setActiveTab] = useState('foods');
+  
   const { currency } = useCurrency();
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [cart, setCart] = useState<{ 
+    localId: string;
+    item: MenuItem;
+    menuType: MenuType;
+    quantity: number;
+  }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [foodLoading, setFoodLoading] = useState(true);
+  const [drinksLoading, setDrinksLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const apiHandler = ApiHandler({ baseUrl: process.env.NEXT_PUBLIC_API_URL || '' });
+
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        const foodRes = await apiHandler.fetchData('food-items?pagination[pageSize]=50');
+        const drinksRes = await apiHandler.fetchData('drinks?pagination[pageSize]=50');
+        
+        const categorizedFoodItems = foodRes.data.map((item: MenuItem) => ({
+          ...item,
+          type: 'food',
+        }));
+        
+        const categorizedDrinkItems = drinksRes.data.map((item: MenuItem) => ({
+          ...item,
+          type: 'drink',
+        }));
+
+        setMenuItems([...categorizedFoodItems, ...categorizedDrinkItems]);
+      } catch (error) {
+        setError((error as Error).message);
+      } finally {
+        setFoodLoading(false);
+        setDrinksLoading(false);
+        setLoading(false);
+      }
+    };
+
+    fetchMenuItems();
+  }, []);
+
 
   const addToCart = (item: MenuItem, menuType: MenuType): void => {
-    setCart([...cart, { item, menuType }]);
+    const newLocalId = crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`;
+
+    if (!item.type) {
+      setError('The selected item does not have a valid type. Please select a valid item.');
+      return;
+    }
+  
+    setCart(prevCart => {
+      const existingItem = prevCart.find(
+        cartItem => cartItem.item.id === item.id && cartItem.menuType === menuType
+      );
+  
+      if (existingItem) {
+        return prevCart.map(cartItem => {
+          if (cartItem.item.id === item.id && cartItem.menuType === menuType) {
+            return { ...cartItem, quantity: cartItem.quantity + 1 };
+          }
+          return cartItem;
+        });
+      } else {
+        return [
+          ...prevCart,
+          {
+            localId: newLocalId,
+            item: { ...item, localId: newLocalId },
+            menuType,
+            quantity: 1
+          }
+        ];
+      }
+    });
   };
 
-  const removeFromCart = (index: number): void => {
-    const newCart = [...cart];
-    newCart.splice(index, 1);
-    setCart(newCart);
-  };
+  // const removeFromCart = (index: number): void => {
+  //   setCart(prevCart => {
+  //     const updatedCart = [...prevCart];
+  //     if (updatedCart[index].quantity > 1) {
+  //       updatedCart[index].quantity -= 1;
+  //     } else {
+  //       updatedCart.splice(index, 1);
+  //     }
+  //     return updatedCart;
+  //   });
+  // };
 
-  const calculateTotal = (): number => {
-    return cart.reduce((total, { item }) => total + item.price, 0);
-  };
+  // const calculateTotal = (): number => {
+  //   return cart.reduce((total, { item, quantity }) => total + item.price * quantity, 0);
+  // };
 
   const handleCheckout = () => {
     if (cart.length === 0) {
       return;
     }
-
-     cart.map(({ menuType }) => menuType).join(', ');
     setCart([]);
     onClose(); // Close after order
   };
+
+  const filterItems = (items: MenuItem[]) =>
+    items.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   if (!isOpen) return null;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close-btn" onClick={onClose}>×</button>
-        <h2 className="section-title">Our Menu</h2>
-
-        <div className="menu-list">
-          <MenuList
-            items={allMenuItems}
-            addToCart={addToCart}
-            currency={currency}
-            formatPrice={formatPrice}
-          />
+        <div className="tabs">
+          <button
+            onClick={() => setActiveTab('foods')}
+            className={activeTab === 'foods' ? 'active' : ''}
+          >
+            Foods
+          </button>
+          <button
+            onClick={() => setActiveTab('drinks')}
+            className={activeTab === 'drinks' ? 'active' : ''}
+          >
+            Drinks
+          </button>
         </div>
-
-        {/* Cart Section */}
-        <div className="cart-section">
-          <h3>Your Order</h3>
-          {cart.length === 0 ? (
-            <p>Your cart is empty. Please add items from the menu.</p>
-          ) : (
+        <button className="modal-close-btn" onClick={onClose}>×</button>
+        <div className="">
+          {(activeTab === 'foods' || activeTab === 'drinks') && (
             <>
-              <div className="cart-items">
-                {cart.map((cartItem, index) => (
-                  <div key={index} className="cart-item">
-                    <div className="cart-item-details">
-                      <span className="cart-item-name">{cartItem.item.name}</span>
-                      <span className="cart-item-price">
-                        {formatPrice(cartItem.item.price, currency)}
-                      </span>
-                      <span className="cart-item-menu-type">({cartItem.menuType})</span>
+              <div>
+                <h2 className="section-title">
+                  {activeTab === 'foods' ? 'Our Menu' : 'Our Drinks'}
+                </h2>
+                <div className="search-bar">
+                  <input
+                    type="text"
+                    placeholder="Search menu..."
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                {loading && <p>Loading...</p>}
+                {foodLoading && activeTab === 'foods' && <p>Loading food items...</p>}
+                {drinksLoading && activeTab === 'drinks' && <p>Loading drink items...</p>}
+                {error && <p className="text-danger">{error}</p>}
+                {!loading && !error && (
+                  <div className="menu-list-container">
+                    <div className="menu-list">
+                      <MenuList
+                        items={filterItems(
+                          activeTab === 'foods' ? 
+                            menuItems.filter(item => item.type === 'food') 
+                            : menuItems.filter(item => item.type === 'drink')
+                        )}
+                        addToCart={addToCart}
+                        currency={currency}
+                        formatPrice={formatPrice}
+                      />
                     </div>
-                    <button className="remove-btn" onClick={() => removeFromCart(index)}>
-                      ×
-                    </button>
                   </div>
-                ))}
-              </div>
-              <div className="cart-total">
-                <strong>Total: {formatPrice(calculateTotal(), currency)}</strong>
+                )}
               </div>
             </>
           )}

@@ -1,23 +1,31 @@
-
 import qs from "qs";
-import  ApiHandler  from "@/utils/apiHandler";
+import ApiHandler from "@/utils/apiHandler";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
-
 const apiHandlerInstance = ApiHandler({ baseUrl });
 
+interface BookingItemPayload {
+  quantity: number;
+  food_items: string | null;
+  drinks: string | null;
+  menu_category: string; // This should store the documentId from MenuType
+}
+
+
+
+// Main service function
 export const strapiService = {
   async fetch(endpoint: string, params?: Record<string, string | number | boolean>) {
-    const queryString = params ? '?' + new URLSearchParams(params as Record<string, string>).toString() : '';
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
     const result = await apiHandlerInstance.fetchData(`${endpoint}${queryString}`);
-
     if (result.error) throw new Error(result.error);
     return result.data;
   },
 
   async post(endpoint: string, body: any) {
     const result = await apiHandlerInstance.createData({ endpoint, data: body });
-
     if (result.error) throw new Error(result.error);
     return result.data;
   },
@@ -32,9 +40,7 @@ export const strapiService = {
     return url.toString();
   },
 
-  // Helper functions following apiHandler structure for on-the-fly creation
   async createBooking(bookingData: any) {
-    console.log(bookingData);
     const booking = await this.post("boookings", bookingData);
     return booking;
   },
@@ -53,20 +59,28 @@ export const strapiService = {
       },
     });
     const existing = await this.fetch(`customers?${query}`);
-
     if (existing && existing.length > 0) {
-      return existing[0].documentId;;
+      return existing[0].documentId;
     }
     const customer = await this.createCustomer(customerData);
-    console.log(customerData);
     return customer.documentId;
   },
-  
+
   async createCustomer(customerData: any) {
-    const customer = await this.post("customers", customerData);
-    return customer;
+    return await this.post("customers", customerData);
   },
 
+  // Refactored function to create a single booking item
+async createBookingItem( itemData: BookingItemPayload) {
+  const result = await apiHandlerInstance.createData({
+    endpoint: "booking-items",
+    data: itemData,
+  });
+  if (result.error) throw new Error(result.error);
+  return result.data.id;
+},
+
+  // Master booking creation handler
   async createOrGetBooking(bookingData: any) {
     const booking = await this.createBooking(bookingData);
     return booking.documentId;

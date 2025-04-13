@@ -6,38 +6,60 @@ import { formatPrice } from '@/utils/priceHandler';
 import { useCurrency } from '@/context/currencyContext';
 import MenuList from '@/components/menuList';
 import ApiHandler from '@/utils/apiHandler';
+import { MenuType } from '@/store/bookingStore';
 
 interface MenuItem {
   id: number;
+  documentId: string;
   name: string;
   price: number;
+  type: 'food' | 'drink';
 }
-
-type MenuType = 'Breakfast' | 'Lunch' | 'Dinner';
 
 export default function RestaurantSection() {
   const router = useRouter();
-  const [cart, setCart] = useState<{ item: MenuItem; menuType: MenuType }[]>([]);
   const [selectedImage, setSelectedImage] = useState('/images/restaurant/restaurant-cover.jpg');
   const [activeTab, setActiveTab] = useState('description');
   const { currency } = useCurrency();
-  
+
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [cart, setCart] = useState<{ 
+    localId: string;
+    item: MenuItem;
+    menuType: MenuType;
+    quantity: number;
+  }[]>([]);
+
   const [loading, setLoading] = useState(true);
+  const [foodLoading, setFoodLoading] = useState(true);
+  const [drinksLoading, setDrinksLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const apiHandler = ApiHandler({ baseUrl: process.env.NEXT_PUBLIC_API_URL || '' });
-
 
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
-        const res = await apiHandler.fetchData('food-items?pagination[pageSize]=50');
-        // console.log("food:", res);
-        setMenuItems(res.data);
+        const foodRes = await apiHandler.fetchData('food-items?pagination[pageSize]=50');
+        const drinksRes = await apiHandler.fetchData('drinks?pagination[pageSize]=50');
+        
+        const categorizedFoodItems = foodRes.data.map((item: MenuItem) => ({
+          ...item,
+          type: 'food',
+        }));
+        
+        const categorizedDrinkItems = drinksRes.data.map((item: MenuItem) => ({
+          ...item,
+          type: 'drink',
+        }));
+
+        setMenuItems([...categorizedFoodItems, ...categorizedDrinkItems]);
       } catch (error) {
         setError((error as Error).message);
       } finally {
+        setFoodLoading(false);
+        setDrinksLoading(false);
         setLoading(false);
       }
     };
@@ -46,28 +68,65 @@ export default function RestaurantSection() {
   }, []);
 
   const addToCart = (item: MenuItem, menuType: MenuType): void => {
-    setCart([...cart, { item, menuType }]);
-  };
+    const newLocalId = crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`;
 
+    if (!item.type) {
+      setError('The selected item does not have a valid type. Please select a valid item.');
+      return;
+    }
+  
+    setCart(prevCart => {
+      const existingItem = prevCart.find(
+        cartItem => cartItem.item.id === item.id && cartItem.menuType === menuType
+      );
+  
+      if (existingItem) {
+        return prevCart.map(cartItem => {
+          if (cartItem.item.id === item.id && cartItem.menuType === menuType) {
+            return { ...cartItem, quantity: cartItem.quantity + 1 };
+          }
+          return cartItem;
+        });
+      } else {
+        return [
+          ...prevCart,
+          {
+            localId: newLocalId,
+            item: { ...item, localId: newLocalId },
+            menuType,
+            quantity: 1
+          }
+        ];
+      }
+    });
+  };
+  
   const removeFromCart = (index: number): void => {
-    const newCart = [...cart];
-    newCart.splice(index, 1);
-    setCart(newCart);
+    setCart(prevCart => {
+      const updatedCart = [...prevCart];
+      if (updatedCart[index].quantity > 1) {
+        updatedCart[index].quantity -= 1;
+      } else {
+        updatedCart.splice(index, 1);
+      }
+      return updatedCart;
+    });
   };
 
   const calculateTotal = (): number => {
-    return cart.reduce((total, { item }) => total + item.price, 0);
+    return cart.reduce((total, { item, quantity }) => total + item.price * quantity, 0);
   };
 
   const handleCheckout = () => {
     if (cart.length === 0) {
-      alert('Please add items to your cart before checking out');
       return;
     }
-
-    setCart([]); // Reset cart after checkout
+    setCart([]);
     router.push(`/booking-summary`);
   };
+
+  const filterItems = (items: MenuItem[]) =>
+    items.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
     <div className="restaurant-page">
@@ -79,10 +138,16 @@ export default function RestaurantSection() {
           View Our Restaurant
         </button>
         <button
-          onClick={() => setActiveTab('order')}
-          className={activeTab === 'order' ? 'active' : ''}
+          onClick={() => setActiveTab('foods')}
+          className={activeTab === 'foods' ? 'active' : ''}
         >
-          Place Order
+          Foods
+        </button>
+        <button
+          onClick={() => setActiveTab('drinks')}
+          className={activeTab === 'drinks' ? 'active' : ''}
+        >
+          Drinks
         </button>
       </div>
 
@@ -129,21 +194,40 @@ export default function RestaurantSection() {
         </div>
       )}
 
-      {activeTab === 'order' && (
-        <div>
-          <h2 className="section-title">Our Menu</h2>
-          {loading && <p>Loading menu...</p>}
-          {error && <p className="text-danger">{error}</p>}
-          {!loading && !error && (
-            <div className="menu-list">
-              <MenuList
-                items={menuItems}
-                addToCart={addToCart}
-                currency={currency}
-                formatPrice={formatPrice}
+      {(activeTab === 'foods' || activeTab === 'drinks') && (
+        <>
+          <div>
+            <h2 className="section-title">
+              {activeTab === 'foods' ? 'Our Menu' : 'Our Drinks'}
+            </h2>
+            <div className="search-bar">
+              <input
+                type="text"
+                placeholder="Search menu..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
               />
             </div>
-          )}
+            {foodLoading && activeTab === 'foods' && <p>Loading food items...</p>}
+            {drinksLoading && activeTab === 'drinks' && <p>Loading drink items...</p>}
+            {error && <p className="text-danger">{error}</p>}
+            {!loading && !error && (
+              <div className="menu-list-container">
+                <div className="menu-list">
+                  <MenuList
+                    items={filterItems(
+                      activeTab === 'foods' ? 
+                        menuItems.filter(item => item.type === 'food') 
+                        : menuItems.filter(item => item.type === 'drink')
+                    )}
+                    addToCart={addToCart}
+                    currency={currency}
+                    formatPrice={formatPrice}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Cart Section */}
           <div className="cart-section">
@@ -153,16 +237,23 @@ export default function RestaurantSection() {
             ) : (
               <>
                 <div className="cart-items">
-                  {cart.map((cartItem, index) => (
-                    <div key={index} className="cart-item">
+                  {cart.map(({ localId, item, menuType, quantity }, index) => (
+                    <div
+                      key={`${localId}`}
+                      className="cart-item"
+                    >
                       <div className="cart-item-details">
-                        <span className="cart-item-name">{cartItem.item.name}</span>
-                        <span className="cart-item-menu-type">{cartItem.menuType}</span>
+                        <span className="cart-item-name">{item.name}</span>
+                        <span className="cart-item-menu-type">{menuType.categoryName}</span>
+                        <span className="cart-item-quantity">Qty: {quantity}</span>
                         <span className="cart-item-price">
-                          {formatPrice(cartItem.item.price, currency)}
+                          {formatPrice(item.price * quantity, currency)}
                         </span>
                       </div>
-                      <button className="remove-btn" onClick={() => removeFromCart(index)}>
+                      <button
+                        className="remove-btn"
+                        onClick={() => removeFromCart(index)}
+                      >
                         <span>×</span>
                       </button>
                     </div>
@@ -173,19 +264,17 @@ export default function RestaurantSection() {
                 </div>
               </>
             )}
+            <div className="checkout-section">
+              <button
+                className={`book-btn ${cart.length === 0 ? 'disabled' : ''}`}
+                onClick={handleCheckout}
+                disabled={cart.length === 0}
+              >
+                Place Order
+              </button>
+            </div>
           </div>
-
-          {/* Checkout Section */}
-          <div className="checkout-section ">
-            <button
-              className={`checkout-btn ${cart.length === 0 ? 'disabled' : ''}`}
-              onClick={handleCheckout}
-              disabled={cart.length === 0}
-            >
-              Place Order
-            </button>
-          </div>
-        </div>
+        </>
       )}
     </div>
   );
