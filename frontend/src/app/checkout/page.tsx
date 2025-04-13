@@ -41,7 +41,7 @@ function CheckoutPage() {
   const [showIncompleteError, setShowIncompleteError] = useState(false);
   const [finalTotal, setFinalTotal] = useState(0);
   const [vatAmount, setVatAmount] = useState(0);
-  const [extrasTotal, setExtrasTotal] = useState(0);
+  const [serviceTotal, setServiceTotal] = useState(0)
 
   const [isBooking, setIsBooking] = useState(false);
   const [bookingError, setBookingError] = useState(false);
@@ -56,14 +56,13 @@ function CheckoutPage() {
       0
     );
 
-    const extrasTotal = menuTotal + extras.reduce(
+    const extrasTotal = extras.reduce(
       (sum, extra) => sum + (extra.price || 0),
       0
     );
-    
+    const serviceTotal = menuTotal + extrasTotal;
     const grandTotal = roomTotal + extrasTotal + menuTotal;
-
-    setExtrasTotal(extrasTotal);
+    setServiceTotal(serviceTotal);
     setVatAmount(vatAmount);
     setFinalTotal(grandTotal);
     updateBooking({ totalPrice: grandTotal });
@@ -285,7 +284,7 @@ function CheckoutPage() {
               <div className="price-summary">
                 <h2 className="room-name">Price Summary</h2>
                 <p><strong>Room Total Price:</strong> {formatPrice(roomTotalPrice, currency)}</p>
-                <p><strong>Extra Services:</strong> {formatPrice(extrasTotal, currency)}</p>
+                <p><strong>Extra Services:</strong> {formatPrice(serviceTotal, currency)}</p>
                 <h3><strong>Final Total:</strong> {formatPrice(finalTotal, currency)}</h3>
               </div>
 
