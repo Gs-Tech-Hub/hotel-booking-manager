@@ -74,6 +74,9 @@ function CheckoutPage() {
     }
 
     const createdBookingId = await strapiService.createOrGetBooking({
+      stayDate,
+      stayStartTime,
+      stayEndTime,
       totalPrice,
       customer: customerId,
       payment: paymentId,
@@ -169,7 +172,7 @@ function CheckoutPage() {
             <ul>
               {selectedMenus.map(({ item, menuType }, i) => (
                 <li key={i}>
-                  {menuType} - {formatPrice(item.price, currency)}
+                  {String(menuType)} - {formatPrice(item.price, currency)}
                 </li>
               ))}
             </ul>
@@ -182,7 +185,7 @@ function CheckoutPage() {
                     <label>First Name:</label>
                     <input
                         type="text"
-                        name="FirstName"
+                        name="firstName"
                         value={guestInfo.firstName || ""}
                         onChange={e =>
                         updateBooking({ guestInfo: { ...guestInfo, [e.target.name]: e.target.value } })

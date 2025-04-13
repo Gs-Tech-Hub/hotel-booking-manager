@@ -118,7 +118,7 @@ export default function BookingPage() {
 
   const handleSelectPayment = (room: Room, paymentType: "online" | "premise") => {
     if (room.roomsLeft === 0) {
-      alert("Sorry, this room is not available at the moment Please try another room.");
+      alert("Sorry, this room is not available at the moment please try another room. <br> Or you can call us (+234 704 523 2697) to BOOK it Now.");
       return;
     }
 
