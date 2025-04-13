@@ -29,6 +29,12 @@ const MenuList: React.FC<MenuListProps> = ({ items, addToCart, currency, formatP
 
   if (!items || !Array.isArray(items)) return <p>No menu items available.</p>;
 
+  // Ensure all items have a localId before rendering
+  const itemsWithLocalId: MenuItem[] = items.map(item => ({
+    ...item,
+    localId: item.localId || crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`
+  }));
+
   const handleMenuTypeChange = (itemId: number, selectedDocId: string) => {
     const selectedType = menuTypes.find(type => type.documentId === selectedDocId);
     if (selectedType) {
@@ -41,16 +47,13 @@ const MenuList: React.FC<MenuListProps> = ({ items, addToCart, currency, formatP
 
   const handleAddToCart = (item: MenuItem) => {
     const selectedType = menuTypeSelections[item.id] || menuTypes[0]; // Default to breakfast
-    const newLocalId = crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`;
-    const itemWithLocalId = { ...item, localId: newLocalId };
-    addToCart(itemWithLocalId, selectedType);
-    // console.log(itemWithLocalId, selectedType);
-    updateSelectedMenu(itemWithLocalId, selectedType);
+    addToCart(item, selectedType);
+    updateSelectedMenu(item, selectedType);
   };
 
   return (
     <div className="menu-list">
-      {items.map(item => (
+      {itemsWithLocalId.map(item => (
         <div key={item.localId} className="menu-row">
           <div className="menu-details">
             <h4>{item.name}</h4>
@@ -81,5 +84,6 @@ const MenuList: React.FC<MenuListProps> = ({ items, addToCart, currency, formatP
     </div>
   );
 };
+
 
 export default MenuList;

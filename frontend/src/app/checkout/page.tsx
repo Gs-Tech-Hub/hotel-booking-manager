@@ -50,15 +50,17 @@ function CheckoutPage() {
 
   useEffect(() => {
     const roomTotal = roomTotalPrice;
+
     const menuTotal = selectedMenus.reduce(
       (sum, { item, count }) => sum + item.price * count,
       0
     );
 
-    const extrasTotal = extras.reduce(
+    const extrasTotal = menuTotal + extras.reduce(
       (sum, extra) => sum + (extra.price || 0),
       0
     );
+    
     const grandTotal = roomTotal + extrasTotal + menuTotal;
 
     setExtrasTotal(extrasTotal);
