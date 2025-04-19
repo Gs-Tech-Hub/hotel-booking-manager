@@ -573,6 +573,7 @@ export interface ApiBookingItemBookingItem extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    amount_paid: Schema.Attribute.Integer;
     boookings: Schema.Attribute.Relation<'oneToMany', 'api::boooking.boooking'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -589,6 +590,11 @@ export interface ApiBookingItemBookingItem extends Struct.CollectionTypeSchema {
     food_type: Schema.Attribute.Relation<
       'oneToOne',
       'api::food-type.food-type'
+    >;
+    games: Schema.Attribute.Relation<'oneToMany', 'api::game.game'>;
+    hotel_services: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::hotel-service.hotel-service'
     >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -628,6 +634,7 @@ export interface ApiBoookingBoooking extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::booking-item.booking-item'
     >;
+    booking_status: Schema.Attribute.String;
     bookingId: Schema.Attribute.String;
     checkin: Schema.Attribute.Date;
     checkout: Schema.Attribute.Date;
@@ -809,6 +816,7 @@ export interface ApiDrinkDrink extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    availability: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     boooking: Schema.Attribute.Relation<'manyToOne', 'api::boooking.boooking'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -828,6 +836,10 @@ export interface ApiDrinkDrink extends Struct.CollectionTypeSchema {
     name: Schema.Attribute.String;
     price: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
+    quantity: Schema.Attribute.Integer;
+    sold: Schema.Attribute.Integer;
+    threshold: Schema.Attribute.Integer;
+    type: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -933,6 +945,38 @@ export interface ApiFoodTypeFoodType extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiGameGame extends Struct.CollectionTypeSchema {
+  collectionName: 'games';
+  info: {
+    displayName: 'Game';
+    pluralName: 'games';
+    singularName: 'game';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    amount_paid: Schema.Attribute.Integer;
+    count: Schema.Attribute.Integer;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    customer: Schema.Attribute.Relation<'oneToOne', 'api::customer.customer'>;
+    game_status: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::game.game'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    users_permissions_user: Schema.Attribute.Relation<
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
   };
 }
 
@@ -1864,6 +1908,7 @@ declare module '@strapi/strapi' {
       'api::floor-plan.floor-plan': ApiFloorPlanFloorPlan;
       'api::food-item.food-item': ApiFoodItemFoodItem;
       'api::food-type.food-type': ApiFoodTypeFoodType;
+      'api::game.game': ApiGameGame;
       'api::global.global': ApiGlobalGlobal;
       'api::hotel-service.hotel-service': ApiHotelServiceHotelService;
       'api::job-application.job-application': ApiJobApplicationJobApplication;

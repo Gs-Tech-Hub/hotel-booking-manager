@@ -88,6 +88,9 @@
     },
     "isShortRest": {
       "type": "boolean"
+    },
+    "booking_status": {
+      "type": "string"
     }
   }
 }
