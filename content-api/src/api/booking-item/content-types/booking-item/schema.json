@@ -43,6 +43,19 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::menu-category.menu-category"
+    },
+    "hotel_services": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::hotel-service.hotel-service"
+    },
+    "amount_paid": {
+      "type": "integer"
+    },
+    "games": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::game.game"
     }
   }
 }

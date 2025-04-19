@@ -41,6 +41,22 @@
       "relation": "manyToOne",
       "target": "api::boooking.boooking",
       "inversedBy": "drinks"
+    },
+    "type": {
+      "type": "string"
+    },
+    "quantity": {
+      "type": "integer"
+    },
+    "threshold": {
+      "type": "integer"
+    },
+    "availability": {
+      "type": "boolean",
+      "default": true
+    },
+    "sold": {
+      "type": "integer"
     }
   }
 }
