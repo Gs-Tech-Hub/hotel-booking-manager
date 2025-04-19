@@ -8,7 +8,7 @@ type PropsType = {
     value: number | string;
     // date: number;
   };
-  Icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
+  Icon?: (props: SVGProps<SVGSVGElement>) => JSX.Element;
 };
 
 export function OverviewCard({ label, data, Icon }: PropsType) {
@@ -16,7 +16,7 @@ export function OverviewCard({ label, data, Icon }: PropsType) {
 
   return (
     <div className="rounded-[10px] bg-white p-6 shadow-1 dark:bg-gray-dark">
-      <Icon />
+      {Icon && <Icon />}
 
       <div className="mt-6 flex items-end justify-between">
         <dl>

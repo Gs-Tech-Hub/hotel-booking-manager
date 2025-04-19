@@ -59,7 +59,7 @@ const ApiHandler = ({ baseUrl }: ApiHandlerProps) => {
     return fetchWithRetry(`${baseUrl}/${endpoint}/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ updatedData }), 
+      body: JSON.stringify({ data: updatedData })
     });
   };
 

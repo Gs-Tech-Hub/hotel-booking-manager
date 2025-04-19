@@ -14,7 +14,7 @@ export const NAV_DATA = [
       },
       {
         title: "Booking",
-        icon: Icons.HomeIcon,
+        icon: Icons.BookingsIcon,
         url: "/bookings",
 
         items: [],
@@ -22,19 +22,41 @@ export const NAV_DATA = [
      
       {
         title: "Rooms",
-        icon: Icons.HomeIcon,
+        icon: Icons.RoomsIcon,
         url: "/rooms",
         items: [],
       }, 
 
       {
         title: "Inventory",
-        icon: Icons.HomeIcon,
-        url: "/inventory",
+        icon: Icons.InventoryIcon,
         items: [
           {
-            title: "Drinks",
-            url: "/inventory/drinks",
+            title: "Products",
+            url: "/products",
+          },
+        ],
+      }, 
+
+      {
+        title: "Hotel Services",
+        icon: Icons.HotelServicesIcon,
+        items: [
+          {
+            title: "Restaurant",
+            url: "/restaurant",
+          },
+          {
+            title: "Bar",
+            url: "/bar",
+          },
+          {
+            title: "Games",
+            url: "/games",
+          },
+          {
+            title: "Swimming",
+            url: "/swimming",
           },
         ],
       }, 

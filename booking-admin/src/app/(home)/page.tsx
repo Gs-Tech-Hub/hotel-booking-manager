@@ -4,10 +4,10 @@ import { TopChannels } from "@/components/Tables/top-channels";
 import { TopChannelsSkeleton } from "@/components/Tables/top-channels/skeleton";
 import { createTimeFrameExtractor } from "@/utils/timeframe-extractor";
 import { Suspense } from "react";
-import { ChatsCard } from "./_components/chats-card";
 import { OverviewCardsGroup } from "./_components/overview-cards";
 import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
 import { CampaignVisitors } from "@/components/Charts/campaign-visitors";
+import { GuestList } from "@/components/Tables/guest-list";
 
 type PropsType = {
   searchParams: Promise<{
@@ -46,7 +46,7 @@ export default async function Home({ searchParams }: PropsType) {
 
         <div className="col-span-12 grid xl:col-span-8">
           <Suspense fallback={<TopChannelsSkeleton />}>
-            <TopChannels />
+            <GuestList />
           </Suspense>
         </div>
       </div>
