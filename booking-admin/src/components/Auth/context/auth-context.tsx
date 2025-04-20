@@ -1,12 +1,13 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 
 interface User {
   name: string;
   email: string;
   image?: string;
+  role: 'admin' | 'receptionist' | 'manager' | 'bar' | 'kitchen' | 'games';
 }
 
 interface AuthContextType {
@@ -14,7 +15,17 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  defaultLandingPage: string | null;
 }
+
+const roleToDefaultPageMap: Record<User["role"], string> = {
+  admin: "/",
+  receptionist: "/",
+  manager: "/",
+  bar: "/bar",
+  kitchen: "/kitchen",
+  games: "/games",
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -24,7 +35,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if user is logged in
     const checkAuth = () => {
       const storedUser = localStorage.getItem("user");
       if (storedUser) {
@@ -38,36 +48,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      // Here you would typically make an API call to your backend
-      // For now, we'll use mock data but properly set the auth state
       const mockUser = {
         name: 'John Smith',
         email,
         image: '/images/user/user-03.png',
+        role: 'bar',
       };
 
-      // Set user in localStorage
       localStorage.setItem('user', JSON.stringify(mockUser));
-      
-      // Set auth cookie
-      document.cookie = 'auth=true; path=/; max-age=86400'; // 24 hours
-      
-      setUser(mockUser);
-      router.push('/');
+      document.cookie = 'auth=true; path=/; max-age=86400';
+
+      const loggedInUser: User = {
+        name: mockUser.name,
+        email: mockUser.email,
+        image: mockUser.image,
+        role: mockUser.role as User['role'],
+      };
+
+      setUser(loggedInUser);
+
+      // Redirect to role-based landing
+      const landing = roleToDefaultPageMap[loggedInUser.role] || "/";
+      router.push(landing);
     } catch (error) {
-      throw new Error('Login failed');
+      throw new Error("Login failed");
     }
   };
 
   const logout = async () => {
     localStorage.removeItem("user");
-    document.cookie = 'auth=; path=/; max-age=0'; // Remove auth cookie
+    document.cookie = 'auth=; path=/; max-age=0';
     setUser(null);
     router.push("/auth/sign-in");
   };
 
+  const defaultLandingPage = useMemo(() => {
+    return user ? roleToDefaultPageMap[user.role] : null;
+  }, [user]);
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, defaultLandingPage }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,6 +1,8 @@
 import * as Icons from "../icons";
+import { NavSection } from "../../../../types/sidebar-types"; // adjust path
 
-export const NAV_DATA = [
+
+export const NAV_DATA: NavSection[] = [
   {
     label: "MAIN MENU",
     items: [
@@ -8,135 +10,68 @@ export const NAV_DATA = [
         title: "Dashboard",
         icon: Icons.HomeIcon,
         url: "/",
-
-        items: [
-        ],
+        roles: ["admin", "receptionist", "manager"],
+        items: [],
       },
       {
         title: "Booking",
         icon: Icons.BookingsIcon,
         url: "/bookings",
-
+        roles: [ "admin", "receptionist", "manager"],
         items: [],
       },
-     
       {
         title: "Rooms",
         icon: Icons.RoomsIcon,
         url: "/rooms",
+        roles: ["admin", "receptionist", "manager"],
         items: [],
-      }, 
-
+      },
       {
         title: "Inventory",
         icon: Icons.InventoryIcon,
+        roles: ["admin", "manager"],
         items: [
           {
             title: "Products",
             url: "/products",
+            roles: ["admin", "manager"],
           },
         ],
-      }, 
+      },
 
       {
         title: "Hotel Services",
         icon: Icons.HotelServicesIcon,
+        roles: ["admin", "receptionist", "manager", "kitchen", "bar", ],
         items: [
-          {
-            title: "Restaurant",
-            url: "/restaurant",
-          },
-          {
-            title: "Bar",
-            url: "/bar",
-          },
-          {
-            title: "Games",
-            url: "/games",
-          },
-          {
-            title: "Swimming",
-            url: "/swimming",
-          },
-        ],
-      }, 
+          { 
+           title: "Restaurant",
+           url: "/restaurant", 
+           roles: ["admin", "kitchen"]
+           },
 
-      // {
-      //   title: "Calendar",
-      //   url: "/calendar",
-      //   icon: Icons.Calendar,
-      //   items: [],
-      // },
-      // {
-      //   title: "Profile",
-      //   url: "/profile",
-      //   icon: Icons.User,
-      //   items: [],
-      // },
-      // {
-      //   title: "Forms",
-      //   icon: Icons.Alphabet,
-      //   items: [
-      //     {
-      //       title: "Form Elements",
-      //       url: "/forms/form-elements",
-      //     },
-      //     {
-      //       title: "Form Layout",
-      //       url: "/forms/form-layout",
-      //     },
-      //   ],
-      // },
-      // {
-      //   title: "Tables",
-      //   url: "/tables",
-      //   icon: Icons.Table,
-      //   items: [
-      //     {
-      //       title: "Tables",
-      //       url: "/tables",
-      //     },
-      //   ],
-      // },
-      // {
-      //   title: "Pages",
-      //   icon: Icons.Alphabet,
-      //   items: [
-      //     {
-      //       title: "Settings",
-      //       url: "/pages/settings",
-      //     },
-      //   ],
-      // },
+          { 
+            title: "Bar", 
+            url: "/bar",
+            roles: ["admin", "bar"]
+           },
+
+          { title: "Games",
+             url: "/games", 
+             roles: ["admin", "bar"] 
+          },
+          { 
+            title: "Swimming", 
+            url: "/swimming", 
+            roles: ["admin", "bar"] },
+        ],
+      },
     ],
   },
   {
     label: "OTHERS",
     items: [
-      // {
-      //   title: "Charts",
-      //   icon: Icons.PieChart,
-      //   items: [
-      //     {
-      //       title: "Basic Chart",
-      //       url: "/charts/basic-chart",
-      //     },
-      //   ],
-      // },
-      // {
-      //   title: "UI Elements",
-      //   icon: Icons.FourCircle,
-      //   items: [
-      //     {
-      //       title: "Alerts",
-      //       url: "/ui-elements/alerts",
-      //     },
-      //     {
-      //       title: "Buttons",
-      //       url: "/ui-elements/buttons",
-      //     },
-      //   ],
-      // },
       {
         title: "Authentication",
         icon: Icons.Authentication,

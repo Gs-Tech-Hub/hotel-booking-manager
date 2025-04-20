@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableBody,
@@ -9,9 +11,18 @@ import {
 import { cn } from "@/lib/utils";
 import { getGuestList } from "../fetch";
 import { format } from "date-fns";
+import { useEffect, useState } from "react";
 
-export async function GuestList ({ className }: { className?: string }) {
-  const data = await getGuestList();
+export function GuestList({ className }: { className?: string }) {
+  const [data, setData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await getGuestList();
+      setData(result);
+    };
+    fetchData();
+  }, []);
 
   // Optional: badge color function for status
   const getStatusBadge = (status: string) => {
@@ -30,10 +41,13 @@ export async function GuestList ({ className }: { className?: string }) {
   return (
     <div 
     className={cn(
-      " rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card",
+      "grid rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card",
       className,
     )}
-  >     <Table>
+  >     <h2 className="mb-4 text-body-2xlg font-bold text-dark dark:text-white">
+        Guest List
+      </h2>
+      <Table>
         <TableHeader>
           <TableRow className="border-none uppercase [&>th]:text-center">
             <TableHead className="min-w-[120px] !text-left">Booking-Id</TableHead>

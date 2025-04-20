@@ -1,15 +1,32 @@
+"use client";
+
 import { PeriodPicker } from "@/components/period-picker";
 import { cn } from "@/lib/utils";
 import { getWeeksBookingData } from "@/services/charts.services";
 import { WeeksProfitChart } from "./chart";
+import { useEffect, useState } from "react";
 
 type PropsType = {
   timeFrame?: string;
   className?: string;
 };
 
-export async function WeeksBooking({ className, timeFrame }: PropsType) {
-  const data = await getWeeksBookingData(timeFrame);
+export function WeeksBooking({ className, timeFrame }: PropsType) {
+  const [data, setData] = useState<{
+    sales: { x: string; y: number }[];
+    revenue: { x: string; y: number }[];
+  }>({
+    sales: [],
+    revenue: []
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await getWeeksBookingData(timeFrame);
+      setData(result);
+    };
+    fetchData();
+  }, [timeFrame]);
 
   return (
     <div

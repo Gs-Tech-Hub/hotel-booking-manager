@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableBody,
@@ -9,9 +11,18 @@ import {
 import { standardFormat } from "@/lib/format-number";
 import { cn } from "@/lib/utils";
 import { getTopChannels } from "../fetch";
+import { useEffect, useState } from "react";
 
-export async function TopChannels({ className }: { className?: string }) {
-  const data = await getTopChannels();
+export function TopChannels({ className }: { className?: string }) {
+  const [data, setData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await getTopChannels();
+      setData(result);
+    };
+    fetchData();
+  }, []);
 
   return (
     <div

@@ -5,8 +5,12 @@ import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
 import { ProductsListSkeleton } from "./_components/games-table/skeleton";
 import DrinksInventoryPage from "./_components/games-table/games-list";
 import { strapiService } from "@/utils/dataEndPoint";
+import { useRoleGuard } from '@/hooks/useRoleGuard';
+
 
 export default function Games() {
+  useRoleGuard(['admin', 'manager', 'games']); // only these can access
+
   const [gamesList, setGamesList] = useState([]);
   const [overviewData, setOverviewData] = useState({
     not_payed: { value: 0 },
