@@ -22,8 +22,9 @@ export function OverviewCardsGroup({  not_payed, payed, total_earned }: Overview
         data={{
           ...not_payed,
           value: +compactFormat(not_payed.value),
+          date: 24
         }}
-        // Icon={icons.ClosedDoor}
+        Icon={icons.ClosedDoor}
       />
 
       <OverviewCard
@@ -31,8 +32,9 @@ export function OverviewCardsGroup({  not_payed, payed, total_earned }: Overview
         data={{
           ...payed,
           value: compactFormat(payed.value),
+          date: 24
         }}
-        // Icon={icons.CheckIn}
+        Icon={icons.CheckIn}
       />
 
       <OverviewCard
@@ -40,8 +42,9 @@ export function OverviewCardsGroup({  not_payed, payed, total_earned }: Overview
         data={{
           ...total_earned,
           value: formatPrice((total_earned.value), 'NGN'),
+          date: 24
         }}
-        // Icon={icons.CheckOut}
+        Icon={icons.CheckOut}
       />
     </div>
   );

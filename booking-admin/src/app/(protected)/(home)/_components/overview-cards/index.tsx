@@ -1,10 +1,20 @@
 import { compactFormat } from "@/lib/format-number";
-import { getOverviewData } from "../../../products/fetch";
 import { OverviewCard } from "./card";
 import * as icons from "./icons";
 
-export async function OverviewCardsGroup() {
-  const { views, profit, products, users } = await getOverviewData();
+type OverviewDataItem = {
+  value: number;
+};
+
+type OverviewProps = {
+  views: OverviewDataItem;
+  profit: OverviewDataItem;
+  products: OverviewDataItem;
+  users: OverviewDataItem;
+
+};
+
+export async function OverviewCardsGroup({ views, profit, products, users }: OverviewProps) {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 2xl:gap-7.5">
@@ -13,6 +23,8 @@ export async function OverviewCardsGroup() {
         data={{
           ...views,
           value: compactFormat(views.value),
+          date: 24
+
         }}
         Icon={icons.OpenDoor}
       />
@@ -22,6 +34,8 @@ export async function OverviewCardsGroup() {
         data={{
           ...profit,
           value:  + compactFormat(profit.value),
+          date: 24
+
         }}
         Icon={icons.ClosedDoor}
       />
@@ -31,6 +45,8 @@ export async function OverviewCardsGroup() {
         data={{
           ...products,
           value: compactFormat(products.value),
+          date: 24
+
         }}
         Icon={icons.CheckIn}
       />
@@ -40,6 +56,8 @@ export async function OverviewCardsGroup() {
         data={{
           ...users,
           value: compactFormat(users.value),
+          date: 24
+
         }}
         Icon={icons.CheckOut}
       />

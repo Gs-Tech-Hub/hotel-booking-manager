@@ -53,10 +53,11 @@ export const strapiService = {
   async createOrGetCustomer(customerData: any) {
     const query = qs.stringify({
       filters: {
-        email: {
-          $eq: customerData.email,
-        },
-      },
+        $or: [
+          { email: { $eq: customerData.email } },
+          { phone: { $eq: customerData.phone } },
+        ]
+      }      
     });
     const existing = await this.fetch(`customers?${query}`);
     if (existing && existing.length > 0) {

@@ -74,6 +74,22 @@ export const strapiService = {
     return result.data;
   },
 
+ async findCustomerByPhoneOrEmail(input: any) {
+    const query = qs.stringify({
+      filters: {
+        $or: [
+          { email: { $eq: input } },
+          { phone: { $eq: input } },
+        ]
+      }
+    });
+    const result = await apiHandlerInstance.fetchData(`customers?${query}`);
+    if (result.error) throw new Error(result.error);
+  
+    return result.data?.[0] || null;
+  },
+  
+
   // Customer related methods
   async createCustomer(customerData: any) {
     const result = await apiHandlerInstance.createData({ 
@@ -87,10 +103,11 @@ export const strapiService = {
   async createOrGetCustomer(customerData: any) {
     const query = qs.stringify({
       filters: {
-        email: {
-          $eq: customerData.email,
-        },
-      },
+        $or: [
+          { email: { $eq: customerData.email } },
+          { phone: { $eq: customerData.phone } },
+        ]
+      }      
     });
     const result = await apiHandlerInstance.fetchData(`customers?${query}`);
     if (result.error) throw new Error(result.error);

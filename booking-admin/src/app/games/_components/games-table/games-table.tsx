@@ -87,13 +87,14 @@ export function GamesList({
               onClick={() => onRowClick?.(item)}
               >
               <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">
-                {item.customer.firstName} {item.customer.lastName}
+                {item.customer?.firstName || ""} {item.customer?.lastName || ""}
               </TableCell>
+
               <TableCell>{item.count}</TableCell>
               <TableCell>₦{item.amount_paid}</TableCell>
               <TableCell>₦{item.amount_paid}</TableCell>
               <TableCell className="capitalize">{item.game_status}</TableCell>
-            <TableCell>{formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}</TableCell>
+            <TableCell>{formatDistanceToNow(new Date(item.updatedAt), { addSuffix: true })}</TableCell>
             </TableRow>
           ))}
         </TableBody>

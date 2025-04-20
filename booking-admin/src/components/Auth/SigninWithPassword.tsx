@@ -4,8 +4,10 @@ import Link from "next/link";
 import React, { useState } from "react";
 import InputGroup from "../FormElements/InputGroup";
 import { Checkbox } from "../FormElements/checkbox";
+import { useAuth } from "@/components/Auth/context/auth-context";
 
 export default function SigninWithPassword() {
+  const { login } = useAuth();
   const [data, setData] = useState({
     email: process.env.NEXT_PUBLIC_DEMO_USER_MAIL || "",
     password: process.env.NEXT_PUBLIC_DEMO_USER_PASS || "",
@@ -13,6 +15,7 @@ export default function SigninWithPassword() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setData({
@@ -21,19 +24,32 @@ export default function SigninWithPassword() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // You can remove this code block
+    setError("");
     setLoading(true);
 
-    setTimeout(() => {
+    try {
+      if (!data.email || !data.password) {
+        throw new Error("Please enter both email and password");
+      }
+
+      await login(data.email, data.password);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Invalid email or password");
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit}>
+      {error && (
+        <div className="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-500">
+          {error}
+        </div>
+      )}
+      
       <InputGroup
         type="email"
         label="Email"
@@ -82,7 +98,8 @@ export default function SigninWithPassword() {
       <div className="mb-4.5">
         <button
           type="submit"
-          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary p-4 font-medium text-white transition hover:bg-opacity-90"
+          disabled={loading}
+          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary p-4 font-medium text-white transition hover:bg-opacity-90 disabled:opacity-70"
         >
           Sign In
           {loading && (
