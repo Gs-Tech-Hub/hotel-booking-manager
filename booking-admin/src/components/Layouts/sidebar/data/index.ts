@@ -69,19 +69,4 @@ export const NAV_DATA: NavSection[] = [
       },
     ],
   },
-  {
-    label: "OTHERS",
-    items: [
-      {
-        title: "Authentication",
-        icon: Icons.Authentication,
-        items: [
-          {
-            title: "Sign In",
-            url: "/auth/sign-in",
-          },
-        ],
-      },
-    ],
-  },
 ];

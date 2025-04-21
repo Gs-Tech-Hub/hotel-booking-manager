@@ -6,6 +6,7 @@ import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
 import DrinksInventoryPage from "./_components/products-table/drinks-inventory";
 import { ProductsListSkeleton } from "./_components/products-table/skeleton";
 import { strapiService } from "@/utils/dataEndPoint";
+import POSLayout from "./_components/sales-section";
 
 type PropsType = {
   searchParams: {
@@ -31,7 +32,7 @@ export default function Bar({ searchParams }: PropsType) {
 
   return (
     <>
-      <Suspense fallback={<OverviewCardsSkeleton />}>
+      {/* <Suspense fallback={<OverviewCardsSkeleton />}>
         <OverviewCardsGroup payed={{
           value: 0
         }} not_payed={{
@@ -39,11 +40,9 @@ export default function Bar({ searchParams }: PropsType) {
         }} total_earned={{
           value: 0
         }} />
-      </Suspense>
+      </Suspense> */}
       <div className="mt-4">
-        <Suspense fallback={<ProductsListSkeleton />}>
-          <DrinksInventoryPage products={productsList} />
-        </Suspense>
+        <POSLayout />
       </div>
     </>
   );
