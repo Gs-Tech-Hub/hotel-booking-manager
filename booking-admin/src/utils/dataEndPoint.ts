@@ -184,6 +184,95 @@ export const strapiService = {
     return result.data;
   },
 
+  async loginUser(email: string, password: string) {
+    try {
+      console.log('Making login request to:', `${baseUrl}/auth/local`);
+      const res = await apiHandlerInstance.createData({
+        endpoint: "auth/local",
+        data: {
+          identifier: email,
+          password,
+        },
+      });
+  
+      if (!res) {
+        throw new Error('No response received from server');
+      }
+      
+      if (res.error) {
+        console.error('Login error response:', res.error);
+        throw new Error(res.error.message || 'Authentication failed');
+      }
+      
+      if (!res.jwt) {
+        console.error('Invalid response format:', res);
+        throw new Error('Invalid response format from server');
+      }
+  
+      return {
+        jwt: res.jwt,
+        user: res.user,
+      };
+    } catch (error) {
+      console.error('Login request failed:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Failed to authenticate user');
+    }
+  },
+
+  async verifyToken(token: string) {
+    try {
+      const res = await apiHandlerInstance.fetchWithAuth(`users`);
+      
+      if (!res) {
+        throw new Error('No response received from server');
+      }
+      
+      if (res.error) {
+        console.error('Token verification error:', res.error);
+        return { valid: false };
+      }
+      
+      return { valid: true };
+    } catch (error) {
+      console.error('Token verification failed:', error);
+      return { valid: false };
+    }
+  },
+
+  async getUserProfileWithRole(userId: number) {
+    try {
+      console.log('Fetching user profile for ID:', userId);
+      const res = await apiHandlerInstance.fetchData(
+        `users/${userId}?populate[role]=*`
+      );
+  
+      if (!res) {
+        throw new Error('No response received from server');
+      }
+      
+      if (res.error) {
+        console.error('Error fetching user profile:', res.error);
+        throw new Error(res.error.message || 'Failed to fetch user profile');
+      }
+      
+      // The response is the user data directly, not wrapped in a data property
+      console.log('User profile response:', res);
+      return res;
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Failed to fetch user profile');
+    }
+  },
+  
+  
+ 
+  
   // Additional utility methods can be added here following the same pattern
 };
 

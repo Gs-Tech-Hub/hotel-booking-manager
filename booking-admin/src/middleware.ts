@@ -1,47 +1,63 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { strapiService } from './utils/dataEndPoint';
 
-export function middleware(request: NextRequest) {
-  const isAuthenticated = request.cookies.has('auth');
-  const isAuthPage = request.nextUrl.pathname.startsWith('/auth/');
-  const currentPath = request.nextUrl.pathname;
+// Define protected routes that require authentication
+const protectedRoutes = [
+  '/bookings',
+  '/rooms',
+  '/products',
+  '/restaurant',
+  '/bar',
+  '/games',
+  '/swimming',
+  '/kitchen',
+];
 
-  // Skip middleware for static files and API routes
+// Define role-based access for specific routes
+const roleBasedRoutes: Record<string, string[]> = {
+  '/bar': ['admin', 'bar'],
+  '/kitchen': ['admin', 'kitchen'],
+  '/games': ['admin', 'bar'],
+  '/products': ['admin', 'manager'],
+};
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Skip middleware for static files, API routes, and public assets
   if (
-    currentPath.startsWith('/_next') ||
-    currentPath.startsWith('/api') ||
-    currentPath.startsWith('/static') ||
-    currentPath.includes('.')
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/static') ||
+    pathname.endsWith('.ico') ||
+    pathname.endsWith('.png') ||
+    pathname.endsWith('.jpg') ||
+    pathname.endsWith('.js') ||
+    pathname.endsWith('.css')
   ) {
     return NextResponse.next();
   }
 
-  // Redirect unauthenticated users trying to access protected pages
-  if (!isAuthenticated && !isAuthPage && currentPath !== '/') {
-    const loginUrl = new URL('/auth/sign-in', request.url);
-    loginUrl.searchParams.set('redirect', currentPath);
-    return NextResponse.redirect(loginUrl);
+  const isAuthPage = pathname.startsWith('/auth/');
+
+  // For now, we'll let the client-side handle the auth checks
+  // This is a temporary solution until we implement proper server-side auth
+  if (isAuthPage) {
+    return NextResponse.next();
   }
 
-  // Redirect authenticated users away from auth pages
-  if (isAuthenticated && isAuthPage) {
-    const redirectPath = request.nextUrl.searchParams.get('redirect') || '/';
-    return NextResponse.redirect(new URL(redirectPath, request.url));
+  // Handle protected routes
+  const isProtected = protectedRoutes.some(route => pathname.startsWith(route)) || pathname === '/';
+  if (isProtected) {
+    return NextResponse.next();
   }
 
   return NextResponse.next();
 }
 
-// Specify which paths the middleware should run on
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|favicon.png).*)',
   ],
 };

@@ -16,7 +16,12 @@ export default function ProtectedLayout({
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push("/auth/sign-in");
+      // Store the current path for redirect after login
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/auth/sign-in') {
+        localStorage.setItem('redirectAfterLogin', currentPath);
+      }
+      router.replace("/auth/sign-in");
     }
   }, [loading, user, router]);
 

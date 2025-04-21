@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useMemo } from "react";
+import { createContext, useContext, useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { strapiService } from "@/utils/dataEndPoint";
 
 interface User {
   name: string;
@@ -29,61 +30,125 @@ const roleToDefaultPageMap: Record<User["role"], string> = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Toggle this to true for verbose debugging
+const DEBUG = true;
+
+const log = (...args: any[]) => {
+  if (DEBUG) console.log("[AUTH]", ...args);
+};
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    const checkAuth = () => {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-      setLoading(false);
-    };
+  const initializeAuth = useCallback(async () => {
+    log("Initializing auth...");
+    try {
+      setLoading(true);
+      const storedUser = localStorage.getItem('user');
+      const storedJwt = localStorage.getItem('jwt');
 
-    checkAuth();
+      if (storedUser && storedJwt) {
+        try {
+          const isValid = await strapiService.verifyToken(storedJwt);
+          if (isValid?.valid) {
+            const userData = JSON.parse(storedUser);
+            setUser(userData);
+            log("User set from storage:", userData);
+          } else {
+            log("Token invalid, clearing storage...");
+            localStorage.removeItem('user');
+            localStorage.removeItem('jwt');
+            setUser(null);
+          }
+        } catch (err) {
+          console.error("Token verification error:", err);
+          localStorage.removeItem('user');
+          localStorage.removeItem('jwt');
+          setUser(null);
+        }
+      } else {
+        log("No valid auth data found in storage.");
+        setUser(null);
+      }
+    } catch (err) {
+      console.error("Auth initialization failed:", err);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
+  useEffect(() => {
+    initializeAuth();
+  }, [initializeAuth]);
+
   const login = async (email: string, password: string) => {
+    log("Attempting login...");
     try {
-      const mockUser = {
-        name: 'John Smith',
-        email,
-        image: '/images/user/user-03.png',
-        role: 'bar',
+      setLoading(true);
+      const verifiedUser = await strapiService.loginUser(email, password);
+      log("Login response:", verifiedUser);
+
+      if (!verifiedUser?.jwt) {
+        throw new Error("Invalid credentials: missing JWT");
+      }
+
+      const userWithRole = await strapiService.getUserProfileWithRole(verifiedUser.user.id);
+      log("Fetched user profile with role:", userWithRole);
+
+      if (!userWithRole?.role) {
+        throw new Error("User role information is missing");
+      }
+
+      const userData: User = {
+        name: userWithRole.username || email,
+        email: userWithRole.email,
+        image: userWithRole.image,
+        role: userWithRole.role.type as User["role"],
       };
 
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      document.cookie = 'auth=true; path=/; max-age=86400';
+      // Store user data and JWT in localStorage
+      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('jwt', verifiedUser.jwt);
 
-      const loggedInUser: User = {
-        name: mockUser.name,
-        email: mockUser.email,
-        image: mockUser.image,
-        role: mockUser.role as User['role'],
-      };
+      setUser(userData);
+      log("User logged in and set:", userData);
 
-      setUser(loggedInUser);
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectPath = urlParams.get("redirect") || roleToDefaultPageMap[userData.role] || "/";
+      log("Redirecting to:", redirectPath);
 
-      // Redirect to role-based landing
-      const landing = roleToDefaultPageMap[loggedInUser.role] || "/";
-      router.push(landing);
-    } catch (error) {
-      throw new Error("Login failed");
+      router.replace(redirectPath);
+    } catch (error: any) {
+      console.error("Login error:", error);
+      setUser(null);
+      localStorage.removeItem('user');
+      localStorage.removeItem('jwt');
+      throw new Error(error?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   const logout = async () => {
-    localStorage.removeItem("user");
-    document.cookie = 'auth=; path=/; max-age=0';
-    setUser(null);
-    router.push("/auth/sign-in");
+    log("Logging out...");
+    try {
+      localStorage.removeItem('user');
+      localStorage.removeItem('jwt');
+      setUser(null);
+      router.replace("/auth/sign-in");
+      log("User logged out, redirected to sign-in.");
+    } catch (err) {
+      console.warn("Logout cleanup failed:", err);
+    }
   };
 
   const defaultLandingPage = useMemo(() => {
-    return user ? roleToDefaultPageMap[user.role] : null;
+    const landing = user ? roleToDefaultPageMap[user.role] : null;
+    log("Computed default landing page:", landing);
+    return landing;
   }, [user]);
 
   return (

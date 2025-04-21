@@ -36,7 +36,10 @@ export default function SigninWithPassword() {
 
       await login(data.email, data.password);
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Invalid email or password");
+      const errorMessage = error instanceof Error ? error.message : "Invalid email or password";
+      setError(errorMessage);
+      
+      setData(prev => ({ ...prev, password: "" }));
     } finally {
       setLoading(false);
     }
