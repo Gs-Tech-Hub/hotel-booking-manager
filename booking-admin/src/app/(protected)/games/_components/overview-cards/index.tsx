@@ -21,7 +21,7 @@ export function OverviewCardsGroup({  not_payed, payed, total_earned }: Overview
         label="Not Payed"
         data={{
           ...not_payed,
-          value: +compactFormat(not_payed.value),
+          value: formatPrice((not_payed.value), 'NGN'),
         }}
         // Icon={icons.ClosedDoor}
       />
@@ -30,7 +30,7 @@ export function OverviewCardsGroup({  not_payed, payed, total_earned }: Overview
         label="Payed"
         data={{
           ...payed,
-          value: compactFormat(payed.value),
+          value: formatPrice((payed.value), 'NGN'),
         }}
         // Icon={icons.CheckIn}
       />

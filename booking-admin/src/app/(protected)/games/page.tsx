@@ -27,24 +27,28 @@ export default function Games() {
         setGamesList(gamesData);
 
         // Compute overview stats without filtering the gamesList state
-        let payedCount = 0;
-        let notPayedCount = 0;
-        let totalEarned = 0;
-
-        for (const game of gamesData) {
-          if (game.amount_paid > 0) {
-            payedCount++;
-            totalEarned += game.amount_paid;
-          } else {
-            notPayedCount++;
+        let payed = 0;
+        let notPayed = 0;
+        
+        for (const game of gamesData || []) {
+          const amountPaid = Number(game.amount_paid) || 0;
+        
+          if (game.game_status === 'completed') {
+            payed += amountPaid;
+          } else if (game.game_status === 'ongoing') {
+            notPayed += amountPaid;
           }
         }
-
+        
+        const totalEarned = payed + notPayed;
+        
         setOverviewData({
-          payed: { value: payedCount },
-          not_payed: { value: notPayedCount },
+          payed: { value: payed },
+          not_payed: { value: notPayed },
           total_earned: { value: totalEarned }
         });
+        
+        
 
       } catch (error) {
         console.error("Failed to fetch products:", error);
