@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { strapiService } from "@/utils/dataEndPoint";
 
 interface User {
+  id: string; // Added id property to User interface
   name: string;
   email: string;
   image?: string;
@@ -50,10 +51,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const storedJwt = localStorage.getItem('jwt');
 
       if (storedUser && storedJwt) {
+        const userData = JSON.parse(storedUser);
+        const userId = userData?.id; // Ensure the user ID is stored in localStorage
+
+        if (!userId) {
+          log("User ID not found in storage.");
+          setUser(null);
+          return;
+        }
+
         try {
-          const isValid = await strapiService.verifyToken(storedJwt);
+          const isValid = await strapiService.verifyToken(storedJwt, userId);
           if (isValid?.valid) {
-            const userData = JSON.parse(storedUser);
             setUser(userData);
             log("User set from storage:", userData);
           } else {
@@ -64,8 +73,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         } catch (err) {
           console.error("Token verification error:", err);
-          localStorage.removeItem('user');
-          localStorage.removeItem('jwt');
           setUser(null);
         }
       } else {
@@ -103,6 +110,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       const userData: User = {
+        id: verifiedUser.user.id, // Ensure the user ID is stored
         name: userWithRole.username || email,
         email: userWithRole.email,
         image: userWithRole.image,

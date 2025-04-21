@@ -222,19 +222,16 @@ export const strapiService = {
     }
   },
 
-  async verifyToken(token: string) {
+  async verifyToken(token: string, userId: number) {
     try {
-      const res = await apiHandlerInstance.fetchWithAuth(`users`);
-      
-      if (!res) {
-        throw new Error('No response received from server');
-      }
-      
-      if (res.error) {
-        console.error('Token verification error:', res.error);
+      console.log('Verifying token for user ID:', userId);
+      const userProfile = await this.getUserProfileWithRole(userId);
+
+      if (!userProfile) {
+        console.error('User profile not found for ID:', userId);
         return { valid: false };
       }
-      
+
       return { valid: true };
     } catch (error) {
       console.error('Token verification failed:', error);
