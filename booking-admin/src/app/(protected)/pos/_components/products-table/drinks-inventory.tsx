@@ -4,9 +4,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui-elements/button";
 import { Select } from "@/components/ui-elements/select";
 import { SelectItem } from "@/components/ui-elements/select-item";
-import { ProductsList } from "./products-table";
+import { ProductsList, Product } from "./products-table";
 
-export default function DrinksInventoryPage({ products }: { products: any[] }) {
+export default function DrinksInventoryPage({ products }: { products: Product[] }) {
   const [typeFilter, setTypeFilter] = useState("");
   const [sortKey, setSortKey] = useState("");
 
@@ -18,8 +18,9 @@ export default function DrinksInventoryPage({ products }: { products: any[] }) {
 
   const sorted = [...filtered].sort((a, b) => {
     if (!sortKey) return 0;
-    return b[sortKey as keyof typeof b] - a[sortKey as keyof typeof a];
+    return Number(b[sortKey as keyof typeof b]) - Number(a[sortKey as keyof typeof a]);
   });
+
 
   return (
     <div className="p-6 space-y-6">

@@ -4,11 +4,13 @@ import { useCartStore } from "@/app/stores/useCartStore";
 import { toast } from "react-toastify";
 import { Order, useOrderStore } from "@/app/stores/useOrderStore";
 
+
+
 export default function CartSidebar({
   onCreateOrder,
   prefillOrder,
 }: {
-  onCreateOrder: (order: any) => void;
+  onCreateOrder: (order: Order) => void;
   prefillOrder?: Order | null;
 }) {
   const [customerName, setCustomerName] = useState("");
@@ -16,12 +18,20 @@ export default function CartSidebar({
   const [waiterName, setWaiterName] = useState("");
   const [isOrderActive, setOrderActive] = useState(false);
 
-
   const cartItems = useCartStore((state) => state.cartItems);
   const setCartItems = useCartStore((state) => state.setCartItems);
   const clearCart = useCartStore((state) => state.clearCart);
   const decrementItem = useCartStore((state) => state.decrementItem);
   const updateOrderItem = useOrderStore((state) => state.updateOrderItem);
+
+  const newOrder: Order = {
+    id: Date.now().toString(), // Generate a temporary ID
+    customerName,
+    tableNumber,
+    waiterName,
+    items: cartItems,
+    status: 'active', // Set initial status
+  };
 
   // When prefillOrder changes, populate the fields
   useEffect(() => {
@@ -44,14 +54,7 @@ export default function CartSidebar({
       toast.error("Please fill in all fields and add items to the cart.");
       return;
     }
-  
-    const newOrder = {
-      customerName,
-      tableNumber,
-      waiterName,
-      items: cartItems,
-    };
-  
+    
     // Check if we are updating an existing order (using prefillOrder)
     if (prefillOrder?.id) {
       // Assuming `updateOrderItem` is imported and available from your store

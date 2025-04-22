@@ -14,7 +14,13 @@ import { getTopChannels } from "../fetch";
 import { useEffect, useState } from "react";
 
 export function TopChannels({ className }: { className?: string }) {
-  const [data, setData] = useState<any[]>([]);
+  interface Channel {
+    name: string;
+    revenues: number;
+    sales: number;
+    conversion: number;
+  }
+  const [data, setData] = useState<Channel[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {

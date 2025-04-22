@@ -13,7 +13,7 @@ function getAvailabilityStatus(quantity: number, threshold: number) {
   return { label: "In Stock", color: "text-green-600" };
 }
 
-type Product = {
+export type Product = {
   name: string;
   type: string;
   price: number;

@@ -7,10 +7,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 
-
-export default function SignIn() {
+function SignInContent() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -64,11 +63,18 @@ export default function SignIn() {
                 Please sign in to your account by completing the necessary
                 fields below
               </p>
-
             </div>
           </div>
         </div>
       </div>
     </>
+  );
+}
+
+export default function SignIn() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignInContent />
+    </Suspense>
   );
 }

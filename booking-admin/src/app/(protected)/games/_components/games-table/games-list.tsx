@@ -80,7 +80,7 @@ export default function GamesListPage({ games }: { games: Games[] }) {
             <SelectItem value="cancelled">Cancelled</SelectItem>
           </Select>
 
-          <Select value={sortKey} onChange={(val) => setSortKey(val as any)}>
+          <Select value={sortKey} onChange={(value: string) => setSortKey(value as "" | "count" | "amount_paid" | "createdAt")}>
             <SelectItem value="">Sort by</SelectItem>
             <SelectItem value="count">Games Played</SelectItem>
             <SelectItem value="amount_paid">Amount Paid</SelectItem>

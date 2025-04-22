@@ -3,7 +3,6 @@ import { useCartStore } from "@/app/stores/useCartStore";
 import { Button } from "@/components/ui-elements/button";
 import { Card } from "@/components/ui-elements/card";
 import { toast } from "react-toastify";
-import { cn } from "@/lib/utils";
 
 const menuItems = [
   { id: 1, name: "Burger", price: 10, available: 20 },

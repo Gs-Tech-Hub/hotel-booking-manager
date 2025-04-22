@@ -14,7 +14,18 @@ import { format } from "date-fns";
 import { useEffect, useState } from "react";
 
 export function GuestList({ className }: { className?: string }) {
-  const [data, setData] = useState<any[]>([]);
+  interface Guest {
+    bookingId: string;
+    name: string;
+    roomType: string;
+    roomNumber: string;
+    duration: number;
+    checkin: string;
+    checkout: string;
+    status: string;
+  }
+
+  const [data, setData] = useState<Guest[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {

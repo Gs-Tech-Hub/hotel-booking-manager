@@ -34,7 +34,7 @@ interface OrderStore {
   setOrder: (order: Order) => void;
   updateItemQuantity: (id: number, quantity: number) => void;
   addItemToOrder: (item: OrderItem) => void;
-  removeItemFromOrder: (orderId: string, itemId: number) => { /* logic to remove item */ },
+  removeItemFromOrder: (orderId: string, itemId: number) => void,
   setPaymentMethod: (orderId: string, method: PaymentMethod) => void;
   completeOrder: (orderId: string) => void;
   clearOrder: () => void;

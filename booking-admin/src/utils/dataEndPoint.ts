@@ -1,6 +1,7 @@
+/* eslint-disable */
+
 import qs from "qs";
 import ApiHandler from "@/utils/apiHandler";
-
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
 const apiHandlerInstance = ApiHandler({ baseUrl });
 

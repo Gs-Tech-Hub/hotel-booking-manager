@@ -1,6 +1,5 @@
-import { Button } from "@/components/ui-elements/button";
 import { useOrderStore, Order } from "@/app/stores/useOrderStore";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 
 export default function OrdersList({
   onViewOrderDetails,

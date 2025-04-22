@@ -14,20 +14,20 @@ export default function Page() {
     coverPhoto: "/images/cover/cover-01.png",
   });
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === "profilePhoto" ) {
-      const file = e.target?.files[0];
+      const file = e.target.files && e.target.files[0];
 
       setData({
         ...data,
-        profilePhoto: file && URL.createObjectURL(file),
+        profilePhoto: file ? URL.createObjectURL(file) : data.profilePhoto,
       });
     } else if (e.target.name === "coverPhoto") {
-      const file = e.target?.files[0];
+      const file = e.target.files && e.target.files[0];
 
       setData({
         ...data,
-        coverPhoto: file && URL.createObjectURL(file),
+        coverPhoto: file ? URL.createObjectURL(file) : data.coverPhoto,
       });
     } else {
       setData({

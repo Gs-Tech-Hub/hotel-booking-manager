@@ -6,13 +6,9 @@ import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
 import DrinksInventoryPage from "./_components/products-table/drinks-inventory";
 import { ProductsListSkeleton } from "./_components/products-table/skeleton";
 import { strapiService } from "@/utils/dataEndPoint";
-type PropsType = {
-  searchParams: {
-    selected_time_frame?: string;
-  };
-};
 
-export default function Bar({ searchParams }: PropsType) {
+
+export default function Bar() {
   const [productsList, setProductsList] = useState([]);
 
   useEffect(() => {

@@ -16,7 +16,6 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
   const removeOrder = useOrderStore((state) => state.removeOrder); // Assuming this function clears order data
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const currentOrder = useOrderStore((state) =>
     state.orders.find((o) => o.id === order.id)
@@ -41,7 +40,7 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
       toast.success("Order completed successfully!");
       onClose();
     } catch (error) {
-      toast.error("Failed to complete the order.");
+      toast.error(`Failed to complete the order: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);
     }
@@ -121,7 +120,7 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
               <div className="mt-6 flex justify-end gap-2">
                 <Button
                   onClick={handleContinueSales}
-                  className={cn("bg-blue-600 text-white", isRefreshing && "opacity-50")}
+                  className={cn("bg-blue-600 text-white")}
                   label="Continue Sales"
                 />
                 <Button
