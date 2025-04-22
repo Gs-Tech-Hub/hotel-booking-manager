@@ -1,4 +1,3 @@
-
 type ApiHandlerProps = {
   baseUrl: string;
 };
@@ -43,15 +42,36 @@ const ApiHandler = ({ baseUrl }: ApiHandlerProps) => {
     }
   };
 
+  const fetchWithAuth = async (endpoint: string) => {
+    // Get JWT token from cookies
+    const token = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('jwt='))
+      ?.split('=')[1];
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    return fetchWithRetry(`${baseUrl}/${endpoint}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  };
+  
+
   const fetchData = async (endpoint: FetchDataParams) => {
     return fetchWithRetry(`${baseUrl}/${endpoint}`);
   };
 
   const createData = async ({ endpoint, data }: CreateDataParams) => {
+    const isAuth = endpoint === "auth/local";
+
     return fetchWithRetry(`${baseUrl}/${endpoint}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ data }), 
+      body: JSON.stringify(isAuth ? data : { data }), // unwrapped for auth
     });
   };
 
@@ -59,7 +79,7 @@ const ApiHandler = ({ baseUrl }: ApiHandlerProps) => {
     return fetchWithRetry(`${baseUrl}/${endpoint}/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ updatedData }), 
+      body: JSON.stringify({ data: updatedData })
     });
   };
 
@@ -67,7 +87,7 @@ const ApiHandler = ({ baseUrl }: ApiHandlerProps) => {
     return fetchWithRetry(`${baseUrl}/${endpoint}/${id}`, { method: 'DELETE' });
   };
 
-  return { fetchData, createData, updateData, deleteData };
+  return { fetchWithAuth, fetchData, createData, updateData, deleteData };
 };
 
 export default ApiHandler;

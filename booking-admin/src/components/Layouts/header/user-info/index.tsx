@@ -11,14 +11,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
+import { useAuth } from '@/components/Auth/context/auth-context';
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, loading, logout } = useAuth(); // Destructure user and loading from context
 
-  const USER = {
-    name: "John Smith",
-    email: "johnson@nextadmin.com",
-    img: "/images/user/user-03.png",
+  if (loading) {
+    return <div>Loading...</div>; // You can replace this with a proper loader component if needed
+  }
+  // Fallback values in case user information is not available
+  const userName = user?.name ? capitalizeName(user.name) : '';
+  const userEmail = user?.email;
+  const userImage = user?.image; 
+
+  const handleLogout = async () => {
+    setIsOpen(false); // Close dropdown/menu
+    await logout();   // Call logout from context
   };
 
   return (
@@ -27,16 +36,21 @@ export function UserInfo() {
         <span className="sr-only">My Account</span>
 
         <figure className="flex items-center gap-3">
-          <Image
-            src={USER.img}
-            className="size-12"
-            alt={`Avatar of ${USER.name}`}
-            role="presentation"
-            width={200}
-            height={200}
-          />
+        {userImage ? (
+            <Image
+              src={userImage}
+              className="size-12"
+              alt={`Avatar of ${userName}`}
+              role="presentation"
+              width={200}
+              height={200}
+            />
+          ) : (
+            <UserIcon className="size-12" aria-hidden />
+          )}
+          
           <figcaption className="flex items-center gap-1 font-medium text-dark dark:text-dark-6 max-[1024px]:sr-only">
-            <span>{USER.name}</span>
+            <span>{userName}</span>
 
             <ChevronUpIcon
               aria-hidden
@@ -57,28 +71,32 @@ export function UserInfo() {
         <h2 className="sr-only">User information</h2>
 
         <figure className="flex items-center gap-2.5 px-5 py-3.5">
-          <Image
-            src={USER.img}
-            className="size-12"
-            alt={`Avatar for ${USER.name}`}
-            role="presentation"
-            width={200}
-            height={200}
-          />
-
+        {userImage ? (
+            <Image
+              src={userImage}
+              className="size-12"
+              alt={`Avatar for ${userName}`}
+              role="presentation"
+              width={200}
+              height={200}
+            />
+          ) : (
+            <UserIcon className="size-12" aria-hidden />
+          )}
+          
           <figcaption className="space-y-1 text-base font-medium">
             <div className="mb-2 leading-none text-dark dark:text-white">
-              {USER.name}
+              {userName}
             </div>
 
-            <div className="leading-none text-gray-6">{USER.email}</div>
+            <div className="leading-none text-gray-6">{userEmail}</div>
           </figcaption>
         </figure>
 
         <hr className="border-[#E8E8E8] dark:border-dark-3" />
 
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-6 [&>*]:cursor-pointer">
-          <Link
+          {/* <Link
             href={"/profile"}
             onClick={() => setIsOpen(false)}
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
@@ -86,10 +104,10 @@ export function UserInfo() {
             <UserIcon />
 
             <span className="mr-auto text-base font-medium">View profile</span>
-          </Link>
+          </Link> */}
 
           <Link
-            href={"/pages/settings"}
+            href={"/settings"}
             onClick={() => setIsOpen(false)}
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
           >
@@ -106,7 +124,7 @@ export function UserInfo() {
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-6">
           <button
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
-            onClick={() => setIsOpen(false)}
+            onClick={handleLogout}
           >
             <LogOutIcon />
 
@@ -117,3 +135,11 @@ export function UserInfo() {
     </Dropdown>
   );
 }
+
+// Helper function to capitalize the first letter of each word in the name
+const capitalizeName = (name: string) => {
+  return name
+    .split(" ")  // Split the name into words
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())  // Capitalize the first letter of each word
+    .join(" ");  // Join the words back together
+};

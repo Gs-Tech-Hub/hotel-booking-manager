@@ -1,11 +1,30 @@
+"use client";
+
 import { TrendingUpIcon } from "@/assets/icons";
 import { compactFormat } from "@/lib/format-number";
 import { cn } from "@/lib/utils";
 import { getCampaignVisitorsData } from "@/services/charts.services";
 import { CampaignVisitorsChart } from "./chart";
+import { useEffect, useState } from "react";
 
-export async function CampaignVisitors({ className }: { className?: string }) {
-  const data = await getCampaignVisitorsData();
+export function CampaignVisitors({ className }: { className?: string }) {
+  const [data, setData] = useState<{
+    total_visitors: number;
+    performance: number;
+    chart: { x: string; y: number }[];
+  }>({
+    total_visitors: 0,
+    performance: 0,
+    chart: []
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await getCampaignVisitorsData();
+      setData(result);
+    };
+    fetchData();
+  }, []);
 
   return (
     <div

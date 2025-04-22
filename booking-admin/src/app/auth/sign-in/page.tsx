@@ -1,17 +1,30 @@
+'use client'
+
+import { useAuth } from "@/components/Auth/context/auth-context";
 import Signin from "@/components/Auth/Signin";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export const metadata: Metadata = {
-  title: "Sign in",
-};
 
 export default function SignIn() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get('redirect') || '/';
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace(redirect);
+    }
+  }, [user, loading, redirect]);
+
   return (
     <>
-      <Breadcrumb pageName="Sign In" />
+      <Breadcrumb pageName="" />
 
       <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
         <div className="flex flex-wrap items-center">
@@ -26,14 +39,14 @@ export default function SignIn() {
               <Link className="mb-10 inline-block" href="/">
                 <Image
                   className="hidden dark:block"
-                  src={"/images/logo/logo.svg"}
+                  src={"/images/fmmm1-light.svg"}
                   alt="Logo"
                   width={176}
                   height={32}
                 />
                 <Image
                   className="dark:hidden"
-                  src={"/images/logo/logo-dark.svg"}
+                  src={"/images/fmmm1-dark.svg"}
                   alt="Logo"
                   width={176}
                   height={32}
@@ -52,15 +65,6 @@ export default function SignIn() {
                 fields below
               </p>
 
-              <div className="mt-31">
-                <Image
-                  src={"/images/grids/grid-02.svg"}
-                  alt="Logo"
-                  width={405}
-                  height={325}
-                  className="mx-auto dark:opacity-30"
-                />
-              </div>
             </div>
           </div>
         </div>

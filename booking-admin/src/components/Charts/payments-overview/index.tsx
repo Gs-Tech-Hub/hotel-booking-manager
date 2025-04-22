@@ -1,19 +1,36 @@
+"use client";
+
 import { PeriodPicker } from "@/components/period-picker";
 import { standardFormat } from "@/lib/format-number";
 import { cn } from "@/lib/utils";
 import { getPaymentsOverviewData } from "@/services/charts.services";
 import { PaymentsOverviewChart } from "./chart";
+import { useEffect, useState } from "react";
 
 type PropsType = {
   timeFrame?: string;
   className?: string;
 };
 
-export async function PaymentsOverview({
+export function PaymentsOverview({
   timeFrame = "monthly",
   className,
 }: PropsType) {
-  const data = await getPaymentsOverviewData(timeFrame);
+  const [data, setData] = useState<{
+    received: { x: unknown; y: number }[];
+    due: { x: unknown; y: number }[];
+  }>({
+    received: [],
+    due: []
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await getPaymentsOverviewData(timeFrame);
+      setData(result);
+    };
+    fetchData();
+  }, [timeFrame]);
 
   return (
     <div
