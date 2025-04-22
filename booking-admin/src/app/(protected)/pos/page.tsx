@@ -1,11 +1,9 @@
 "use client"
-
-import { Suspense, useEffect, useState } from "react";
-import { OverviewCardsGroup } from "./_components/overview-cards";
-import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
-import DrinksInventoryPage from "./_components/products-table/drinks-inventory";
-import { ProductsListSkeleton } from "./_components/products-table/skeleton";
 import { strapiService } from "@/utils/dataEndPoint";
+import { useState, useEffect, Suspense } from "react";
+import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
+import POSLayout from "./_components/sales-section";
+
 type PropsType = {
   searchParams: {
     selected_time_frame?: string;
@@ -31,21 +29,7 @@ export default function Bar({ searchParams }: PropsType) {
   return (
     <>
       <Suspense fallback={<OverviewCardsSkeleton />}>
-        <OverviewCardsGroup 
-        payed={{
-          value: 0
-        }} 
-        not_payed={{
-          value: 0
-        }} 
-        total_earned={{
-          value: 0
-        }} 
-        />
-      </Suspense>
-
-      <Suspense fallback={<ProductsListSkeleton />}>
-        <DrinksInventoryPage products={productsList} />
+       <POSLayout />
       </Suspense>
     </>
   );
