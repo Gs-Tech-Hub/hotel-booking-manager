@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 type ApiHandlerProps = {
   baseUrl: string;
 };
@@ -5,11 +7,13 @@ type ApiHandlerProps = {
 type FetchDataParams = string;
 type CreateDataParams = {
   endpoint: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
 };
 type UpdateDataParams = {
   endpoint: string;
   id: string | number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   updatedData: any;
 };
 type DeleteDataParams = {

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { strapiService } from './utils/dataEndPoint';
 
 // Define protected routes that require authentication
 const protectedRoutes = [
@@ -15,12 +14,12 @@ const protectedRoutes = [
 ];
 
 // Define role-based access for specific routes
-const roleBasedRoutes: Record<string, string[]> = {
-  '/bar': ['admin', 'bar'],
-  '/kitchen': ['admin', 'kitchen'],
-  '/games': ['admin', 'bar'],
-  '/products': ['admin', 'manager'],
-};
+// const roleBasedRoutes: Record<string, string[]> = {
+//   '/bar': ['admin', 'bar'],
+//   '/kitchen': ['admin', 'kitchen'],
+//   '/games': ['admin', 'bar'],
+//   '/products': ['admin', 'manager'],
+// };
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

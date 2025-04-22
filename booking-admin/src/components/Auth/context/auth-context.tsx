@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable */
+
 import { createContext, useContext, useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { strapiService } from "@/utils/dataEndPoint";
@@ -32,11 +34,11 @@ const roleToDefaultPageMap: Record<User["role"], string> = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Toggle this to true for verbose debugging
-const DEBUG = true;
+// const DEBUG = true;
 
-const log = (...args: any[]) => {
-  if (DEBUG) console.log("[AUTH]", ...args);
-};
+// const log = (...args: any[]) => {
+//   if (DEBUG) console.log("[AUTH]", ...args);
+// };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -44,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   const initializeAuth = useCallback(async () => {
-    log("Initializing auth...");
+    // log("Initializing auth...");
     try {
       setLoading(true);
       const storedUser = localStorage.getItem('user');
@@ -55,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const userId = userData?.id; // Ensure the user ID is stored in localStorage
 
         if (!userId) {
-          log("User ID not found in storage.");
+          // log("User ID not found in storage.");
           setUser(null);
           return;
         }
@@ -64,9 +66,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const isValid = await strapiService.verifyToken(storedJwt, userId);
           if (isValid?.valid) {
             setUser(userData);
-            log("User set from storage:", userData);
+            // log("User set from storage:", userData);
           } else {
-            log("Token invalid, clearing storage...");
+            // log("Token invalid, clearing storage...");
             localStorage.removeItem('user');
             localStorage.removeItem('jwt');
             setUser(null);
@@ -76,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(null);
         }
       } else {
-        log("No valid auth data found in storage.");
+        // log("No valid auth data found in storage.");
         setUser(null);
       }
     } catch (err) {
@@ -92,18 +94,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [initializeAuth]);
 
   const login = async (email: string, password: string) => {
-    log("Attempting login...");
+    // log("Attempting login...");
     try {
       setLoading(true);
       const verifiedUser = await strapiService.loginUser(email, password);
-      log("Login response:", verifiedUser);
+      // log("Login response:", verifiedUser);
 
       if (!verifiedUser?.jwt) {
         throw new Error("Invalid credentials: missing JWT");
       }
 
       const userWithRole = await strapiService.getUserProfileWithRole(verifiedUser.user.id);
-      log("Fetched user profile with role:", userWithRole);
+      // log("Fetched user profile with role:", userWithRole);
 
       if (!userWithRole?.role) {
         throw new Error("User role information is missing");
@@ -122,11 +124,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('jwt', verifiedUser.jwt);
 
       setUser(userData);
-      log("User logged in and set:", userData);
+      // log("User logged in and set:", userData);
 
       const urlParams = new URLSearchParams(window.location.search);
       const redirectPath = urlParams.get("redirect") || roleToDefaultPageMap[userData.role] || "/";
-      log("Redirecting to:", redirectPath);
+      // log("Redirecting to:", redirectPath);
 
       router.replace(redirectPath);
     } catch (error: any) {
@@ -141,13 +143,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    log("Logging out...");
+    // log("Logging out...");
     try {
       localStorage.removeItem('user');
       localStorage.removeItem('jwt');
       setUser(null);
       router.replace("/auth/sign-in");
-      log("User logged out, redirected to sign-in.");
+      // log("User logged out, redirected to sign-in.");
     } catch (err) {
       console.warn("Logout cleanup failed:", err);
     }
@@ -155,7 +157,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const defaultLandingPage = useMemo(() => {
     const landing = user ? roleToDefaultPageMap[user.role] : null;
-    log("Computed default landing page:", landing);
+    // log("Computed default landing page:", landing);
     return landing;
   }, [user]);
 

@@ -97,8 +97,8 @@ export function ClosedDoor(props: SVGPropsType){
   return(
     <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width={38} height={38}
      viewBox="0 0 100.000000 100.000000" preserveAspectRatio="xMidYMid meet"
-     {...props}
-     >
+     
+     {...props}>
 
 <g transform="translate(0.000000,100.000000) scale(0.100000,-0.100000)"
  fill="currentColor" stroke="none">
@@ -115,8 +115,7 @@ export function CheckIn(props: SVGPropsType) {
      width={38} height={38}
      viewBox="0 0 100.000000 100.000000" 
      preserveAspectRatio="xMidYMid meet"
-     {...props}
-     >
+     {...props}>
 
     <g transform="translate(0.000000,100.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none">
     <path d="M294 969 c-46 -13 -74 -49 -83 -110 -9 -56 -1 -89 23 -89 10 0 12 12 8 45 -4 38 -1 50 18 70 27 29 37 31 59 11 9 -8 32 -18 51 -23 34 -9 35 -11 33 -56 -1 -43 0 -46 18 -37 22 12 25 53 9 111 -17 61 -74 94 -136 78z"/>
@@ -139,8 +138,7 @@ export function CheckOut(props: SVGPropsType) {
     width={38} height={38} 
     viewBox="0 0 100.000000 100.000000" 
     preserveAspectRatio="xMidYMid meet"
-    {...props}
-    >
+    {...props}>
 
     <g transform="translate(0.000000,100.000000) scale(0.100000,-0.100000)" 
     fill="currentColor" stroke="none">
@@ -168,5 +166,5 @@ export function CheckOut(props: SVGPropsType) {
     <path d="M760 62 c0 -60 1 -62 26 -62 25 0 26 2 21 41 -3 23 -15 51 -26 63 l-21 20 0 -62z"/>
     </g>
     </svg>
-  );
+  );    
 }

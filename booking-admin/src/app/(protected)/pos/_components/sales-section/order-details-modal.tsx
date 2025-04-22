@@ -40,7 +40,7 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
       toast.success("Order completed successfully!");
       onClose();
     } catch (error) {
-      toast.error(`Failed to complete the order: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(`"Failed to complete the order." ${error}`);
     } finally {
       setIsLoading(false);
     }

@@ -1,6 +1,4 @@
-import { compactFormat, standardFormat } from "@/lib/format-number";
 import { OverviewCard } from "./card";
-import * as icons from "./icons";
 import { formatPrice } from "@/utils/priceHandler";
 
 type OverviewDataItem = {

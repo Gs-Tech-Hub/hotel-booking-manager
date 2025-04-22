@@ -6,15 +6,9 @@ import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
 import DrinksInventoryPage from "./_components/products-table/drinks-inventory";
 import { ProductsListSkeleton } from "./_components/products-table/skeleton";
 import { strapiService } from "@/utils/dataEndPoint";
-import POSLayout from "./_components/sales-section";
 
-type PropsType = {
-  searchParams: {
-    selected_time_frame?: string;
-  };
-};
 
-export default function Bar({ searchParams }: PropsType) {
+export default function Bar() {
   const [productsList, setProductsList] = useState([]);
 
   useEffect(() => {
@@ -32,18 +26,23 @@ export default function Bar({ searchParams }: PropsType) {
 
   return (
     <>
-      {/* <Suspense fallback={<OverviewCardsSkeleton />}>
-        <OverviewCardsGroup payed={{
+      <Suspense fallback={<OverviewCardsSkeleton />}>
+        <OverviewCardsGroup 
+        payed={{
           value: 0
-        }} not_payed={{
+        }} 
+        not_payed={{
           value: 0
-        }} total_earned={{
+        }} 
+        total_earned={{
           value: 0
-        }} />
-      </Suspense> */}
-      <div className="mt-4">
-        <POSLayout />
-      </div>
+        }} 
+        />
+      </Suspense>
+
+      <Suspense fallback={<ProductsListSkeleton />}>
+        <DrinksInventoryPage products={productsList} />
+      </Suspense>
     </>
   );
 }

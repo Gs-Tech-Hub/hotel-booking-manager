@@ -1,5 +1,3 @@
-import { ArrowDownIcon, ArrowUpIcon } from "@/assets/icons";
-import { cn } from "@/lib/utils";
 import type { JSX, SVGProps } from "react";
 
 type PropsType = {
@@ -26,22 +24,6 @@ export function OverviewCard({ label, data, Icon }: PropsType) {
 
           <dd className="text-lg font-medium text-dark-6">{label}</dd>
         </dl>
-
-        {/* <dl
-          className={cn(
-            "text-sm font-medium",
-            isDecreasing ? "text-red" : "text-green",
-          )}
-        > */}
-          {/* <dt className="flex items-center gap-1.8">
-            {data.date} hours
-          </dt> */}
-
-          {/* <dd className="sr-only">
-            {label} {isDecreasing ? "Decreased" : "Increased"} by{" "}
-            {data.date} hours
-          </dd> */}
-        {/* </dl> */}
       </div>
     </div>
   );

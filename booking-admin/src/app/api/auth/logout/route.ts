@@ -3,11 +3,11 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const options = {
-    path: "/",
-    secure: true,
-    sameSite: "strict" as const,
-  };
+  // const options = {
+  //   path: "/",
+  //   secure: true,
+  //   sameSite: "strict" as const,
+  // };
 
   (await cookies()).delete("jwt");
   (await cookies()).delete("auth");

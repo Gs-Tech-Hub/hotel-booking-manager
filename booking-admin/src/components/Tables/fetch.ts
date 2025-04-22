@@ -1,4 +1,3 @@
-import * as logos from "@/assets/logos";
 
 export async function getTopProducts() {
   // Fake delay

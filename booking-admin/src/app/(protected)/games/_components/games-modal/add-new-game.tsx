@@ -38,7 +38,7 @@ export function CreateGameModal({ isOpen, onClose, onSubmit }: CreateGameModalPr
         setShowUserForm(true);
       }
     } catch (error) {
-      toast.error("Error checking customer.");
+      toast.error(`Error checking customer: ${(error as Error).message}`);
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +61,7 @@ export function CreateGameModal({ isOpen, onClose, onSubmit }: CreateGameModalPr
       });
       await createGame(newUser.documentId);
     } catch (error) {
-      toast.error("Failed to create user.");
+      toast.error(`Failed to create user : ${(error as Error).message}`);
     } finally {
       setIsLoading(false);
     }
@@ -79,7 +79,7 @@ export function CreateGameModal({ isOpen, onClose, onSubmit }: CreateGameModalPr
       onSubmit();
       onClose();
     } catch (error) {
-      toast.error("Failed to create game.");
+      toast.error(`Failed to create game.: ${(error as Error).message}`);
     }
   };
 

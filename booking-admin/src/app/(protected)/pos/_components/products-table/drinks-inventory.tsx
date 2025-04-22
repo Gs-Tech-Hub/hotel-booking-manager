@@ -21,6 +21,7 @@ export default function DrinksInventoryPage({ products }: { products: Product[] 
     return Number(b[sortKey as keyof typeof b]) - Number(a[sortKey as keyof typeof a]);
   });
 
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-4">

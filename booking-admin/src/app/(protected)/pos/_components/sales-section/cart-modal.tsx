@@ -60,7 +60,7 @@ export function CartModal({
       toast.success("Order placed successfully!");
       onClose();
     } catch (error) {
-      toast.error("Failed to process order." + (error as Error).message);
+      toast.error(`"Failed to process order." ${error}`);
     } finally {
       setIsLoading(false);
     }

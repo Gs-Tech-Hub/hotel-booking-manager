@@ -1,4 +1,4 @@
-import { JSX } from "react";
+import { JSX, SVGProps } from "react";
 
 export type SubItem = {
     title: string;
@@ -8,7 +8,7 @@ export type SubItem = {
   
   export type NavItem = {
     title: string;
-    icon: (props: any) => JSX.Element;
+    icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
     url?: string;
     items: SubItem[];
     roles?: string[]; // Optional roles
