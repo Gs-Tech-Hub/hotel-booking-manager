@@ -15,6 +15,8 @@ export interface CartItem extends MenuItem {
 interface CartState {
   cartItems: CartItem[];
   addToCart: (item: MenuItem) => void;
+  decrementItem: (itemId: number) => void;
+  setCartItems: (items: CartItem[]) => void;  
   clearCart: () => void;
 }
 
@@ -35,5 +37,15 @@ export const useCartStore = create<CartState>((set) => ({
         };
       }
     }),
-  clearCart: () => set({ cartItems: [] }),
+
+    decrementItem: (itemId: number) => set((state) => {
+      const updatedCart = state.cartItems
+      .map(item => item.id === itemId ? { ...item, quantity: item.quantity - 1 } : item)
+      .filter(item => item.quantity > 0);
+    return { cartItems: updatedCart };
+    }),
+
+    setCartItems: (items) => set(() => ({ cartItems: items })),
+
+     clearCart: () => set({ cartItems: [] }),
 }));

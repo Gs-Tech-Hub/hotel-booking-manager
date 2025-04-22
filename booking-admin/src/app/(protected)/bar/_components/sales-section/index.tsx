@@ -9,7 +9,7 @@ import { useOrderStore, Order } from '@/app/stores/useOrderStore';
 export default function POSLayout() {
   const [isOrderDetailsOpen, setOrderDetailsOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [isOrderActive, setOrderActive] = useState(false);  
+  const [activeOrder, setActiveOrder] = useState<Order | null>(null);
 
 
   const orders = useOrderStore((state) => state.orders);
@@ -18,6 +18,7 @@ export default function POSLayout() {
   const handleViewOrderDetails = (order: Order) => {
     setSelectedOrder(order);
     setOrderDetailsOpen(true);
+    setActiveOrder(order);
   };
 
   const handleCreateOrder = ({
@@ -70,7 +71,10 @@ export default function POSLayout() {
 
       {/* Chart Sidebar */}
       <div className="lg:col-span-1">
-        <CartSidebar onCreateOrder={handleCreateOrder} />
+        <CartSidebar 
+        onCreateOrder={handleCreateOrder}
+        prefillOrder={activeOrder}  
+        />
       </div>
     </div>
   );

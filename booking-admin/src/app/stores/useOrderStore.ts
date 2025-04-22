@@ -20,18 +20,29 @@ export interface Order {
   paymentMethod?: PaymentMethod;
 }
 
+export type OrderStatus = "active" | "completed";
+
+export interface updateItemQuantity {
+  orderId?: string;
+  itemId: number;
+  quantity: number;
+}
+
 interface OrderStore {
   currentOrder: Order | null;
   orders: Order[];
   setOrder: (order: Order) => void;
   updateItemQuantity: (id: number, quantity: number) => void;
   addItemToOrder: (item: OrderItem) => void;
+  removeItemFromOrder: (orderId: string, itemId: number) => { /* logic to remove item */ },
   setPaymentMethod: (orderId: string, method: PaymentMethod) => void;
   completeOrder: (orderId: string) => void;
   clearOrder: () => void;
   setOrders: (orders: Order[]) => void;
   addOrder: (order: Order) => void;
   removeOrder: (orderId: string) => void;
+  updateOrderItem: (orderId: string, updatedItem: OrderItem) => void;
+  refreshOrders: () => Promise<void>;
   getOrderByCustomer: (customerName: string) => Order | undefined;
 }
 
@@ -45,20 +56,40 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
       return;
     }
     set({ currentOrder: order });
+  },  
+
+  updateItemQuantity: (itemId, newQty) => {
+    set((state) => {
+      const order = state.orders.find((o) =>
+        o.items.some((item) => item.id === itemId)
+      );
+      if (!order) return state;
+  
+      order.items = order.items.map((item) =>
+        item.id === itemId ? { ...item, quantity: newQty } : item
+      );
+  
+      return {
+        ...state,
+        orders: state.orders.map((o) =>
+          o.id === order.id ? order : o
+        )
+      };
+    });
   },
 
-  updateItemQuantity: (id, quantity) => {
+  removeItemFromOrder(orderId, itemId) {
     const state = get();
-    if (!state.currentOrder || quantity < 0) return;
+    if (!state.currentOrder) return {};
 
+    const updatedItems = state.currentOrder.items.filter((item) => item.id !== itemId);
     set({
       currentOrder: {
         ...state.currentOrder,
-        items: state.currentOrder.items.map((item) =>
-          item.id === id ? { ...item, quantity } : item
-        ),
+        items: updatedItems,
       },
     });
+    return {};
   },
 
   addItemToOrder: (newItem) => {
@@ -142,7 +173,27 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     }));
   },
 
-  getOrderByCustomer: (customerName) => {
+  updateOrderItem: (orderId: string, updatedItem: OrderItem) => {
+    set((state: OrderStore) => {
+      const updatedOrders = state.orders.map((order) => {
+        if (order.id === orderId) {
+          const updatedItems = order.items.map((item) =>
+            item.id === updatedItem.id ? { ...item, ...updatedItem } : item
+          );
+          return { ...order, items: updatedItems };
+        }
+        return order;
+      });
+      return { orders: updatedOrders };
+    });
+  },
+
+  refreshOrders: async (): Promise<void> => {
+    const fetched: Order[] = await fetch("/api/orders").then(res => res.json());
+    set({ orders: fetched });
+  },
+
+  getOrderByCustomer: (customerName: string): Order | undefined => {
     return get().orders.find(
       (order) => order.customerName === customerName && order.status === "active"
     );

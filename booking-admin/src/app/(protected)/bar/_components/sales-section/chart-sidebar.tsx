@@ -1,46 +1,78 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui-elements/button";
 import { useCartStore } from "@/app/stores/useCartStore";
+import { toast } from "react-toastify";
+import { Order, useOrderStore } from "@/app/stores/useOrderStore";
 
-export default function CartSidebar({ onCreateOrder }: { onCreateOrder: (order: any) => void }) {
+export default function CartSidebar({
+  onCreateOrder,
+  prefillOrder,
+}: {
+  onCreateOrder: (order: any) => void;
+  prefillOrder?: Order | null;
+}) {
   const [customerName, setCustomerName] = useState("");
   const [tableNumber, setTableNumber] = useState("");
   const [waiterName, setWaiterName] = useState("");
   const [isOrderActive, setOrderActive] = useState(false);
 
+
   const cartItems = useCartStore((state) => state.cartItems);
+  const setCartItems = useCartStore((state) => state.setCartItems);
   const clearCart = useCartStore((state) => state.clearCart);
+  const decrementItem = useCartStore((state) => state.decrementItem);
+  const updateOrderItem = useOrderStore((state) => state.updateOrderItem);
+
+  // When prefillOrder changes, populate the fields
+  useEffect(() => {
+    if (prefillOrder) {
+      setCustomerName(prefillOrder.customerName || "");
+      setTableNumber(prefillOrder.tableNumber || "");
+      setWaiterName(prefillOrder.waiterName || "");
+      setCartItems(prefillOrder.items || []); // ✅ Load items into cart
+      setOrderActive(true);
+      toast.info("Order loaded into cart.");
+    }
+  }, [prefillOrder, setCartItems]);
+
+  const handleNewOrder = () => {
+    setOrderActive(true);
+  };
 
   const handleCreateOrder = () => {
     if (!customerName || !tableNumber || !waiterName || cartItems.length === 0) {
-      alert("Please fill in all fields and add items to the cart.");
+      toast.error("Please fill in all fields and add items to the cart.");
       return;
     }
-
+  
     const newOrder = {
       customerName,
       tableNumber,
       waiterName,
       items: cartItems,
     };
-
-    onCreateOrder(newOrder);
-    clearCart(); // ✅ Clear cart after order
+  
+    // Check if we are updating an existing order (using prefillOrder)
+    if (prefillOrder?.id) {
+      // Assuming `updateOrderItem` is imported and available from your store
+      cartItems.forEach((updatedItem) => {
+        updateOrderItem(prefillOrder.id, updatedItem); // Update each item in the cart
+      });
+      toast.success("Order updated successfully!");
+    } else {
+      // If no orderId, create a new order
+      onCreateOrder(newOrder);
+      toast.success("Order submitted successfully!");
+    }
+  
+    // Clear the cart and reset the form
+    clearCart();
     setCustomerName("");
     setTableNumber("");
     setWaiterName("");
     setOrderActive(false);
-
-    console.log("Order created:", newOrder);
   };
-
-  const handleNewOrder = () => {
-    setOrderActive(true);
-    setCustomerName("");
-    setTableNumber("");
-    setWaiterName("");
-    console.log("New order started");
-  };
+  
 
   const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
 
@@ -53,8 +85,9 @@ export default function CartSidebar({ onCreateOrder }: { onCreateOrder: (order: 
           <p className="text-sm text-gray-500">No active order.</p>
           <Button
             onClick={handleNewOrder}
-            className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
+            className="mt-4 text-white px-4 py-2 rounded"
             label="Create New Order"
+            variant="dark"
           />
         </div>
       ) : (
@@ -101,8 +134,16 @@ export default function CartSidebar({ onCreateOrder }: { onCreateOrder: (order: 
             ) : (
               <ul className="mt-2 space-y-2 text-sm">
                 {cartItems.map((item, index) => (
-                  <li key={index} className="flex justify-between">
-                    <span>{item.name} x {item.quantity}</span>
+                  <li key={index} className="flex justify-between items-center">
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => decrementItem(item.id)}
+                        className="px-2 py-1 bg-gray-200 text-sm rounded hover:bg-gray-300"
+                      >
+                        −
+                      </button>
+                      <span>{item.name} x {item.quantity}</span>
+                    </div>
                     <span>${item.price * item.quantity}</span>
                   </li>
                 ))}
@@ -120,8 +161,9 @@ export default function CartSidebar({ onCreateOrder }: { onCreateOrder: (order: 
           {/* Submit Order */}
           <Button
             onClick={handleCreateOrder}
-            className="mt-4 bg-green-600 text-white px-4 py-2 rounded w-full"
+            className="mt-4 text-white px-4 py-2 rounded w-full"
             label="Submit Order"
+            variant="dark"
           />
         </div>
       )}

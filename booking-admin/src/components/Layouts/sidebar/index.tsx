@@ -67,7 +67,8 @@ export function Sidebar() {
         className={cn(
           "max-w-[290px] overflow-hidden border-r border-gray-200 bg-white transition-[width] duration-200 ease-linear dark:border-gray-800 dark:bg-gray-dark",
           isMobile ? "fixed bottom-0 top-0 z-50" : "sticky top-0 h-screen",
-          isOpen ? "w-full" : "w-0"
+          isOpen ? "w-full" : "w-0",
+          "h-screen" 
         )}
         aria-label="Main navigation"
         aria-hidden={!isOpen}
@@ -94,7 +95,7 @@ export function Sidebar() {
             )}
           </div>
 
-          {/* Navigation */}
+          {/* Navigation with scrollable content */}
           <div className="custom-scrollbar mt-6 flex-1 overflow-y-auto pr-3 min-[850px]:mt-10">
             {filteredNavData.map((section) => (
               <div key={section.label} className="mb-6">
