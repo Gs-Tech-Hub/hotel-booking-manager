@@ -69,7 +69,7 @@ export async function ChatsCard() {
                   </div>
                 )}
               </div>
-            </Link>
+            </Link> 
           </li>
         ))}
       </ul>

@@ -31,7 +31,7 @@ export default function CartSidebar({
     waiterName,
     items: cartItems,
     status: 'active', // Set initial status
-  };
+  }; 
 
   // When prefillOrder changes, populate the fields
   useEffect(() => {

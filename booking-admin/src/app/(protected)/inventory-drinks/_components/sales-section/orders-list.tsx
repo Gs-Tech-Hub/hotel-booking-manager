@@ -14,7 +14,7 @@ export default function OrdersList({
     (order: Order) => {
       onViewOrderDetails(order);
     },
-    [onViewOrderDetails]
+    [onViewOrderDetails] 
   );
 
   return (

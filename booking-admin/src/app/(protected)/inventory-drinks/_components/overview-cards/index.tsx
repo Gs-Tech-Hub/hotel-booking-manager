@@ -38,7 +38,7 @@ export function OverviewCardsGroup({  out_of_stock, low_stock, total_stock, bar_
         }}
         // Icon={icons.CheckIn}
       />
-
+ 
       <OverviewCard
         label="Total Available Stock"
         data={{

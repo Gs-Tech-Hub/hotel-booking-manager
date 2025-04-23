@@ -19,7 +19,7 @@ export type Product = {
   name: string;
   description: string | null;
   price: number;
-  quantity: number;
+  quantity: number; 
   threshold: number;
   availability: boolean;
   sold: number | null;

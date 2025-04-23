@@ -20,7 +20,7 @@ export default function POSLayout() {
     setOrderDetailsOpen(true);
     setActiveOrder(order);
   };
-
+ 
   const handleCreateOrder = ({
     customerName,
     tableNumber,

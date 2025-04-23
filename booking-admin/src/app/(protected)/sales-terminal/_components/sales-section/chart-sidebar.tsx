@@ -23,7 +23,7 @@ export default function CartSidebar({
   const clearCart = useCartStore((state) => state.clearCart);
   const decrementItem = useCartStore((state) => state.decrementItem);
   const updateOrderItem = useOrderStore((state) => state.updateOrderItem);
-
+ 
   const newOrder: Order = {
     id: Date.now().toString(), // Generate a temporary ID
     customerName,

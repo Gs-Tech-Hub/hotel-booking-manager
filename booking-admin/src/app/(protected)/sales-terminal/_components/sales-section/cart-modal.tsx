@@ -64,7 +64,7 @@ export function CartModal({
     } finally {
       setIsLoading(false);
     }
-  };
+  }; 
 
   const content = (
     <fieldset className="space-y-4" disabled={isLoading}>

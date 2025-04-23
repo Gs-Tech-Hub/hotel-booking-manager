@@ -23,5 +23,5 @@ export default function StockTransferModal({ products }: { products: Product[] }
         onClose={() => setIsOpen(false)} />}
       />
     </div>
-  );
+  ); 
 }

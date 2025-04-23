@@ -20,7 +20,7 @@ export default function DrinksInventoryPage({ products }: { products: Product[] 
     if (!sortKey) return 0;
     return Number(b[sortKey as keyof typeof b]) - Number(a[sortKey as keyof typeof a]);
   });
-
+ 
 
   return (
     <div className="p-6 space-y-6">

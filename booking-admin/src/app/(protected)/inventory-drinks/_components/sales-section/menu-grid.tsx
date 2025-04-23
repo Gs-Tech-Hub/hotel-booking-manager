@@ -18,7 +18,7 @@ export default function MenuGrid() {
     addToCart(item);
     toast.success(`${item.name} added to cart!`);
   };
-
+ 
   return (
     <div>
       <div className="flex justify-between items-center mb-4">

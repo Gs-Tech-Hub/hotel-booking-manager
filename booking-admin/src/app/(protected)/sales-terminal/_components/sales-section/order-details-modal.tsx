@@ -20,7 +20,7 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
   const currentOrder = useOrderStore((state) =>
     state.orders.find((o) => o.id === order.id)
   );
-
+ 
   useEffect(() => {
     if (!currentOrder) {
       toast.error("Order no longer exists.");

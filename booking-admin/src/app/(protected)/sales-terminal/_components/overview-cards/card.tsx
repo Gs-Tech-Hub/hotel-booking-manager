@@ -6,7 +6,7 @@ type PropsType = {
   data: {
     value: number | string;
     date: number;
-  };
+  }; 
   Icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
 };
 

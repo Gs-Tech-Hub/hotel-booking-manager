@@ -94,7 +94,7 @@ export default function StockTransferForm({ products, onClose }: { products: Pro
     for (const item of validItems) {
       try {
         const product = products.find(p => p.id === item.productId);
-        if (!product) continue;
+        if (!product) continue; 
 
         const currentTargetStock =
           item.target === "bar" ? product.bar_stock ?? 0 : product.restaurant_stock ?? 0;

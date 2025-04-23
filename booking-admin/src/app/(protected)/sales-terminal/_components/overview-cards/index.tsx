@@ -22,7 +22,7 @@ export function OverviewCardsGroup({  not_payed, payed, total_earned }: Overview
         data={{
           ...not_payed,
           value: +compactFormat(not_payed.value),
-          date: 24
+          date: 24 
         }}
         Icon={icons.ClosedDoor}
       />

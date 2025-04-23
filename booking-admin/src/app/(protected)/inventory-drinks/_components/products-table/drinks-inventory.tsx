@@ -21,7 +21,7 @@ export default function DrinksInventoryPage({ products }: { products: Product[] 
   const filtered = products.filter(item =>
     typeFilter ? item.drink_type?.typeName === typeFilter : true
   );
-
+ 
   // Sort by selected key
   const sorted = [...filtered].sort((a, b) => {
     if (!sortKey) return 0;

@@ -22,7 +22,7 @@ export type Product = {
   sold: number;
   profit: number;
 };
-
+ 
 export function ProductsList({
   products,
   filter,

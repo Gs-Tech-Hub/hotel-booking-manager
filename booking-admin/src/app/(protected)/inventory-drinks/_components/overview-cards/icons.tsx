@@ -170,4 +170,4 @@ export function CheckOut(props: SVGPropsType) {
     </g>
     </svg>
   );
-}
+} 

@@ -49,7 +49,7 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
   const handleContinueSales = () => {
     // Close the modal without modifying state, keeping cart intact
     onClose();
-  };
+  }; 
 
   const handleCancel = () => {
     // Clear the order data and prefilled data, disabling further editing

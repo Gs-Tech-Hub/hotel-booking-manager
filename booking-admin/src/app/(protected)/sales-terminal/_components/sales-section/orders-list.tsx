@@ -16,7 +16,7 @@ export default function OrdersList({
     },
     [onViewOrderDetails]
   );
-
+ 
   return (
     <div className="rounded-[10px] bg-white p-6 shadow-1 dark:bg-gray-dark">
       <h2 className="text-lg font-bold mb-4">Orders</h2>

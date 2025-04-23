@@ -15,7 +15,7 @@ export function ProductsListSkeleton() {
         Top Products
       </h2>
 
-      <Table>
+      <Table> 
         <TableHeader>
           <TableRow className="border-t text-base [&>th]:h-auto [&>th]:py-3 sm:[&>th]:py-4.5">
             <TableHead className="min-w-[120px]">Product Name</TableHead>

@@ -44,7 +44,7 @@ export default function POSLayout() {
       waiterName,
       items,
       status: 'active',
-    };
+    }; 
 
     setOrders([...orders, newOrder]);
     console.log('Order added to list:', newOrder);
