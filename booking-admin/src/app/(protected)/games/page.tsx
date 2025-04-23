@@ -15,13 +15,23 @@ export default function Games() {
   const [overviewData, setOverviewData] = useState({
     not_payed: { value: 0 },
     payed: { value: 0 },
-    total_earned: { value: 0 }
+    total_earned: { value: 0 },
+    total_games: { value: 0 }
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const gamesData = await strapiService.getGamesList({ populate: '*' });
+        const today = new Date();
+        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+        const gamesData = await strapiService.getGamesList({
+           populate: '*', 
+           'pagination[pageSize]': 50, 
+          'filters[createdAt][$gte]': startOfDay.toISOString(),
+          'filters[createdAt][$lte]': endOfDay.toISOString(),  
+         });
 
         // Set data for use by other components
         setGamesList(gamesData);
@@ -29,14 +39,19 @@ export default function Games() {
         // Compute overview stats without filtering the gamesList state
         let payed = 0;
         let notPayed = 0;
-        
+        let totalGames = 0;
+
         for (const game of gamesData || []) {
-          const amountPaid = Number(game.amount_paid) || 0;
-        
+          const amountPaid = Number(game.amount_paid) || 0; 
+          const amountOwed = Number(game.amount_owed) || 0;
+          const gameCount = Number(game.count) || 0;
+
+          totalGames += gameCount;
+
           if (game.game_status === 'completed') {
             payed += amountPaid;
           } else if (game.game_status === 'ongoing') {
-            notPayed += amountPaid;
+            notPayed += amountOwed;
           }
         }
         
@@ -45,7 +60,8 @@ export default function Games() {
         setOverviewData({
           payed: { value: payed },
           not_payed: { value: notPayed },
-          total_earned: { value: totalEarned }
+          total_earned: { value: totalEarned },
+          total_games: { value: totalGames }
         });
         
         
@@ -67,6 +83,7 @@ export default function Games() {
           not_payed={overviewData.not_payed}
           payed={overviewData.payed}
           total_earned={overviewData.total_earned}
+          total_games={overviewData.total_games}
         />
       </Suspense>
       <div className="mt-4">

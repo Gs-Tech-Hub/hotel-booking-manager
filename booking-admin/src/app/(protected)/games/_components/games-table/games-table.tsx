@@ -15,6 +15,7 @@ export type Games = {
   count: number;
   game_status: string;
   amount_paid: number;
+  amount_owed: number;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
@@ -91,7 +92,7 @@ export function GamesList({
               </TableCell>
 
               <TableCell>{item.count}</TableCell>
-              <TableCell>₦{item.amount_paid}</TableCell>
+              <TableCell>₦{item.amount_owed}</TableCell>
               <TableCell>₦{item.amount_paid}</TableCell>
               <TableCell className="capitalize">{item.game_status}</TableCell>
             <TableCell>{formatDistanceToNow(new Date(item.updatedAt), { addSuffix: true })}</TableCell>

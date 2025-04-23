@@ -72,7 +72,8 @@ export function CreateGameModal({ isOpen, onClose, onSubmit }: CreateGameModalPr
       await strapiService.createGame({
         customer: customerId,
         count: 1,
-        amount_paid: 500,
+        amount_paid: 0,
+        amount_owed: 500,
         game_status: "ongoing",
       });
       toast.success("Game session created!");

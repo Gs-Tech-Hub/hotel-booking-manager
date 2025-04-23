@@ -4,6 +4,7 @@ import { Button } from "@/components/ui-elements/button";
 import { strapiService } from "@/utils/dataEndPoint";
 import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/components/Auth/context/auth-context";
 
 interface AddGameModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface AddGameModalProps {
   onSubmit: (data: {
     count: number;
     amount_paid: number;
+    amount_owed: number;
     game_status: string;
   }) => void;
   defaultData?: {
@@ -18,6 +20,7 @@ interface AddGameModalProps {
     playerName: string;
     count: number;
     amountPaid: number;
+    amountOwed: number;
     gameStatus: string;
   };
 }
@@ -30,11 +33,16 @@ export function AddGameModal({
 }: AddGameModalProps) {
   const [playerName, setPlayerName] = useState<string>("");
   const [count, setCount] = useState<number>(1);
-  const [amountPaid, setAmountPaid] = useState<number>(500);
+  const [amountPaid, setAmountPaid] = useState<number>(0);
+  const [amountOwed, setAmountOwed] = useState<number>(500);
   const [gameStatus, setGameStatus] = useState<string>("");
   const [lockedStatus, setLockedStatus] = useState<string>("");
   const [defaultCount, setDefaultCount] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const { user } = useAuth();
+  const userRole = user?.role || "";
+
 
   const isLocked = lockedStatus === "completed" || lockedStatus === "cancelled";
 
@@ -44,18 +52,24 @@ export function AddGameModal({
       setCount(defaultData.count);
       setDefaultCount(defaultData.count);
       setAmountPaid(defaultData.amountPaid);
+      setAmountOwed(defaultData.amountOwed);
       setGameStatus(defaultData.gameStatus);
       setLockedStatus(defaultData.gameStatus);
     }
   }, [defaultData]);
 
   useEffect(() => {
-    setAmountPaid(count * 500);
+    setAmountOwed(count * 500);
   }, [count]);
 
   const handleSubmit = async () => {
     if (!playerName.trim()) {
       toast.warning("Player name is required");
+      return;
+    }
+
+    if (gameStatus === "cancelled" && userRole !== "manager" || userRole !== "admin") {
+      toast.warn("Only a manager can cancel an ongoing game.");
       return;
     }
 
@@ -67,6 +81,7 @@ export function AddGameModal({
     const payload = {
       count,
       amount_paid: amountPaid,
+      amount_owed: amountOwed,
       game_status: gameStatus,
     };
 
@@ -145,7 +160,26 @@ export function AddGameModal({
         </label>
         <select
           value={gameStatus}
-          onChange={(e) => setGameStatus(e.target.value)}
+          onChange={(e) => {
+            const newStatus = e.target.value;
+            setGameStatus(newStatus);
+            if (newStatus === "cancelled") {
+              if (userRole !== "manager") {
+                toast.warn("Only a manager can cancel an ongoing game.");
+                return; // Prevent change if not a manager
+              }
+              setAmountPaid(0); // No payment if cancelled
+              setAmountOwed(0); // Nothing left to owe
+              setCount(0); // Reset games played
+            } else if (newStatus === "completed") {
+              setAmountPaid(amountOwed); // Pay everything owed
+              setAmountOwed(0); // Nothing left to owe
+            } else if (newStatus === "ongoing") {
+              setAmountPaid(0); // Reset payment if ongoing
+              setAmountOwed(count * 500); // Recalculate amount owed
+            }
+            
+          }}
           className="w-full px-3 py-2 mt-1 border rounded dark:bg-gray-800 dark:text-white"
         >
           <option value="ongoing">Ongoing</option>
