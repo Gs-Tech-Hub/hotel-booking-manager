@@ -1,4 +1,4 @@
-'use client'
+'use client';
 // import { useState } from 'react';
 
 type ApiHandlerProps = {
@@ -65,11 +65,32 @@ const ApiHandler = ({ baseUrl }: ApiHandlerProps) => {
     });
   };
 
+  const uploadToStrapi = async ({ endpoint, data }: { endpoint: string; data: FormData }) => {
+    return fetchWithRetry(`${baseUrl}/${endpoint}`, {
+      method: 'POST',
+      body: data, // Let the browser handle multipart headers
+    });
+  };
+
+  const uploadFile = async (file: File): Promise<any> => {
+    const formData = new FormData();
+    formData.append('files', file);
+  
+    const response = await uploadToStrapi({
+      endpoint: 'upload',
+      data: formData,
+    });
+  
+    return response?.[0]; // Return full metadata (or adjust to return .id only if preferred)
+  };
+  
+  
+  
   const deleteData = async ({ endpoint, id }: DeleteDataParams) => {
     return fetchWithRetry(`${baseUrl}/${endpoint}/${id}`, { method: 'DELETE' });
   };
 
-  return { fetchData, createData, updateData, deleteData };
+  return { fetchData, createData, updateData, uploadToStrapi, uploadFile, deleteData };
 };
 
 export default ApiHandler;

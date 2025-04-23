@@ -40,6 +40,26 @@ export const strapiService = {
     return url.toString();
   },
 
+  uploadFile: async function (file: File): Promise<number | null> {
+    const formData = new FormData();
+    formData.append("files", file);
+  
+    const response = await apiHandlerInstance.uploadToStrapi({
+      endpoint: "upload",
+      data: formData,
+    });
+  
+    return response?.[0]?.id ?? null;
+  },
+  
+  
+
+  async  createJobApplication (formData: any) {
+    const jobApplication = await this.post('job-applications', formData,);
+    return jobApplication;
+  },
+  
+
   async createBooking(bookingData: any) {
     const booking = await this.post("boookings", bookingData);
     return booking;
@@ -85,5 +105,6 @@ async createBookingItem( itemData: BookingItemPayload) {
   async createOrGetBooking(bookingData: any) {
     const booking = await this.createBooking(bookingData);
     return booking.documentId;
-  }
+  },
+     
 };
