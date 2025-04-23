@@ -14,8 +14,11 @@ export default function Bar() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const productsData = await strapiService.getDrinksList({ 'pagination[pageSize]': 50 });
-        setProductsList(productsData);
+        const productsData = await strapiService.getDrinksList({
+          'populate': '*',
+          'pagination[pageSize]': 50,
+        });
+      setProductsList(productsData);
       } catch (error) {
         console.error("Failed to fetch products:", error);
       }
