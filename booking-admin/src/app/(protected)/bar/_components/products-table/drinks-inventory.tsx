@@ -10,22 +10,16 @@ export default function DrinksInventoryPage({ products }: { products: Product[] 
   const [typeFilter, setTypeFilter] = useState("");
   const [sortKey, setSortKey] = useState("");
 
- 
-  const drinkTypes: string[] = Array.from(
-    new Set(products.map(p => p.drink_type?.typeName || ""))
-  ).filter(Boolean).sort();
   
 
-  // Filter by selected type
-  const filtered = products.filter(item =>
-    typeFilter ? item.drink_type?.typeName === typeFilter : true
+  const filtered = products.filter((item) =>
+    typeFilter ? item.type === typeFilter : true
   );
-
-  // Sort by selected key
   const sorted = [...filtered].sort((a, b) => {
     if (!sortKey) return 0;
     return Number(b[sortKey as keyof typeof b]) - Number(a[sortKey as keyof typeof a]);
   });
+
 
   return (
     <div className="p-6 space-y-6">
@@ -33,13 +27,13 @@ export default function DrinksInventoryPage({ products }: { products: Product[] 
         <Button className="bg-primary text-white hover:bg-primary/90" label="+ Add Product" />
 
         <div className="flex gap-2 flex-wrap">
-        <Select value={typeFilter} onChange={setTypeFilter}>
+          <Select value={typeFilter} onChange={setTypeFilter}>
             <SelectItem value="">All Types</SelectItem>
-            {drinkTypes.map(type => (
-              <SelectItem key={type} value={type}>
-                {type}
-              </SelectItem>
-            ))}
+            <SelectItem value="Soft">Soft</SelectItem>
+            <SelectItem value="Alcoholic">Alcoholic</SelectItem>
+            <SelectItem value="Juice">Juice</SelectItem>
+            <SelectItem value="Water">Water</SelectItem>
+            <SelectItem value="Other">Other</SelectItem>
           </Select>
 
           <Select value={sortKey} onChange={setSortKey}>

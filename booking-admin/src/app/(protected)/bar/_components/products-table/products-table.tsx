@@ -14,32 +14,13 @@ function getAvailabilityStatus(quantity: number, threshold: number) {
 }
 
 export type Product = {
-  id: number;
-  documentId: string;
   name: string;
-  description: string | null;
+  type: string;
   price: number;
   quantity: number;
   threshold: number;
-  availability: boolean;
-  sold: number | null;
-  bar_stock: number;
-  restaurant_stock: number;
-  supplied: number;
-  image: string | null;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
-  type: string | null;
-  drink_type: {
-    id: number;
-    documentId: string;
-    typeName: string;
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-  } | null;
-  profit?: number; // Optional, assuming it's calculated elsewhere
+  sold: number;
+  profit: number;
 };
 
 export function ProductsList({
@@ -55,10 +36,8 @@ export function ProductsList({
 
   // Filtering
   if (filter) {
-    filteredData = filteredData.filter(
-      (item) => item.drink_type?.typeName === filter
-    );
-      }
+    filteredData = filteredData.filter((item) => item.type === filter);
+  }
 
   // Sorting
   if (sort) {
@@ -89,11 +68,8 @@ export function ProductsList({
             <TableHead>Price</TableHead>
             <TableHead>Quantity</TableHead>
             <TableHead>Threshold</TableHead>
-            <TableHead>Stock Level</TableHead>
-            <TableHead>Bar Stock</TableHead>
-            <TableHead>Restaurant Stock</TableHead>
+            <TableHead>Availability</TableHead>
             <TableHead>Sold</TableHead>
-            <TableHead>Supplied</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -107,15 +83,12 @@ export function ProductsList({
                 key={item.name + item.profit}
               >
                 <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{item.name}</TableCell>
-                <TableCell>{item.drink_type?.typeName || 'N/A'}</TableCell>
+                <TableCell>{item.type}</TableCell>
                 <TableCell>₦{item.price}</TableCell>
                 <TableCell>{item.quantity}</TableCell>
                 <TableCell>{item.threshold}</TableCell>
                 <TableCell className={status.color}>{status.label}</TableCell>
-                <TableCell>{item.bar_stock}</TableCell>
-                <TableCell>{item.restaurant_stock}</TableCell>
                 <TableCell>{item.sold}</TableCell>
-                <TableCell>{item.supplied}</TableCell>
               </TableRow>
             );
           })}

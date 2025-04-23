@@ -141,6 +141,24 @@ export const strapiService = {
     return result.data;
   },
 
+  //update drinks Data
+async updateDrinksList(drinkId: string | number, drinkData: any) {
+  try {
+    const result = await apiHandlerInstance.updateData({
+      endpoint: "drinks",
+      id: drinkId,
+      updatedData: drinkData,
+    });
+
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  } catch (error) {
+    console.error("Error updating drinks:", error);
+    throw error; // rethrow or handle as needed
+  }
+ },
+
+
    // Games related methods
    async getGamesList(params?: Record<string, string | number | boolean>) {
     const queryString = params
