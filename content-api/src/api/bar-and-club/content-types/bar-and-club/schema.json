@@ -27,6 +27,37 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::drink.drink"
+    },
+    "active_orders": {
+      "type": "integer"
+    },
+    "completed_orders": {
+      "type": "integer"
+    },
+    "amount_sold": {
+      "type": "integer"
+    },
+    "stock_request": {
+      "type": "string"
+    },
+    "debt": {
+      "type": "integer"
+    },
+    "booking_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::booking-item.booking-item"
+    },
+    "open_time": {
+      "type": "time"
+    },
+    "close_time": {
+      "type": "time"
+    },
+    "users_permissions_users": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user"
     }
   }
 }

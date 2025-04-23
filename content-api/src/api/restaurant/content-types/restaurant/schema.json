@@ -14,7 +14,7 @@
     "name": {
       "type": "string"
     },
-    "operatingHours": {
+    "open_time": {
       "type": "time"
     },
     "location": {
@@ -24,6 +24,44 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::menu-category.menu-category"
+    },
+    "food_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::food-item.food-item"
+    },
+    "close_time": {
+      "type": "time"
+    },
+    "active_order": {
+      "type": "integer"
+    },
+    "completed_orders": {
+      "type": "integer"
+    },
+    "amount_sold": {
+      "type": "integer"
+    },
+    "debt": {
+      "type": "integer"
+    },
+    "stock_request": {
+      "type": "string"
+    },
+    "booking_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::booking-item.booking-item"
+    },
+    "users_permissions_users": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user"
+    },
+    "drinks": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::drink.drink"
     }
   }
 }
