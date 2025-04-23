@@ -4,7 +4,8 @@
   "info": {
     "singularName": "game",
     "pluralName": "games",
-    "displayName": "Game"
+    "displayName": "Game",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -27,6 +28,9 @@
       "type": "string"
     },
     "amount_paid": {
+      "type": "integer"
+    },
+    "amount_owed": {
       "type": "integer"
     }
   }

@@ -512,9 +512,18 @@ export interface ApiBarAndClubBarAndClub extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    active_orders: Schema.Attribute.Integer;
+    amount_sold: Schema.Attribute.Integer;
+    booking_items: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::booking-item.booking-item'
+    >;
+    close_time: Schema.Attribute.Time;
+    completed_orders: Schema.Attribute.Integer;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    debt: Schema.Attribute.Integer;
     drinks: Schema.Attribute.Relation<'oneToMany', 'api::drink.drink'>;
     entryFees: Schema.Attribute.Integer;
     happyHours: Schema.Attribute.Time;
@@ -526,10 +535,16 @@ export interface ApiBarAndClubBarAndClub extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     location: Schema.Attribute.String;
     name: Schema.Attribute.String;
+    open_time: Schema.Attribute.Time;
     publishedAt: Schema.Attribute.DateTime;
+    stock_request: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    users_permissions_users: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::users-permissions.user'
+    >;
   };
 }
 
@@ -817,6 +832,7 @@ export interface ApiDrinkDrink extends Struct.CollectionTypeSchema {
   };
   attributes: {
     availability: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    bar_stock: Schema.Attribute.Integer;
     boooking: Schema.Attribute.Relation<'manyToOne', 'api::boooking.boooking'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -837,7 +853,9 @@ export interface ApiDrinkDrink extends Struct.CollectionTypeSchema {
     price: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
     quantity: Schema.Attribute.Integer;
+    restaurant_stock: Schema.Attribute.Integer;
     sold: Schema.Attribute.Integer;
+    supplied: Schema.Attribute.Integer;
     threshold: Schema.Attribute.Integer;
     type: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
@@ -951,6 +969,7 @@ export interface ApiFoodTypeFoodType extends Struct.CollectionTypeSchema {
 export interface ApiGameGame extends Struct.CollectionTypeSchema {
   collectionName: 'games';
   info: {
+    description: '';
     displayName: 'Game';
     pluralName: 'games';
     singularName: 'game';
@@ -959,6 +978,7 @@ export interface ApiGameGame extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    amount_owed: Schema.Attribute.Integer;
     amount_paid: Schema.Attribute.Integer;
     count: Schema.Attribute.Integer;
     createdAt: Schema.Attribute.DateTime;
@@ -1220,9 +1240,23 @@ export interface ApiRestaurantRestaurant extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    active_order: Schema.Attribute.Integer;
+    amount_sold: Schema.Attribute.Integer;
+    booking_items: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::booking-item.booking-item'
+    >;
+    close_time: Schema.Attribute.Time;
+    completed_orders: Schema.Attribute.Integer;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    debt: Schema.Attribute.Integer;
+    drinks: Schema.Attribute.Relation<'oneToMany', 'api::drink.drink'>;
+    food_items: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::food-item.food-item'
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1235,11 +1269,16 @@ export interface ApiRestaurantRestaurant extends Struct.CollectionTypeSchema {
       'api::menu-category.menu-category'
     >;
     name: Schema.Attribute.String;
-    operatingHours: Schema.Attribute.Time;
+    open_time: Schema.Attribute.Time;
     publishedAt: Schema.Attribute.DateTime;
+    stock_request: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    users_permissions_users: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::users-permissions.user'
+    >;
   };
 }
 
