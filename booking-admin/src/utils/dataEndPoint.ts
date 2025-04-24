@@ -65,6 +65,16 @@ export const strapiService = {
     const booking = await this.createBooking(bookingData);
     return booking.documentId;
   },
+  
+  //get bookings
+  async getBookings(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`boookings${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
 
   async createBookingItem(itemData: BookingItemPayload) {
     const result = await apiHandlerInstance.createData({ 
@@ -129,6 +139,16 @@ export const strapiService = {
     });
     if (result.error) throw new Error(result.error);
     return result.data.documentId;
+  },
+
+  //get transactions
+  async getTransactions(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`payments${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result.data;
   },
 
   // Menu related methods

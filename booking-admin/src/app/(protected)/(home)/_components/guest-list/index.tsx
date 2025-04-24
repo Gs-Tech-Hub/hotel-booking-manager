@@ -9,19 +9,31 @@ import {
   TableRow,     
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { getGuestList } from "../fetch";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
+import { strapiService } from "@/utils/dataEndPoint";
 
 export function GuestList({ className }: { className?: string }) {
   interface Guest {
+    documentId: string
     bookingId: string;
+    customer: {
+      firstName: string;
+      lastName: string;
+    };
+
+    room: {
+      title: string;
+    };
+    
     name: string;
     roomType: string;
     roomNumber: string;
+    nights: number;
     duration: number;
     checkin: string;
     checkout: string;
+    book_status: string;
     status: string;
   }
 
@@ -29,8 +41,23 @@ export function GuestList({ className }: { className?: string }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await getGuestList();
-      setData(result);
+      const result = await strapiService.getBookings({
+        populate: '*',
+        pagination: 25
+      });
+
+      const mappedData = result.map((item: Guest) => ({
+        bookingId: item.documentId?.slice(0, 5) || "-----", 
+        name: `${item.customer?.firstName || "Unknown"} ${item.customer?.lastName || ""}`,
+        roomType: item.room?.title || "N/A",
+        roomNumber: "-", // Use dash as placeholder
+        duration: item.nights,
+        checkin: item.checkin,
+        checkout: item.checkout,
+        status: item.book_status || "Pending",
+      }));
+      
+      setData(mappedData);
     };
     fetchData();
   }, []);
