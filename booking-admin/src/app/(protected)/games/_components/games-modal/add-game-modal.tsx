@@ -164,7 +164,7 @@ export function AddGameModal({
             const newStatus = e.target.value;
             setGameStatus(newStatus);
             if (newStatus === "cancelled") {
-              if (userRole !== "manager") {
+              if (userRole !== "admin") {
                 toast.warn("Only a manager can cancel an ongoing game.");
                 return; // Prevent change if not a manager
               }

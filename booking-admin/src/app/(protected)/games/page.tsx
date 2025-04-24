@@ -40,7 +40,7 @@ export default function Games() {
           'filters[createdAt][$gte]': startOfDay.toISOString(),
           'filters[createdAt][$lte]': endOfDay.toISOString(),
         });
-        console.log("Games data:", gamesData);
+        // console.log("Games data:", gamesData);
 
         setGamesList(gamesData);
 
@@ -88,8 +88,8 @@ export default function Games() {
           value={dateRange}
           onChange={(e) => setDateRange(e.target.value as 'today' | 'yesterday')}
         >
-          <option value="today">Today`&apos;`,s Games</option>
-          <option value="yesterday">Yesterday`&apos;`,s Games</option>
+          <option value="today">Today&apos;s Games</option>
+          <option value="yesterday">Yesterday&apos;s Games</option>
         </select>
       </div>
 
