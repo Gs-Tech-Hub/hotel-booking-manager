@@ -5,8 +5,13 @@ import { useState } from 'react';
 import OrdersList from './orders-list';
 import CartSidebar from './chart-sidebar';
 import { useOrderStore, Order } from '@/app/stores/useOrderStore';
+import { MenuItem } from '@/app/stores/useCartStore';
 
-export default function POSLayout() {
+type PosMenuProps = {
+  menuItems: MenuItem[];
+};
+
+export default function POSLayout(props: PosMenuProps) {
   const [isOrderDetailsOpen, setOrderDetailsOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [activeOrder, setActiveOrder] = useState<Order | null>(null);
@@ -66,7 +71,7 @@ export default function POSLayout() {
 
       {/* Menu Grid */}
       <div className="lg:col-span-2 space-y-4">
-        <MenuGrid />
+        <MenuGrid menuItems={props.menuItems} />
       </div>
 
       {/* Chart Sidebar */}
