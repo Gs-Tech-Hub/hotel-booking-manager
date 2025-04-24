@@ -21,6 +21,7 @@ export default function GamesListPage({ games }: { games: Games[] }) {
   const handleUpdate = (updated: {
     count: number;
     amount_paid: number;
+    amount_owed: number;
     game_status: string;
 
   }) => {
@@ -60,6 +61,7 @@ export default function GamesListPage({ games }: { games: Games[] }) {
                 playerName: selectedGame.customer.firstName,
                 count: selectedGame.count,
                 amountPaid: selectedGame.amount_paid,
+                amountOwed: selectedGame.amount_owed,
                 gameStatus: selectedGame.game_status,
               }
             : undefined // ✅ change from `null` to `undefined`

@@ -15,11 +15,11 @@ export default function DrinksInventoryPage({ products }: { products: Product[] 
   const filtered = products.filter((item) =>
     typeFilter ? item.type === typeFilter : true
   );
-
   const sorted = [...filtered].sort((a, b) => {
     if (!sortKey) return 0;
     return Number(b[sortKey as keyof typeof b]) - Number(a[sortKey as keyof typeof a]);
   });
+
 
   return (
     <div className="p-6 space-y-6">

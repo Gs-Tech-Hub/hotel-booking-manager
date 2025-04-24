@@ -28,13 +28,32 @@ export const NAV_DATA: NavSection[] = [
         items: [],
       },
       {
+        title: "Events Booking",
+        icon: Icons.EventIcon,
+        url: "/events-booking",
+        roles: ["admin", "receptionist", "manager"],
+        items: [],
+      },
+      {
+        title: "Account",
+        icon: Icons.AccountingIcon,
+        roles: ["admin", "receptionist", "manager"],
+        items: [
+          {
+            title: "Account Summary",
+            url: "/account-summary",
+            roles: ["admin", "receptionist", "manager"],
+          },
+        ],
+      },
+      {
         title: "Inventory",
         icon: Icons.InventoryIcon,
         roles: ["admin", "manager"],
         items: [
           {
-            title: "Products",
-            url: "/products",
+            title: "Inventory",
+            url: "/inventory-drinks",
             roles: ["admin", "manager"],
           },
         ],
@@ -64,7 +83,13 @@ export const NAV_DATA: NavSection[] = [
           { 
             title: "Swimming", 
             url: "/swimming", 
-            roles: ["admin", "bar"] },
+            roles: ["admin", "bar"] 
+          },
+          { 
+            title: "Sales Terminal", 
+            url: "/sales-terminal", 
+            roles: ["admin", "bar", "kitchen", "receptionist", "manager"] 
+          },
         ],
       },
     ],

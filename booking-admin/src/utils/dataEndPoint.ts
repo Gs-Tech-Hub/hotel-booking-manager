@@ -65,6 +65,16 @@ export const strapiService = {
     const booking = await this.createBooking(bookingData);
     return booking.documentId;
   },
+  
+  //get bookings
+  async getBookings(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`boookings${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
 
   async createBookingItem(itemData: BookingItemPayload) {
     const result = await apiHandlerInstance.createData({ 
@@ -131,6 +141,16 @@ export const strapiService = {
     return result.data.documentId;
   },
 
+  //get transactions
+  async getTransactions(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`payments${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
+
   // Menu related methods
   async getDrinksList(params?: Record<string, string | number | boolean>) {
     const queryString = params
@@ -140,6 +160,24 @@ export const strapiService = {
     if (result.error) throw new Error(result.error);
     return result.data;
   },
+
+  //update drinks Data
+async updateDrinksList(drinkId: string | number, drinkData: any) {
+  try {
+    const result = await apiHandlerInstance.updateData({
+      endpoint: "drinks",
+      id: drinkId,
+      updatedData: drinkData,
+    });
+
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  } catch (error) {
+    console.error("Error updating drinks:", error);
+    throw error; // rethrow or handle as needed
+  }
+ },
+
 
    // Games related methods
    async getGamesList(params?: Record<string, string | number | boolean>) {

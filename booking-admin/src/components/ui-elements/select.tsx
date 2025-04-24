@@ -1,7 +1,7 @@
 import React, { createContext } from "react";
 
 type SelectContextType = {
-  value: string;
+  value: string | number;
   onChange: (value: string) => void;
 };
 
@@ -13,7 +13,7 @@ export function Select({
   children,
   className = "",
 }: {
-  value: string;
+  value: string | number;
   onChange: (value: string) => void;
   children: React.ReactNode;
   className?: string;

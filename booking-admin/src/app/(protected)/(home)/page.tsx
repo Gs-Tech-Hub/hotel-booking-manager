@@ -7,10 +7,10 @@ import { createTimeFrameExtractor } from "@/utils/timeframe-extractor";
 import { Suspense, useEffect } from "react";
 import { OverviewCardsGroup } from "./_components/overview-cards";
 import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
-import { CampaignVisitors } from "@/components/Charts/campaign-visitors";
-import { GuestList } from "@/components/Tables/guest-list";
+import { GuestList } from "@/app/(protected)/(home)/_components/guest-list";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/Auth/context/auth-context";
+import { TimeFrame } from "@/types";
 
 export default function Home() {
   const router = useRouter();
@@ -46,7 +46,7 @@ export default function Home() {
         <PaymentsOverview
           className="col-span-12 xl:col-span-7"
           key={extractTimeFrame("payments_overview")}
-          timeFrame={extractTimeFrame("payments_overview")?.split(":")[1]}
+          timeFrame={extractTimeFrame("payments_overview")?.split(":")[1] as TimeFrame}
         />
 
         <WeeksBooking
@@ -54,17 +54,13 @@ export default function Home() {
           timeFrame={extractTimeFrame("weeks_profit")?.split(":")[1]}
           className="col-span-12 xl:col-span-5"
         />
-
-        <div className="col-span-12 xl:col-span-5">
-          <CampaignVisitors />
-        </div>
-
-        <div className="col-span-12 grid xl:col-span-8">
+      </div>
+      
+      <div className="mt-12 col-span-12 grid xl:col-span-8">
           <Suspense fallback={<TopChannelsSkeleton />}>
             <GuestList />
           </Suspense>
-        </div>
-      </div>
+       </div>
     </>
   );
 }

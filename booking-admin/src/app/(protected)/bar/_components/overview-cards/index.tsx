@@ -1,48 +1,53 @@
 import { compactFormat } from "@/lib/format-number";
 import { OverviewCard } from "./card";
 import * as icons from "./icons";
-import { formatPrice } from "@/utils/priceHandler";
 
 type OverviewDataItem = {
   value: number;
 };
 
 type OverviewProps = {
-  payed: OverviewDataItem;
-  not_payed: OverviewDataItem;
-  total_earned: OverviewDataItem;
+  categories: OverviewDataItem;
+  low_stock: OverviewDataItem;
+  out_of_stock: OverviewDataItem;
+  total_sold: OverviewDataItem;
 };
 
-export function OverviewCardsGroup({  not_payed, payed, total_earned }: OverviewProps) {
+export function OverviewCardsGroup({ categories, low_stock, out_of_stock, total_sold }: OverviewProps) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3 2xl:gap-7.5">
-  
+    <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 2xl:gap-7.5">
       <OverviewCard
-        label="Not Payed"
+        label="Categories"
         data={{
-          ...not_payed,
-          value: +compactFormat(not_payed.value),
-          date: 24
+          ...categories,
+          value: compactFormat(categories.value),
+        }}
+        Icon={icons.OpenDoor}
+      />
+
+      <OverviewCard
+        label="Low Stock"
+        data={{
+          ...low_stock,
+          value: +compactFormat(low_stock.value),
         }}
         Icon={icons.ClosedDoor}
       />
 
       <OverviewCard
-        label="Payed"
+        label="Out-Of-Stock"
         data={{
-          ...payed,
-          value: compactFormat(payed.value),
-          date: 24
+          ...out_of_stock,
+          value: compactFormat(out_of_stock.value),
         }}
         Icon={icons.CheckIn}
       />
 
       <OverviewCard
-        label="Total Amount Earned"
+        label="Total Sold"
         data={{
-          ...total_earned,
-          value: formatPrice((total_earned.value), 'NGN'),
-          date: 24
+          ...total_sold,
+          value: compactFormat(total_sold.value),
         }}
         Icon={icons.CheckOut}
       />
