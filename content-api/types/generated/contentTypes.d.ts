@@ -623,6 +623,10 @@ export interface ApiBookingItemBookingItem extends Struct.CollectionTypeSchema {
     >;
     publishedAt: Schema.Attribute.DateTime;
     quantity: Schema.Attribute.Integer;
+    status: Schema.Attribute.Enumeration<
+      ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled']
+    > &
+      Schema.Attribute.DefaultTo<'pending'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1136,6 +1140,46 @@ export interface ApiMenuCategoryMenuCategory
   };
 }
 
+export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
+  collectionName: 'orders';
+  info: {
+    description: '';
+    displayName: 'order';
+    pluralName: 'orders';
+    singularName: 'order';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    booking_item: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::booking-item.booking-item'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    customer: Schema.Attribute.Relation<'oneToOne', 'api::customer.customer'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::order.order'> &
+      Schema.Attribute.Private;
+    order_status: Schema.Attribute.Enumeration<['Active', 'Completed']>;
+    payment: Schema.Attribute.Relation<'oneToOne', 'api::payment.payment'>;
+    payment_type: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::payment-type.payment-type'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    users_permissions_user: Schema.Attribute.Relation<
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiPaymentDetailPaymentDetail
   extends Struct.CollectionTypeSchema {
   collectionName: 'payment_details';
@@ -1163,6 +1207,36 @@ export interface ApiPaymentDetailPaymentDetail
     paymentID: Schema.Attribute.UID;
     payments: Schema.Attribute.Relation<'oneToMany', 'api::payment.payment'>;
     publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPaymentTypePaymentType extends Struct.CollectionTypeSchema {
+  collectionName: 'payment_types';
+  info: {
+    displayName: 'Payment-type';
+    pluralName: 'payment-types';
+    singularName: 'payment-type';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::payment-type.payment-type'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    types: Schema.Attribute.Enumeration<
+      ['cash', 'card ', 'bank_transfer ', 'mobile_payment']
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1952,7 +2026,9 @@ declare module '@strapi/strapi' {
       'api::hotel-service.hotel-service': ApiHotelServiceHotelService;
       'api::job-application.job-application': ApiJobApplicationJobApplication;
       'api::menu-category.menu-category': ApiMenuCategoryMenuCategory;
+      'api::order.order': ApiOrderOrder;
       'api::payment-detail.payment-detail': ApiPaymentDetailPaymentDetail;
+      'api::payment-type.payment-type': ApiPaymentTypePaymentType;
       'api::payment.payment': ApiPaymentPayment;
       'api::promo-coupon.promo-coupon': ApiPromoCouponPromoCoupon;
       'api::restaurant.restaurant': ApiRestaurantRestaurant;

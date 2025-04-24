@@ -1,0 +1,23 @@
+{
+  "kind": "collectionType",
+  "collectionName": "payment_types",
+  "info": {
+    "singularName": "payment-type",
+    "pluralName": "payment-types",
+    "displayName": "Payment-type"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "types": {
+      "type": "enumeration",
+      "enum": [
+        "cash",
+        "card ",
+        "bank_transfer ",
+        "mobile_payment"
+      ]
+    }
+  }
+}
