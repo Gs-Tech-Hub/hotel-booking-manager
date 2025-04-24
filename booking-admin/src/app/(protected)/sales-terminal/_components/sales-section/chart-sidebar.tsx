@@ -16,7 +16,7 @@ export default function CartSidebar({
   const [customerName, setCustomerName] = useState("");
   const [tableNumber, setTableNumber] = useState("");
   const [waiterName, setWaiterName] = useState("");
-  const [isOrderActive, setOrderActive] = useState(false);
+  const [isOrderActive, setOrderActive] = useState(true);
 
   const cartItems = useCartStore((state) => state.cartItems);
   const setCartItems = useCartStore((state) => state.setCartItems);

@@ -4,14 +4,18 @@ import { Button } from "@/components/ui-elements/button";
 import { Card } from "@/components/ui-elements/card";
 import { toast } from "react-toastify";
 
-const menuItems = [
-  { id: 1, name: "Burger", price: 10, available: 20 },
-  { id: 2, name: "Fries", price: 5, available: 30 },
-  { id: 3, name: "Pizza", price: 15, available: 10 },
-  { id: 4, name: "Soda", price: 3, available: 50 },
-];
+export type MenuItem = {
+  id: number;
+  name: string;
+  price: number;
+  available: number;
+};
 
-export default function MenuGrid() {
+type MenuGridProps = {
+  menuItems: MenuItem[];
+};
+
+export default function MenuGrid({ menuItems }: MenuGridProps) {
   const addToCart = useCartStore((state) => state.addToCart);
 
   const handleAddToCart = (item: typeof menuItems[0]) => {

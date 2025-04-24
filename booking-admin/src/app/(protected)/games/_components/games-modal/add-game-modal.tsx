@@ -68,7 +68,7 @@ export function AddGameModal({
       return;
     }
 
-    if (gameStatus === "cancelled" && userRole !== "manager" || userRole !== "admin") {
+    if (gameStatus === "cancelled" && userRole !== "admin") {
       toast.warn("Only a manager can cancel an ongoing game.");
       return;
     }
@@ -164,20 +164,24 @@ export function AddGameModal({
             const newStatus = e.target.value;
             setGameStatus(newStatus);
             if (newStatus === "cancelled") {
-              if (userRole !== "manager") {
+              if (userRole !== "admin") {
                 toast.warn("Only a manager can cancel an ongoing game.");
                 return; // Prevent change if not a manager
               }
               setAmountPaid(0); // No payment if cancelled
               setAmountOwed(0); // Nothing left to owe
               setCount(0); // Reset games played
+              setGameStatus(newStatus);
             } else if (newStatus === "completed") {
               setAmountPaid(amountOwed); // Pay everything owed
               setAmountOwed(0); // Nothing left to owe
+              setGameStatus(newStatus);
             } else if (newStatus === "ongoing") {
               setAmountPaid(0); // Reset payment if ongoing
               setAmountOwed(count * 500); // Recalculate amount owed
+              setGameStatus(newStatus);
             }
+            
             
           }}
           className="w-full px-3 py-2 mt-1 border rounded dark:bg-gray-800 dark:text-white"
