@@ -56,6 +56,12 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::game.game"
-    }
+    },
+   "status": {
+   "type": "enumeration",
+   "enum": ["pending", "confirmed", "in_progress", "completed", "cancelled"],
+   "default": "pending"
+}
+
   }
 }
