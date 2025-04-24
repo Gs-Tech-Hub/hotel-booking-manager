@@ -88,8 +88,8 @@ export default function Games() {
           value={dateRange}
           onChange={(e) => setDateRange(e.target.value as 'today' | 'yesterday')}
         >
-          <option value="today">Today's Games</option>
-          <option value="yesterday">Yesterday's Games</option>
+          <option value="today">Today`&apos;`,s Games</option>
+          <option value="yesterday">Yesterday`&apos;`,s Games</option>
         </select>
       </div>
 
