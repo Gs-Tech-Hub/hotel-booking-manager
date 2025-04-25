@@ -2,10 +2,12 @@
 import { useCartStore } from "@/app/stores/useCartStore";
 import { Button } from "@/components/ui-elements/button";
 import { Card } from "@/components/ui-elements/card";
+import { formatPrice } from "@/utils/priceHandler";
 import { toast } from "react-toastify";
 
 export type MenuItem = {
   id: number;
+  documentId: string;
   name: string;
   price: number;
   available: number;
@@ -20,7 +22,7 @@ export default function MenuGrid({ menuItems }: MenuGridProps) {
 
   const handleAddToCart = (item: typeof menuItems[0]) => {
     addToCart(item);
-    toast.success(`${item.name} added to cart!`);
+    toast.success(`${ item.name} added to cart!`);
   };
  
   return (
@@ -35,7 +37,7 @@ export default function MenuGrid({ menuItems }: MenuGridProps) {
             title={item.name}
             content={
               <>
-                <p className="text-lg text-gray-500">Price: ${item.price}</p>
+                <p className="text-lg text-gray-500">Price: {formatPrice(item.price, 'NGN')}</p>
                 <p className="text-sm text-gray-500">Available: {item.available}</p>
                 <Button
                   label="Add to Cart"

@@ -4,6 +4,8 @@ import { Button } from "@/components/ui-elements/button";
 import { Modal } from "@/components/ui-elements/modal";
 import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
+import { processOrder } from "@/utils/processOrder";
+import { useAuth } from "@/components/Auth/context/auth-context"; // Assuming useAuth is imported
 
 interface OrderDetailsModalProps {
   order: Order;
@@ -11,6 +13,7 @@ interface OrderDetailsModalProps {
 }
 
 export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalProps) {
+  const { user } = useAuth(); // Assuming useAuth is imported and provides user data
   const setPaymentMethod = useOrderStore((state) => state.setPaymentMethod);
   const completeOrder = useOrderStore((state) => state.completeOrder);
   const removeOrder = useOrderStore((state) => state.removeOrder); // Assuming this function clears order data
@@ -35,12 +38,37 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
     }
 
     setIsLoading(true);
+
     try {
+      // Construct the finalOrder object using currentOrder data
+      const finalOrder = {
+        id: currentOrder.id,
+        customerName: currentOrder.customerName,
+        tableNumber: currentOrder.tableNumber,
+        waiterName: currentOrder.waiterId|| "",
+        items: currentOrder.items,
+        status: "completed",
+      };
+      console.log("Final Order:", finalOrder);
+      // Ensure user and documentId are available
+      if (!user?.documentId) {
+        throw new Error("User document ID is missing.");
+      }
+
+      // Process the order using the utility function
+      await processOrder({
+        order: finalOrder,
+        waiterId: user?.documentId,
+        customerId: currentOrder?.customerId || null, // Use customerId if available
+      });
+
+      // Mark the order as completed
       await completeOrder(order.id);
+
       toast.success("Order completed successfully!");
       onClose();
     } catch (error) {
-      toast.error(`"Failed to complete the order." ${error}`);
+      toast.error(`Failed to complete the order: ${error instanceof Error ? error.message : "Unknown error"}`);
     } finally {
       setIsLoading(false);
     }
@@ -75,7 +103,7 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
           <div className="space-y-2 text-sm">
             <p><strong>Customer:</strong> {currentOrder.customerName}</p>
             <p><strong>Table:</strong> {currentOrder.tableNumber}</p>
-            <p><strong>Waiter:</strong> {currentOrder.waiterName}</p>
+            <p><strong>Waiter:</strong> {currentOrder.waiterId}</p>
           </div>
 
           <div className="mt-4">

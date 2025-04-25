@@ -1,4 +1,5 @@
 import { useOrderStore, Order } from "@/app/stores/useOrderStore";
+import { formatPrice } from "@/utils/priceHandler";
 import { useCallback, useState } from "react";
 
 export default function OrdersList({
@@ -8,7 +9,15 @@ export default function OrdersList({
 }) {
   const orders = useOrderStore((state) => state.orders) || [];
   const [viewAll, setViewAll] = useState(false);
-  const displayedOrders = viewAll ? orders : orders.slice(0, 5);
+
+  // Sort orders with "pending" first
+  const sortedOrders = [...orders].sort((a, b) => {
+    if (a.status === "active" && b.status !== "active") return -1;
+    if (a.status !== "active" && b.status === "active") return 1;
+    return 0;
+  });
+
+  const displayedOrders = viewAll ? sortedOrders : sortedOrders.slice(0, 5);
 
   const handleViewDetails = useCallback(
     (order: Order) => {
@@ -16,7 +25,7 @@ export default function OrdersList({
     },
     [onViewOrderDetails]
   );
- 
+
   return (
     <div className="rounded-[10px] bg-white p-6 shadow-1 dark:bg-gray-dark">
       <h2 className="text-lg font-bold mb-4">Orders</h2>
@@ -38,9 +47,9 @@ export default function OrdersList({
                   className="border rounded-lg p-4 shadow cursor-pointer hover:shadow-md transition"
                   onClick={() => handleViewDetails(order)}
                 >
-                  <p className="font-bold text-sm mb-1">{order.customerName}</p>
+                  <p className="font-bold text-lg mb-1">{order.customerName}</p>
                   <p className="text-sm text-gray-600 mb-1">
-                    Total: ${total.toFixed(2)}
+                    Total: {formatPrice(total, 'NGN')}
                   </p>
                   <p className="text-xs text-gray-500 mb-2">
                     Table: {order.tableNumber}

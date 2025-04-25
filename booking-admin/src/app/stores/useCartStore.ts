@@ -1,8 +1,10 @@
 // stores/useCartStore.ts
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 export interface MenuItem {
   id: number;
+  documentId: string;
   name: string;
   price: number;
   available: number;
@@ -20,9 +22,10 @@ interface CartState {
   clearCart: () => void;
 }
 
-export const useCartStore = create<CartState>((set) => ({
-  cartItems: [],
-  addToCart: (item) =>
+export const useCartStore = create<CartState>()(
+  persist((set) => ({
+    cartItems: [],
+    addToCart: (item) =>
     set((state) => {
       const existingItem = state.cartItems.find((i) => i.id === item.id);
       if (existingItem) {
@@ -47,5 +50,11 @@ export const useCartStore = create<CartState>((set) => ({
 
     setCartItems: (items) => set(() => ({ cartItems: items })),
 
-     clearCart: () => set({ cartItems: [] }),
-}));
+     clearCart: () => set({ cartItems: [] })
+  }),
+  {
+    name: 'cart-storage',
+    storage: createJSONStorage(() => localStorage), // correct storage setup
+
+  }
+));
