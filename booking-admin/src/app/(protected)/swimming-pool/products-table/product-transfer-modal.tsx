@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Modal} from "@/components/ui-elements/modal"; 
 import { Button } from "@/components/ui-elements/button";
 import StockTransferForm from "./product-transfer";
-import { Product } from "./products-table";
+import { Product } from "./pool-table";
 
 export default function StockTransferModal({ products }: { products: Product[] }) {
   const [isOpen, setIsOpen] = useState(false);

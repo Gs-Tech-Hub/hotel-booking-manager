@@ -6,7 +6,7 @@ import { Select } from "@/components/ui-elements/select";
 import { SelectItem } from "@/components/ui-elements/select-item";
 import { Input } from "@/components/ui-elements/input";
 import { strapiService } from "@/utils/dataEndPoint";
-import { Product } from "./products-table";
+import { Product } from "./pool-table";
 import { AlertTriangle, X } from "lucide-react";
 import { toast } from "react-toastify";
 

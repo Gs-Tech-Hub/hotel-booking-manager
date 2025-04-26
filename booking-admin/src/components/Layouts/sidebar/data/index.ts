@@ -82,7 +82,7 @@ export const NAV_DATA: NavSection[] = [
           },
           { 
             title: "Swimming", 
-            url: "/swimming", 
+            url: "/swimming-pool", 
             roles: ["admin", "bar"] 
           },
           { 

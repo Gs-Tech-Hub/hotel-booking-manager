@@ -1,11 +1,20 @@
+    'use client'
 import React from "react"
+import { GuestList } from "../(home)/_components/guest-list"
+import CreateBookingForm from "./create-booking-form"
 
-export default function Sales () {
+export default function BookingsPage () {
+
+    const handleSubmit = (booking: any) => {
+        // Handle the booking submission
+        console.log(booking);
+    };
+
     return (
         <div>
-            <h2>
-                This is the Booking Page
-            </h2>
+        <GuestList />
+        <CreateBookingForm 
+        />
         </div>
     )
 }

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui-elements/button";
 import { Select } from "@/components/ui-elements/select";
 import { SelectItem } from "@/components/ui-elements/select-item";
-import { ProductsList, Product } from "./products-table";
+import { ProductsList, Product } from "./pool-table";
 import StockTransferModal from "./product-transfer-modal";
 
 export default function DrinksInventoryPage({ products }: { products: Product[] }) {
