@@ -42,6 +42,9 @@
         "Active",
         "Completed"
       ]
+    },
+    "total": {
+      "type": "integer"
     }
   }
 }
