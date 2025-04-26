@@ -51,14 +51,14 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
       };
       console.log("Final Order:", finalOrder);
       // Ensure user and documentId are available
-      if (!user?.documentId) {
+      if (!user?.id) {
         throw new Error("User document ID is missing.");
       }
 
       // Process the order using the utility function
       await processOrder({
         order: finalOrder,
-        waiterId: user?.documentId,
+        waiterId: user?.id,
         customerId: currentOrder?.customerId || null, // Use customerId if available
       });
 
