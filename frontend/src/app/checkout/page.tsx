@@ -41,7 +41,9 @@ function CheckoutPage() {
   const [showIncompleteError, setShowIncompleteError] = useState(false);
   const [finalTotal, setFinalTotal] = useState(0);
   const [vatAmount, setVatAmount] = useState(0);
-  const [serviceTotal, setServiceTotal] = useState(0)
+  const [serviceTotal, setServiceTotal] = useState(0);
+  const [menuTotal, setMenuTotal] = useState(0);
+  const [ extrasTotal, setExtrasTotal] = useState(0);
 
   const [isBooking, setIsBooking] = useState(false);
   const [bookingError, setBookingError] = useState(false);
@@ -64,6 +66,8 @@ function CheckoutPage() {
     const grandTotal = roomTotal + extrasTotal + menuTotal;
     setServiceTotal(serviceTotal);
     setVatAmount(vatAmount);
+    setMenuTotal(menuTotal);
+    setExtrasTotal(extrasTotal);
     setFinalTotal(grandTotal);
     updateBooking({ totalPrice: grandTotal });
   }, [selectedRoom, nights, extras, roomTotalPrice, selectedMenus]);
@@ -92,17 +96,27 @@ function CheckoutPage() {
       const bookingItemPayloads = selectedMenus.map(({ item, count, menuType }) => {
         let foodItemId = null;
         let drinkItemId = null;
+        let hotelServicesId = null;
+        let amountPaid = menuTotal; // default to menuTotal
 
+      
         if (item?.type === "food") foodItemId = item.documentId;
         else if (item?.type === "drink") drinkItemId = item.documentId;
-
+        else if (item?.type === "extras") {
+          hotelServicesId = item.documentId;
+          amountPaid = extrasTotal; // override to extrasTotal
+        }
+      
         return {
           quantity: count,
           food_items: foodItemId,
           drinks: drinkItemId,
+          hotel_services: hotelServicesId,
           menu_category: menuType.documentId,
+          amount_paid: amountPaid,
         };
       });
+      
 
       const bookingItemIds = await Promise.all(
         bookingItemPayloads.map((payload) => strapiService.createBookingItem(payload))

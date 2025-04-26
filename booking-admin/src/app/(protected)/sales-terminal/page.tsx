@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
+import { OverviewCardsSkeleton } from "../account-summary/_components/overview-cards/skeleton";
 import POSLayout from "./_components/sales-section";
 import { MenuItem } from "@/app/stores/useCartStore";
 import { strapiService } from "@/utils/dataEndPoint";
@@ -25,6 +25,7 @@ export default function POS() {
           documentId: drink.documentId,
           name: drink.name,
           price: drink.price,
+          available: drink.bar_stock,
           quantity: drink.quantity || 1,
           department: 'Bar',
         })) || []
@@ -43,6 +44,7 @@ export default function POS() {
           name: item.name,
           price: item.price,
           quantity: 1,
+          available: 100,
           department: 'Restaurant',
         })) || []
       ) || [];
@@ -60,7 +62,7 @@ export default function POS() {
         price: item.price,
         quantity: 1,
         department: 'Hotel-Services',
-        available:  1,
+        available:  100, // Assuming a default value for available items
       })) || [];
     }
 

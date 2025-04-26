@@ -8,6 +8,8 @@ export interface MenuItem {
   name: string;
   price: number;
   available: number;
+  quantity?: number; // Optional for initial state
+  department?: string; // Optional for initial state
 }
 
 export interface CartItem extends MenuItem {

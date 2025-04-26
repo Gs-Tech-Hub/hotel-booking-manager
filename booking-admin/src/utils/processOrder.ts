@@ -1,5 +1,6 @@
 const qs = require('qs');
 import { strapiService } from '@/utils/dataEndPoint';
+import { connect } from 'http2';
 
 interface OrderItem {
   id: number;
@@ -29,7 +30,7 @@ export const processOrder = async ({
     console.log('Starting order processing...', order);
 
     const bookingItems: any[] = [];
-    // const totalAmount = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const totalAmount = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     const itemsByDepartment = order.items.reduce((acc, item) => {
       const dept = item.department || 'General';
@@ -139,7 +140,7 @@ export const processOrder = async ({
         hotel_services,  
         menu_category,  
         games: { set: [] },
-        amount_paid: null,
+        amount_paid: totalAmount,
         status: null,
       };
 
@@ -156,15 +157,15 @@ export const processOrder = async ({
     // === Final Order Creation ===
 
 const orderPayload = {
-   order_status: "Completed",
-  // total: totalAmount,   // Total amount for the order
-  // waiter: waiterId,     // ID of the waiter handling the order
+  order_status: "Completed",
+  total: totalAmount,   // Total amount for the order
+  users_permissions_user:{ connect: {id: waiterId}},     // ID of the waiter handling the order
   booking_item: {
     connect: bookingItems.map(item => ({ id: item }))  // Using connect for booking_items relations
   },
   // customer: { connect: { id: customerId } }, // Connect to customer by their ID
   // payment_type: { connect: { id: paymentTypeId } }, // Connect to payment type by ID (e.g., "bank_transfer")
-  // ...(customerId && { customer: { connect: { id: customerId } } }), // Ensure customer connection
+   ...(customerId && { customer: { connect: { id: customerId } } }), // Ensure customer connection
 };
 
 try {

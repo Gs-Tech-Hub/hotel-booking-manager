@@ -4,14 +4,6 @@ import { CartItem } from "./useCartStore";
 
 export type PaymentMethod = "cash" | "card" | "bank_transfer" | "mobile_payment";
 
-// interface OrderItem {
-//   id: number;
-//   documentId: string;
-//   name: string;
-//   price: number;
-//   available: number;
-//   quantity: number;
-// }
 
 export interface Order {
   id: string;

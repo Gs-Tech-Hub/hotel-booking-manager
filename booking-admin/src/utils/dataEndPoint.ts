@@ -109,6 +109,16 @@ export const strapiService = {
     return result.data;
   },
 
+  // Get booking items
+  async getBookingItems(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`booking-items${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
+
  async findCustomerByPhoneOrEmail(input: any) {
     const query = qs.stringify({
       filters: {
