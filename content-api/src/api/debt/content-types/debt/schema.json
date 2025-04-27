@@ -1,0 +1,46 @@
+{
+  "kind": "collectionType",
+  "collectionName": "debts",
+  "info": {
+    "singularName": "debt",
+    "pluralName": "debts",
+    "displayName": "debt",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "users_permissions_users": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user"
+    },
+    "debt_amount": {
+      "type": "integer"
+    },
+    "food_item": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::food-item.food-item"
+    },
+    "drink": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::drink.drink"
+    },
+    "date_issued": {
+      "type": "date"
+    },
+    "discount_applied": {
+      "type": "integer"
+    },
+    "debt_status": {
+      "type": "enumeration",
+      "enum": [
+        "unpaid",
+        "paid"
+      ]
+    }
+  }
+}

@@ -61,6 +61,11 @@
    "type": "enumeration",
    "enum": ["pending", "confirmed", "in_progress", "completed", "cancelled"],
    "default": "pending"
+},
+"payment_type": {
+  "type": "relation",
+  "relation": "oneToOne",
+  "target": "api::payment-type.payment-type"
 }
 
   }

@@ -621,6 +621,10 @@ export interface ApiBookingItemBookingItem extends Struct.CollectionTypeSchema {
       'oneToOne',
       'api::menu-category.menu-category'
     >;
+    payment_type: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::payment-type.payment-type'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     quantity: Schema.Attribute.Integer;
     status: Schema.Attribute.Enumeration<
@@ -792,6 +796,44 @@ export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     zip: Schema.Attribute.Integer;
+  };
+}
+
+export interface ApiDebtDebt extends Struct.CollectionTypeSchema {
+  collectionName: 'debts';
+  info: {
+    description: '';
+    displayName: 'debt';
+    pluralName: 'debts';
+    singularName: 'debt';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    date_issued: Schema.Attribute.Date;
+    debt_amount: Schema.Attribute.Integer;
+    debt_status: Schema.Attribute.Enumeration<['unpaid', 'paid']>;
+    discount_applied: Schema.Attribute.Integer;
+    drink: Schema.Attribute.Relation<'oneToOne', 'api::drink.drink'>;
+    food_item: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::food-item.food-item'
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::debt.debt'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    users_permissions_users: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::users-permissions.user'
+    >;
   };
 }
 
@@ -1152,8 +1194,8 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    booking_item: Schema.Attribute.Relation<
-      'oneToOne',
+    booking_items: Schema.Attribute.Relation<
+      'oneToMany',
       'api::booking-item.booking-item'
     >;
     createdAt: Schema.Attribute.DateTime;
@@ -2017,6 +2059,7 @@ declare module '@strapi/strapi' {
       'api::carrousel.carrousel': ApiCarrouselCarrousel;
       'api::category.category': ApiCategoryCategory;
       'api::customer.customer': ApiCustomerCustomer;
+      'api::debt.debt': ApiDebtDebt;
       'api::drink-type.drink-type': ApiDrinkTypeDrinkType;
       'api::drink.drink': ApiDrinkDrink;
       'api::floor-plan.floor-plan': ApiFloorPlanFloorPlan;
