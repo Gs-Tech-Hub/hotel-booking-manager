@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useOrderStore, Order, PaymentMethod } from "@/app/stores/useOrderStore";
+import { useOrderStore, Order, PaymentMethod, paymentMethods } from "@/app/stores/useOrderStore";
 import { Button } from "@/components/ui-elements/button";
 import { Modal } from "@/components/ui-elements/modal";
 import { toast } from "react-toastify";
@@ -59,7 +59,9 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
       await processOrder({
         order: finalOrder,
         waiterId: user?.id,
-        customerId: currentOrder?.customerId || null, // Use customerId if available
+        customerId: currentOrder?.customerId || null, 
+        paymentMethod: currentOrder.paymentMethod|| "",
+
       });
 
       // Mark the order as completed
@@ -129,19 +131,25 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
               <div className="mt-6">
                 <label className="block mb-2 font-medium">Payment Method</label>
                 <select
-                  value={currentOrder.paymentMethod || ""}
-                  onChange={(e) => {
-                    const method = e.target.value as PaymentMethod;
-                    setPaymentMethod(order.id, method);
-                    toast.success("Payment method updated.");
-                  }}
+                  value={currentOrder.paymentMethod?.type}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const selectedPaymentMethod = paymentMethods.find(
+                        (method) => method.type === value
+                      );
+                      if (selectedPaymentMethod) {
+                        setPaymentMethod(order.id, selectedPaymentMethod);
+                        toast.success("Payment method updated.");
+                      } else {
+                        toast.error("Invalid payment method selected.");
+                      }
+                    }}                    
                   className="w-full px-3 py-2 border rounded"
                 >
                   <option value="">Select payment method</option>
                   <option value="cash">Cash</option>
                   <option value="card">Card</option>
                   <option value="bank_transfer">Bank Transfer</option>
-                  <option value="mobile">Mobile</option>
                 </select>
               </div>
 

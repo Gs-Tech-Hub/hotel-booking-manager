@@ -1,6 +1,6 @@
 const qs = require('qs');
 import { strapiService } from '@/utils/dataEndPoint';
-import { connect } from 'http2';
+import { PaymentMethod } from '@/app/stores/useOrderStore';
 
 interface OrderItem {
   id: number;
@@ -8,6 +8,7 @@ interface OrderItem {
   name: string;
   price: number;
   quantity: number;
+  paymentMethod?: string; 
   department?: string;
   menu_category?: string;
 }
@@ -21,10 +22,12 @@ export const processOrder = async ({
   order,
   waiterId,
   customerId = null,
+  paymentMethod,
 }: {
   order: Order;
   waiterId: string;
   customerId?: string | null;
+  paymentMethod: PaymentMethod ;
 }) => {
   try {
     console.log('Starting order processing...', order);
@@ -141,6 +144,7 @@ export const processOrder = async ({
         menu_category,  
         games: { set: [] },
         amount_paid: totalAmount,
+        payment_type: paymentMethod.id,
         status: null,
       };
 
@@ -160,7 +164,7 @@ const orderPayload = {
   order_status: "Completed",
   total: totalAmount,   // Total amount for the order
   users_permissions_user:{ connect: {id: waiterId}},     // ID of the waiter handling the order
-  booking_item: {
+  booking_items: {
     connect: bookingItems.map(item => ({ id: item }))  // Using connect for booking_items relations
   },
   // customer: { connect: { id: customerId } }, // Connect to customer by their ID

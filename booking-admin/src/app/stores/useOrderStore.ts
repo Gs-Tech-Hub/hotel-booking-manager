@@ -2,7 +2,32 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { CartItem } from "./useCartStore";
 
-export type PaymentMethod = "cash" | "card" | "bank_transfer" | "mobile_payment";
+export type PaymentMethodType = "cash" | "card" | "bank_transfer";
+
+export interface PaymentMethod {
+  id: number;
+  documentId: string;
+  type: PaymentMethodType;
+}
+
+export const paymentMethods: PaymentMethod[] = [
+  {
+    id: 2,
+    documentId: "jepc2g6nnux51f8sdjcfddrp",
+    type: "bank_transfer",
+  },
+  {
+    id: 4,
+    documentId: "nk5minqfer8qd5sujdo2xuvu",
+    type: "cash",
+  },
+  {
+    id: 6,
+    documentId: "ccde1iw9163wra5r7l3tolqe",
+    type: "card",
+  },
+];
+
 
 
 export interface Order {
