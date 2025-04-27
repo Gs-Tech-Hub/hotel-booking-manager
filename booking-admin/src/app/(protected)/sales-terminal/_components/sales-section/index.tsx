@@ -3,10 +3,9 @@ import MenuGrid from './menu-grid';
 import OrderDetailsModal from './order-details-modal';
 import { useState } from 'react';
 import OrdersList from './orders-list';
-import CartSidebar from './chart-sidebar';
+import CartSidebar from './cart-sidebar';
 import { useOrderStore, Order } from '@/app/stores/useOrderStore';
 import { MenuItem } from '@/app/stores/useCartStore';
-import { useAuth } from '@/components/Auth/context/auth-context'; // Assuming useAuth is imported
 
 type PosMenuProps = {
   menuItems: MenuItem[];
@@ -24,7 +23,6 @@ export default function POSLayout(props: PosMenuProps) {
 
   const orders = useOrderStore((state) => state.orders);
   const setOrders = useOrderStore((state) => state.setOrders);
-  const { user } = useAuth(); // Assuming useAuth is imported
 
   const handleViewOrderDetails = (order: Order) => {
     setSelectedOrder(order);

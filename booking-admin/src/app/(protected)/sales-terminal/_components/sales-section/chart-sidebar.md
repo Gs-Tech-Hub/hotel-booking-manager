@@ -36,7 +36,7 @@ export default function CartSidebar({
     if (prefillOrder) {
       setCustomerName(prefillOrder.customerName || "");
       setTableNumber(prefillOrder.tableNumber || "");
-      setWaiterName(prefillOrder.waiterId || user?.name || "");
+      // setWaiterName(prefillOrder.waiterId || user?.name || "");
       setCartItems(prefillOrder.items || []);
       setOrderActive(true);
       toast.info("Order loaded into cart.");

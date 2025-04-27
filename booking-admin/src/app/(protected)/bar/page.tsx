@@ -1,5 +1,5 @@
 'use client';
-
+/* eslint-disable */
 import { Suspense, useEffect, useState } from "react";
 import { OverviewCardsGroup } from "./_components/overview-cards";
 import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";

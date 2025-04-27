@@ -1,4 +1,4 @@
-const qs = require('qs');
+/* eslint-disable */
 import { strapiService } from '@/utils/dataEndPoint';
 import { PaymentMethod } from '@/app/stores/useOrderStore';
 

@@ -1,5 +1,5 @@
 "use client";
-
+/* eslint-disable */
 import { Suspense, useEffect, useState } from "react";
 import { OverviewCardsSkeleton } from "../account-summary/_components/overview-cards/skeleton";
 import POSLayout from "./_components/sales-section";

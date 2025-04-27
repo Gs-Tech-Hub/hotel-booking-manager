@@ -1,4 +1,3 @@
-import { compactFormat } from "@/lib/format-number";
 import { OverviewCard } from "./card";
 import { formatPrice } from "@/utils/priceHandler";
 

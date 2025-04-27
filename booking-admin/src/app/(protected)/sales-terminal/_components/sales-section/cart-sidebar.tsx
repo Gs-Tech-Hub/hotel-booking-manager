@@ -37,19 +37,16 @@ export default function CartSidebar({
   }, [user]);
 
   useEffect(() => {
-    if (prefillOrder) {
+    if (prefillOrder ) {
       setCustomerName(prefillOrder.customerName || "");
       setTableNumber(prefillOrder.tableNumber || "");
-      setWaiterName(prefillOrder.waiterId || user?.name || "");
+      // setWaiterName(prefillOrder.waiterId || user?.name || "");
       setCartItems(prefillOrder.items || []);
       setOrderActive(true);
       toast.info("Order loaded into cart.");
     }
   }, [prefillOrder, setCartItems, user]);
 
-  const handleNewOrder = () => {
-    setOrderActive(true);
-  };
 
   const handleCreateOrder = async () => {
     if (!customerName || !tableNumber || cartItems.length === 0) {
@@ -103,7 +100,7 @@ export default function CartSidebar({
 
     
         <div className="mt-4 space-y-4">
-        <Button
+         <Button
               onClick={() => {
                 clearCart();
                 setCustomerName("");
@@ -116,8 +113,6 @@ export default function CartSidebar({
               className="text-black bg-gray-200 px-4 py-2 rounded w-full"
               label="Click to reset cart"
               variant="dark"
-              size={"small"}
-
             />
           <div>
             <label className="block text-sm font-medium">Customer Name</label>
@@ -188,6 +183,7 @@ export default function CartSidebar({
             className="mt-4 text-white px-4 py-2 rounded w-full"
             label="Submit Order"
             variant="dark"
+            disabled={!isOrderActive}  // Disable submit button if the order is inactive
           />
         </div>
     </div>

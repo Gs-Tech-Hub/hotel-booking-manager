@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useOrderStore, Order, PaymentMethod, paymentMethods } from "@/app/stores/useOrderStore";
+import { useOrderStore, Order, paymentMethods } from "@/app/stores/useOrderStore";
 import { Button } from "@/components/ui-elements/button";
 import { Modal } from "@/components/ui-elements/modal";
 import { toast } from "react-toastify";
