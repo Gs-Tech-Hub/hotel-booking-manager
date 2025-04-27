@@ -1,56 +1,64 @@
-import { compactFormat } from "@/lib/format-number";
 import { OverviewCard } from "./card";
-import * as icons from "./icons";
+import { formatPrice } from "@/utils/priceHandler";
 
 type OverviewDataItem = {
   value: number;
 };
 
 type OverviewProps = {
-  categories: OverviewDataItem;
+  total_cash: OverviewDataItem;
+  total_transfers: OverviewDataItem;
+  total_sold: OverviewDataItem;
+
   low_stock: OverviewDataItem;
   out_of_stock: OverviewDataItem;
-  total_sold: OverviewDataItem;
 };
 
-export function OverviewCardsGroup({ categories, low_stock, out_of_stock, total_sold }: OverviewProps) {
+export function OverviewCardsGroup({ total_cash, total_transfers, low_stock, out_of_stock, total_sold }: OverviewProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 2xl:gap-7.5">
       <OverviewCard
-        label="Categories"
+        label="Cash"
         data={{
-          ...categories,
-          value: compactFormat(categories.value),
+          ...total_cash,
+          value: formatPrice((total_cash.value), 'NGN'),
         }}
-        Icon={icons.OpenDoor}
       />
 
       <OverviewCard
-        label="Low Stock"
+        label="Card | Bank Transfer"
         data={{
-          ...low_stock,
-          value: +compactFormat(low_stock.value),
+          ...total_transfers,
+          value: formatPrice((total_transfers.value), 'NGN'),
         }}
-        Icon={icons.ClosedDoor}
-      />
-
-      <OverviewCard
-        label="Out-Of-Stock"
-        data={{
-          ...out_of_stock,
-          value: compactFormat(out_of_stock.value),
-        }}
-        Icon={icons.CheckIn}
       />
 
       <OverviewCard
         label="Total Sold"
         data={{
           ...total_sold,
-          value: compactFormat(total_sold.value),
+          value: formatPrice((total_sold.value), 'NGN'),
         }}
-        Icon={icons.CheckOut}
       />
+
+      <OverviewCard
+        label="Low Stock"
+        data={{
+          ...low_stock,
+          value: (low_stock.value),
+        }}
+      />
+
+      <OverviewCard
+        label="Out-Of-Stock"
+        data={{
+          ...out_of_stock,
+          value: (out_of_stock.value),
+        }}
+        // Icon={icons.CheckIn}
+      />
+
+  
     </div>
   );
 }

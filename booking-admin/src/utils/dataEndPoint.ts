@@ -7,9 +7,9 @@ const apiHandlerInstance = ApiHandler({ baseUrl });
 
 interface BookingItemPayload {
   quantity: number;
-  food_items: string | null;
-  drinks: string | null;
-  menu_category: string; 
+  food_items: { id: string }[] | null;
+  drinks: { id: string }[] | null;
+  menu_category: { id: string;} | null;
 }
 
 // Main service function
@@ -49,8 +49,32 @@ export const strapiService = {
       });
     }
     return url.toString();
-  },
-
+  },   
+  
+  // find items by id
+  async findDrinkByDocumentId(documentId: string, drinkId: number | string) {
+    const query = qs.stringify({
+      filters: {
+        documentId: {
+          $eq: documentId,
+        },
+      },
+      populate: ['drinks'],
+      encodeValuesOnly: true,
+    });
+  
+    const result = await apiHandlerInstance.fetchData(`bar-and-clubs?${query}`);
+  
+    if (result.error) throw new Error(result.error?.message || 'Failed to fetch bar data');
+  
+    const bar = result.data?.[0];
+    if (!bar) throw new Error(`Bar with documentId "${documentId}" not found`);
+  
+    const drink = bar.drinks?.find((d: any) => d.id === Number(drinkId));
+    if (!drink) throw new Error(`Drink with ID ${drinkId} not found in bar "${documentId}"`);
+  
+    return drink;
+  },  
   // Booking related methods
   async createBooking(bookingData: any) {
     const result = await apiHandlerInstance.createData({ 
@@ -81,6 +105,16 @@ export const strapiService = {
       endpoint: "booking-items", 
       data: itemData 
     });
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
+
+  // Get booking items
+  async getBookingItems(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`booking-items${queryString}`);
     if (result.error) throw new Error(result.error);
     return result.data;
   },
@@ -151,6 +185,35 @@ export const strapiService = {
     return result.data;
   },
 
+  //get bar-and-clubs 
+  async getBarAndClubs(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`bar-and-clubs${queryString}`); 
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
+  // get restaurants
+  async getRestaurants(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`restaurants${queryString}`);
+    if (result.error) throw new Error(result.error); 
+    return result.data 
+  },
+
+  // get hotelServices
+  async getHotelServices(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`hotel-services${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
+
   // Menu related methods
   async getDrinksList(params?: Record<string, string | number | boolean>) {
     const queryString = params
@@ -164,6 +227,7 @@ export const strapiService = {
   //update drinks Data
 async updateDrinksList(drinkId: string | number, drinkData: any) {
   try {
+    console.log("Updating drink with ID:", drinkId);
     const result = await apiHandlerInstance.updateData({
       endpoint: "drinks",
       id: drinkId,
@@ -305,6 +369,26 @@ async updateDrinksList(drinkId: string | number, drinkData: any) {
       throw new Error('Failed to fetch user profile');
     }
   },
+// get menu category 
+  async getMenuCategory(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`menu-categories${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
+
+  // GET FOOD ITEMS
+  async getFoodItems(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`food-items${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
+  
   
   
  

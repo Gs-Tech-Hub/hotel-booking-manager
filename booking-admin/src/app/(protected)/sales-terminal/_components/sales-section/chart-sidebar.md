@@ -3,8 +3,8 @@ import { Button } from "@/components/ui-elements/button";
 import { useCartStore } from "@/app/stores/useCartStore";
 import { toast } from "react-toastify";
 import { Order, useOrderStore } from "@/app/stores/useOrderStore";
-
-
+import { formatPrice } from "@/utils/priceHandler";
+import { useAuth } from "@/components/Auth/context/auth-context";
 
 export default function CartSidebar({
   onCreateOrder,
@@ -16,7 +16,7 @@ export default function CartSidebar({
   const [customerName, setCustomerName] = useState("");
   const [tableNumber, setTableNumber] = useState("");
   const [waiterName, setWaiterName] = useState("");
-  const [isOrderActive, setOrderActive] = useState(false);
+  const [isOrderActive, setOrderActive] = useState(true);
 
   const cartItems = useCartStore((state) => state.cartItems);
   const setCartItems = useCartStore((state) => state.setCartItems);
@@ -24,60 +24,70 @@ export default function CartSidebar({
   const decrementItem = useCartStore((state) => state.decrementItem);
   const updateOrderItem = useOrderStore((state) => state.updateOrderItem);
 
-  const newOrder: Order = {
-    id: Date.now().toString(), // Generate a temporary ID
-    customerName,
-    tableNumber,
-    waiterName,
-    items: cartItems,
-    status: 'active', // Set initial status
-  }; 
+  const { user } = useAuth();
 
-  // When prefillOrder changes, populate the fields
+  useEffect(() => {
+    if (user?.name) {
+      setWaiterName(user.name);
+    }
+  }, [user]);
+
   useEffect(() => {
     if (prefillOrder) {
       setCustomerName(prefillOrder.customerName || "");
       setTableNumber(prefillOrder.tableNumber || "");
-      setWaiterName(prefillOrder.waiterName || "");
-      setCartItems(prefillOrder.items || []); // ✅ Load items into cart
+      // setWaiterName(prefillOrder.waiterId || user?.name || "");
+      setCartItems(prefillOrder.items || []);
       setOrderActive(true);
       toast.info("Order loaded into cart.");
     }
-  }, [prefillOrder, setCartItems]);
+  }, [prefillOrder, setCartItems, user]);
 
   const handleNewOrder = () => {
     setOrderActive(true);
   };
 
-  const handleCreateOrder = () => {
-    if (!customerName || !tableNumber || !waiterName || cartItems.length === 0) {
+  const handleCreateOrder = async () => {
+    if (!customerName || !tableNumber || cartItems.length === 0) {
       toast.error("Please fill in all fields and add items to the cart.");
       return;
     }
-    
-    // Check if we are updating an existing order (using prefillOrder)
-    if (prefillOrder?.id) {
-      // Assuming `updateOrderItem` is imported and available from your store
-      cartItems.forEach((updatedItem) => {
-        updateOrderItem(prefillOrder.id, updatedItem); // Update each item in the cart
-      });
-      toast.success("Order updated successfully!");
-    } else {
-      // If no orderId, create a new order
-      onCreateOrder(newOrder);
-      toast.success("Order submitted successfully!");
-    }
-  
-    // Clear the cart and reset the form
-    clearCart();
-    setCustomerName("");
-    setTableNumber("");
-    setWaiterName("");
-    setOrderActive(false);
-  };
-  
 
-  const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    const finalOrder: Order = {
+      id: Date.now().toString(),
+      customerName,
+      tableNumber,
+      waiterId: user?.name || "",
+      items: cartItems,
+      status: "active",
+      totalAmount: cartTotal,
+    };
+
+    try {
+      if (prefillOrder?.id) {
+        cartItems.forEach((updatedItem) => {
+          updateOrderItem(prefillOrder.id, updatedItem);
+        });
+        toast.success("Order updated successfully!");
+      } else {
+        onCreateOrder(finalOrder);
+        toast.success("Order submitted successfully!");
+      }
+
+      clearCart();
+      setCustomerName("");
+      setTableNumber("");
+      setWaiterName(user?.name || "");
+      setOrderActive(false);
+    } catch (error) {
+      toast.error(`Failed to process order: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const cartTotal = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
 
   return (
     <div className="rounded-[10px] bg-white p-6 shadow-md dark:bg-gray-dark">
@@ -95,7 +105,6 @@ export default function CartSidebar({
         </div>
       ) : (
         <div className="mt-4 space-y-4">
-          {/* Customer Info */}
           <div>
             <label className="block text-sm font-medium">Customer Name</label>
             <input
@@ -119,17 +128,12 @@ export default function CartSidebar({
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Waiter Name</label>
-            <input
-              type="text"
-              value={waiterName}
-              onChange={(e) => setWaiterName(e.target.value)}
-              className="w-full mt-1 px-3 py-2 border rounded"
-              placeholder="Enter waiter name"
-            />
+            <label className="block text-sm font-medium">Cashier</label>
+            <div className="w-full mt-1 px-3 py-2 border rounded bg-gray-100">
+              {waiterName || "Loading..."}
+            </div>
           </div>
 
-          {/* Cart Summary */}
           <div>
             <h3 className="text-md font-semibold">Cart Summary</h3>
             {cartItems.length === 0 ? (
@@ -145,9 +149,13 @@ export default function CartSidebar({
                       >
                         −
                       </button>
-                      <span>{item.name} x {item.quantity}</span>
+                      <span>
+                        {item.name} x {item.quantity}
+                      </span>
                     </div>
-                    <span>${item.price * item.quantity}</span>
+                    <span>
+                      {formatPrice(item.price * item.quantity, "NGN")}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -156,12 +164,11 @@ export default function CartSidebar({
             {cartItems.length > 0 && (
               <div className="flex justify-between mt-4 font-semibold">
                 <span>Total:</span>
-                <span>${cartTotal}</span>
+                <span>{formatPrice(cartTotal, "NGN")}</span>
               </div>
             )}
           </div>
 
-          {/* Submit Order */}
           <Button
             onClick={handleCreateOrder}
             className="mt-4 text-white px-4 py-2 rounded w-full"

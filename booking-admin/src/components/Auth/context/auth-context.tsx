@@ -8,6 +8,7 @@ import { strapiService } from "@/utils/dataEndPoint";
 
 interface User {
   id: string; // Added id property to User interface
+  documentId: string;
   name: string;
   email: string;
   image?: string;
@@ -66,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const isValid = await strapiService.verifyToken(storedJwt, userId);
           if (isValid?.valid) {
             setUser(userData);
-            // log("User set from storage:", userData);
+           console.log("User set from storage:", userData);
           } else {
             // log("Token invalid, clearing storage...");
             localStorage.removeItem('user');
@@ -113,6 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const userData: User = {
         id: verifiedUser.user.id, // Ensure the user ID is stored
+        documentId: userWithRole.documentId,
         name: userWithRole.username || email,
         email: userWithRole.email,
         image: userWithRole.image,
@@ -124,7 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('jwt', verifiedUser.jwt);
 
       setUser(userData);
-      // log("User logged in and set:", userData);
+      console.log("User logged in and set:", userData);
 
       const urlParams = new URLSearchParams(window.location.search);
       const redirectPath = urlParams.get("redirect") || roleToDefaultPageMap[userData.role] || "/";

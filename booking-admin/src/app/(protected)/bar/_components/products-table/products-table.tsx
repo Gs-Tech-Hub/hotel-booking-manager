@@ -6,6 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatPrice } from "@/utils/priceHandler";
 
 function getAvailabilityStatus(quantity: number, threshold: number) {
   if (quantity === 0) return { label: "Out of Stock", color: "text-red-600" };
@@ -17,9 +18,9 @@ export type Product = {
   name: string;
   type: string;
   price: number;
-  quantity: number;
-  threshold: number;
+  bar_stock: number;
   sold: number;
+  amount: number;
   profit: number;
 };
 
@@ -66,16 +67,17 @@ export function ProductsList({
             <TableHead>Name</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Price</TableHead>
-            <TableHead>Quantity</TableHead>
-            <TableHead>Threshold</TableHead>
-            <TableHead>Availability</TableHead>
-            <TableHead>Sold</TableHead>
+            <TableHead>Bar Stock</TableHead>
+            <TableHead>Stock Level</TableHead>
+            <TableHead>Units Sold</TableHead>
+            <TableHead>Amount</TableHead>
+
           </TableRow>
         </TableHeader>
 
         <TableBody>
           {filteredData.map((item) => {
-            const status = getAvailabilityStatus(item.quantity, item.threshold);
+            const status = getAvailabilityStatus(item.bar_stock, 10);
 
             return (
               <TableRow
@@ -84,11 +86,12 @@ export function ProductsList({
               >
                 <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{item.name}</TableCell>
                 <TableCell>{item.type}</TableCell>
-                <TableCell>₦{item.price}</TableCell>
-                <TableCell>{item.quantity}</TableCell>
-                <TableCell>{item.threshold}</TableCell>
+                <TableCell>{formatPrice((item.price), 'NGN')}</TableCell>
+                <TableCell>{item.bar_stock}</TableCell>
                 <TableCell className={status.color}>{status.label}</TableCell>
                 <TableCell>{item.sold}</TableCell>
+                <TableCell>{formatPrice((item.amount), 'NGN')}</TableCell>
+
               </TableRow>
             );
           })}
