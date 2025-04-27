@@ -14,10 +14,7 @@ export interface OverviewCardData {
 }
 
 export interface ExtendedProduct extends Product {
-  isBar?: boolean;
   isRestaurant?: boolean;
-  isHotel?: boolean;
-  showStock?: boolean;
 }
 
 

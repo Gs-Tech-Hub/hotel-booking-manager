@@ -145,7 +145,12 @@ export default function Products() {
 
       <div className="mt-4">
         <Suspense fallback={<ProductsListSkeleton />}>
-          <DrinksInventoryPage products={productsList} />
+        <DrinksInventoryPage
+        products={productsList.map((product) => ({
+        ...product,
+       showStock: product.isBar 
+      }))}
+     />
         </Suspense>
       </div>
     </div>

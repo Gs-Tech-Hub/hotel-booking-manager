@@ -7,6 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatPrice } from "@/utils/priceHandler";
+import { ExtendedProduct } from "@/utils/handleDepartmentRecord";
 
 function getAvailabilityStatus(quantity: number, threshold: number) {
   if (quantity === 0) return { label: "Out of Stock", color: "text-red-600" };
@@ -18,10 +19,16 @@ export type Product = {
   name: string;
   type: string;
   price: number;
-  bar_stock: number;
+  bar_stock: number; // existing field
   sold: number;
   amount: number;
   profit: number;
+  isFood?: boolean; // Make optional
+  isBar?: boolean; // Make optional
+  isHotel?: boolean; // Make optional
+  showStock?: boolean; // Make optional
+  stock?: number; // Make optional
+  other_stock?: number; // Make optional
   drink_type: {
     id: number;
     documentId: string;
@@ -32,12 +39,13 @@ export type Product = {
   } | null;
 };
 
+
 export function ProductsList({
   products,
   filter,
   sort,
 }: {
-  products: Product[];
+  products: ExtendedProduct[];
   filter?: string;
   sort?: string;
 }) {
@@ -85,7 +93,7 @@ export function ProductsList({
 
         <TableBody>
           {filteredData.map((item) => {
-            const status = getAvailabilityStatus(item.bar_stock, 10);
+            const status = getAvailabilityStatus(item.stock ?? 0, 10);
 
             return (
               <TableRow
@@ -95,7 +103,7 @@ export function ProductsList({
                 <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{item.name}</TableCell>
                 <TableCell>{item.type}</TableCell>
                 <TableCell>{formatPrice((item.price), 'NGN')}</TableCell>
-                <TableCell>{item.bar_stock}</TableCell>
+                <TableCell>{item.showStock ? item.stock : 'N/A'}</TableCell> {/* Use `stock` */}
                 <TableCell className={status.color}>{status.label}</TableCell>
                 <TableCell>{item.sold}</TableCell>
                 <TableCell>{formatPrice((item.amount), 'NGN')}</TableCell>

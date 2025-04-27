@@ -74,7 +74,6 @@ export function ProductsList({
           <TableRow className="border-t text-base [&>th]:h-auto [&>th]:py-3 sm:[&>th]:py-4.5">
             <TableHead>Name</TableHead>
             <TableHead>Price</TableHead>
-            <TableHead>Bar Stock</TableHead>
             <TableHead>Stock Level</TableHead>
             <TableHead>Units Sold</TableHead>
             <TableHead>Amount</TableHead>
@@ -93,7 +92,6 @@ export function ProductsList({
               >
                 <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{item.name}</TableCell>
                 <TableCell>{formatPrice((item.price), 'NGN')}</TableCell>
-                <TableCell>{item.bar_stock}</TableCell>
                 <TableCell className={status.color}>{status.label}</TableCell>
                 <TableCell>{item.sold}</TableCell>
                 <TableCell>{formatPrice((item.amount), 'NGN')}</TableCell>

@@ -9,8 +9,11 @@ import { strapiService } from "@/utils/dataEndPoint";
 export default function POS() {
   const [department, setDepartment] = useState<'Bar' | 'Restaurant' | 'Hotel-Services'>('Bar');
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);  // Loading state for menu items
+
 
   const fetchMenuItems = async (dept: typeof department) => {
+    setLoading(true);  // Set loading to true when fetching data
     let items: MenuItem[] = [];
 
     if (dept === 'Bar') {
@@ -68,6 +71,7 @@ export default function POS() {
 
     // console.log("Fetched Items:", items);
     setMenuItems(items);
+    setLoading(false); // Set loading to false after fetching is complete
   };
 
   useEffect(() => {
@@ -85,6 +89,7 @@ export default function POS() {
         <POSLayout
           menuItems={menuItems}
           onDepartmentChange={handleDepartmentChange}
+          loading={loading}  // Pass loading state to POSLayout
         />
       </Suspense>
     </div>
