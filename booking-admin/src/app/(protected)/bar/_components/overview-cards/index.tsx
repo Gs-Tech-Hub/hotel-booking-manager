@@ -1,5 +1,6 @@
 import { compactFormat } from "@/lib/format-number";
 import { OverviewCard } from "./card";
+import { formatPrice } from "@/utils/priceHandler";
 
 type OverviewDataItem = {
   value: number;
@@ -21,7 +22,7 @@ export function OverviewCardsGroup({ total_cash, total_transfers, low_stock, out
         label="Cash"
         data={{
           ...total_cash,
-          value: compactFormat(total_cash.value),
+          value: formatPrice((total_cash.value), 'NGN'),
         }}
       />
 
@@ -29,7 +30,7 @@ export function OverviewCardsGroup({ total_cash, total_transfers, low_stock, out
         label="Card | Bank Transfer"
         data={{
           ...total_transfers,
-          value: compactFormat(total_transfers.value),
+          value: formatPrice((total_transfers.value), 'NGN'),
         }}
       />
 
@@ -37,7 +38,7 @@ export function OverviewCardsGroup({ total_cash, total_transfers, low_stock, out
         label="Total Sold"
         data={{
           ...total_sold,
-          value: compactFormat(total_sold.value),
+          value: formatPrice((total_sold.value), 'NGN'),
         }}
       />
 
@@ -45,7 +46,7 @@ export function OverviewCardsGroup({ total_cash, total_transfers, low_stock, out
         label="Low Stock"
         data={{
           ...low_stock,
-          value: +compactFormat(low_stock.value),
+          value: (low_stock.value),
         }}
       />
 
@@ -53,7 +54,7 @@ export function OverviewCardsGroup({ total_cash, total_transfers, low_stock, out
         label="Out-Of-Stock"
         data={{
           ...out_of_stock,
-          value: compactFormat(out_of_stock.value),
+          value: (out_of_stock.value),
         }}
         // Icon={icons.CheckIn}
       />

@@ -1,15 +1,10 @@
 import { strapiService } from "@/utils/dataEndPoint";
-import { Product } from "@/app/(protected)/bar/_components/products-table/products-table"; // Import the ProductData interface
+import { Product } from "@/app/(protected)/bar/_components/products-table/products-table";
 
 interface OverviewData {
   cashSales: number;
   totalTransfers: number;
   totalSales: number;
-}
-
-interface DepartmentRecordData {
-  overview: OverviewData;
-  products?: Product[]; // Optional, as inventory may not always be needed
 }
 
 export async function handleDepartmentRecord(
@@ -21,54 +16,113 @@ export async function handleDepartmentRecord(
     departmentStockField: string;
     otherStockField: string;
   }
-): Promise<{ overview: any; products: Product[] }> {
+): Promise<{ overview: OverviewData; products: Product[] }> {
   const { inventoryEndpoint, departmentStockField, otherStockField } = options;
 
-  // Fetch data from the API
-  const products = await strapiService[inventoryEndpoint](
-    { startDate, endDate, department },
-    {},
-    {}
-  );
+  try {
+    // --- Fetch booking items with drinks ---
+    const bookingItems = await strapiService.getBookingItems({
+      "pagination[pageSize]": 200,
+        "filters[createdAt][$gte]": formatDate(startDate),
+        "filters[createdAt][$lte]": formatDate(endDate),
+      populate: "*"
+    });
 
-  // Map the products to match the ProductData interface
-  const mappedProducts: Product[] = products.map((product: any) => ({
-    ...product,
-    bar_stock: product[departmentStockField] || 0,
-    restaurant_stock: product[otherStockField] || 0,
-    type: product.type || "",
-    sold: product.sold || 0,
-    amount: product.amount || 0,
-    profit: product.profit || 0,
-  }));
+    console.log("Fetched Booking Items:", bookingItems);
 
-  // Example overview data
-  const overview = {
-    cashSales: 1000,
-    totalTransfers: 500,
-    totalSales: 1500,
-  };
+    // --- Track cash, transfers, and product sales in one pass ---
+    const salesByProduct: Record<string, { units: number; amount: number }> = {};
+    let cashSales = 0;
+    let totalTransfers = 0;
 
-  return { overview, products: mappedProducts };
+    bookingItems.forEach((item: any) => {
+      const paymentMethod = item.paymentMethod;
+      const amountPaid = item.amount_paid || 0;
+
+      // Calculate sales based on payment method
+      if (paymentMethod === "cash") {
+        cashSales += amountPaid;
+      } else {
+        totalTransfers += amountPaid;
+      }
+
+      // Track drinks sold
+      if (item.drinks && Array.isArray(item.drinks)) {
+        item.drinks.forEach((drink: any) => {
+          if (!drink?.documentId) return; // skip invalid drinks
+          if (!salesByProduct[drink.documentId]) {
+            salesByProduct[drink.documentId] = { units: 0, amount: 0 };
+          }
+          const qty = item.quantity || 0;
+          salesByProduct[drink.documentId].units += qty;
+          salesByProduct[drink.documentId].amount += (drink.price || 0) * qty;
+        });
+      }
+    });
+
+    console.log("Sales by Product:", salesByProduct);
+
+    // --- Fetch inventory (NO department filter anymore) ---
+    const inventory = await strapiService[inventoryEndpoint](
+      {},
+      {
+        populate: "*",
+        "pagination[pageSize]": 100,
+      },
+      {}
+    );
+
+    console.log("Fetched Inventory:", inventory);
+
+    // --- Map inventory with sales ---
+    const products: Product[] = inventory.map((product: any) => {
+      const sales = salesByProduct[product.documentId] || { units: 0, amount: 0 };
+
+      return {
+        name: String(product.name || "Unnamed Product"),
+        type: product.type || "",
+        price: Number(product.price) || 0,
+        bar_stock: Number(product[departmentStockField]) || 0,
+        restaurant_stock: Number(product[otherStockField]) || 0,
+        sold: sales.units,
+        amount: sales.amount,
+        profit: sales.amount - (product.price * sales.units),
+      };
+    });
+
+    const overview: OverviewData = {
+      cashSales,
+      totalTransfers,
+      totalSales: cashSales + totalTransfers,
+    };
+
+    console.log("Overview Data:", overview);
+
+    return { overview, products };
+  } catch (error) {
+    console.error("Error in handleDepartmentRecord:", error);
+    throw error;
+  }
 }
 
+// --- Fetch Inventory Utility ---
 export async function fetchInventoryData(
   inventoryEndpoint: keyof typeof strapiService,
   departmentStockField: string,
   otherStockField: string
 ): Promise<Product[]> {
   try {
-    // Fetch inventory data from the specified endpoint
     const inventory = await strapiService[inventoryEndpoint](
       {},
       {
         populate: "*",
-        "pagination[pageSize]": 50,
+        "pagination[pageSize]": 100,
       },
       {}
     );
 
-    // Process inventory data for the products table
+    console.log("Fetched Inventory (Simple):", inventory);
+
     return inventory.map((item: any) => ({
       id: item.id,
       name: item.name,
@@ -83,8 +137,8 @@ export async function fetchInventoryData(
   }
 }
 
+// --- Format date helper (unchanged) ---
 function formatDate(date: string): string {
-  // Utility function to format date as needed by the API
   const d = new Date(date);
   return d.toISOString().split("T")[0];
 }
