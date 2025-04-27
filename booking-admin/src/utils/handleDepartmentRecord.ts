@@ -23,12 +23,12 @@ export async function handleDepartmentRecord(
   try {
     // --- Fetch booking items with drinks ---
     const bookingItems = await strapiService.getBookingItems({
-      "pagination[pageSize]": 200,
-        "filters[createdAt][$gte]": formatDate(startDate),
-        "filters[createdAt][$lte]": formatDate(endDate),
-      populate: "*"
+      "pagination[pageSize]": 70,
+      "filters[createdAt][$gte]": formatDateRange(startDate),
+      "filters[createdAt][$lte]": formatDateRange(endDate, true),
+      "populate": "*",
     });
-
+    
     console.log("Fetched Booking Items:", bookingItems);
 
     // --- Track cash, transfers, and product sales in one pass ---
@@ -37,7 +37,7 @@ export async function handleDepartmentRecord(
     let totalTransfers = 0;
 
     bookingItems.forEach((item: any) => {
-      const paymentMethod = item.paymentMethod;
+      const paymentMethod = item.payment_type?.types?.trim().toLowerCase();
       const amountPaid = item.amount_paid || 0;
 
       // Calculate sales based on payment method
@@ -64,16 +64,13 @@ export async function handleDepartmentRecord(
     console.log("Sales by Product:", salesByProduct);
 
     // --- Fetch inventory (NO department filter anymore) ---
-    const inventory = await strapiService[inventoryEndpoint](
-      {},
-      {
-        populate: "*",
-        "pagination[pageSize]": 100,
-      },
-      {}
-    );
-
+    const inventory = await strapiService[inventoryEndpoint]({
+      populate: "*",
+      "pagination[pageSize]": 100,
+    },{},{});
+    
     console.log("Fetched Inventory:", inventory);
+    
 
     // --- Map inventory with sales ---
     const products: Product[] = inventory.map((product: any) => {
@@ -81,7 +78,7 @@ export async function handleDepartmentRecord(
 
       return {
         name: String(product.name || "Unnamed Product"),
-        type: product.type || "",
+        type: product.drink_type?.typeName || "",
         price: Number(product.price) || 0,
         bar_stock: Number(product[departmentStockField]) || 0,
         restaurant_stock: Number(product[otherStockField]) || 0,
@@ -113,14 +110,13 @@ export async function fetchInventoryData(
   otherStockField: string
 ): Promise<Product[]> {
   try {
-    const inventory = await strapiService[inventoryEndpoint](
-      {},
-      {
-        populate: "*",
-        "pagination[pageSize]": 100,
-      },
-      {}
-    );
+    const inventory = await strapiService[inventoryEndpoint]({
+      populate: "*",
+      "pagination[pageSize]": 100,
+    },{},{});
+    
+    console.log("Fetched Inventory:", inventory);
+    
 
     console.log("Fetched Inventory (Simple):", inventory);
 
@@ -139,7 +135,13 @@ export async function fetchInventoryData(
 }
 
 // --- Format date helper (unchanged) ---
-function formatDate(date: string): string {
+function formatDateRange(date: string, endOfDay = false): string {
   const d = new Date(date);
-  return d.toISOString().split("T")[0];
+  if (endOfDay) {
+    d.setHours(23, 59, 59, 999); // move to end of day
+  } else {
+    d.setHours(0, 0, 0, 0); // move to start of day
+  }
+  return d.toISOString();
 }
+

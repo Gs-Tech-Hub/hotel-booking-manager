@@ -7,9 +7,11 @@ import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
 import DrinksInventoryPage from "./_components/products-table/drinks-inventory";
 import { ProductsListSkeleton } from "./_components/products-table/skeleton";
 import { strapiService } from "@/utils/dataEndPoint";
+import { useRoleGuard } from "@/hooks/useRoleGuard";
 
 
 export default function Bar() {
+  useRoleGuard(['admin', 'manager']);
   const [productsList, setProductsList] = useState([]);
   const [stockSummary, setStockSummary] = useState({
     out_of_stock: 0,

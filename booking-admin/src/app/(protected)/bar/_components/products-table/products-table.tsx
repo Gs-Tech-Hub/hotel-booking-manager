@@ -22,6 +22,14 @@ export type Product = {
   sold: number;
   amount: number;
   profit: number;
+  drink_type: {
+    id: number;
+    documentId: string;
+    typeName: string;
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: string;
+  } | null;
 };
 
 export function ProductsList({
