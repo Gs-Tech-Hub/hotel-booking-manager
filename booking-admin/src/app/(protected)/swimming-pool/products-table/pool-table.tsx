@@ -2,10 +2,12 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatPrice } from "@/utils/priceHandler";
 
 export function SwimmingPoolList({
   hotelServices,
@@ -19,9 +21,13 @@ export function SwimmingPoolList({
     amountPaid: number; // Amount paid
   }[];
 }) {
+  // Calculate the total amount paid
+  const totalAmountPaid = hotelServices.reduce((acc, service) => acc + service.amountPaid, 0);
+
   return (
     <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
       <div className="px-6 py-4 sm:px-7 sm:py-5 xl:px-8.5">
+        {/* Optional: Add any content here */}
       </div>
 
       <Table>
@@ -47,6 +53,14 @@ export function SwimmingPoolList({
             </TableRow>
           ))}
         </TableBody>
+
+        {/* Row for total amount paid */}
+        <TableFooter>
+          <TableRow className="text-base font-medium text-dark dark:text-white">
+            <TableCell colSpan={3} className="text-right space-between pr-5 sm:pr-6 xl:pr-7.5">Total Amount Paid</TableCell>
+            <TableCell>{formatPrice (totalAmountPaid, 'NGN')}</TableCell>
+          </TableRow>
+        </TableFooter>
       </Table>
     </div>
   );

@@ -67,13 +67,13 @@ export const NAV_DATA: NavSection[] = [
           { 
            title: "Restaurant",
            url: "/restaurant", 
-           roles: ["admin", "kitchen"]
+           roles: ["admin", "bar", "kitchen"]
            },
 
           { 
             title: "Bar", 
             url: "/bar",
-            roles: ["admin", "bar"]
+            roles: ["admin", "bar", "kitchen"]
            },
 
           { title: "Games",
@@ -88,7 +88,7 @@ export const NAV_DATA: NavSection[] = [
           { 
             title: "Sales Terminal", 
             url: "/sales-terminal", 
-            roles: ["admin", "bar", "kitchen", "receptionist", "manager"] 
+            roles: ["admin", "bar", "kitchen", "games", "receptionist", "manager"] 
           },
         ],
       },
