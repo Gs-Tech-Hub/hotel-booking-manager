@@ -17,28 +17,41 @@ interface ProductData {
   sold: number;
   amount: number;
   profit: number;
+  
+  drink_type: {
+    id: number;
+    documentId: string;
+    typeName: string;
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: string;
+  } | null;
+
   [key: string]: any;
 }
 
-// Use formatDate if you want cleaner dates here
 const generatePastWeekDateRanges = () => {
   const now = new Date();
   const ranges = [];
-
-  for (let i = 1; i <= 7; i++) {
+  for (let i = 0; i <= 7; i++) {
     const pastDate = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
     ranges.push({
-      label: `${i === 1 ? "Yesterday" : `${i} days ago`} (${pastDate.toLocaleDateString()})`,
-      value: pastDate.toISOString().split("T")[0], // already formatted well
+      label:
+        i === 0
+          ? `Today (${pastDate.toLocaleDateString()})`
+          : i === 1
+          ? `Yesterday (${pastDate.toLocaleDateString()})`
+          : `${i} days ago (${pastDate.toLocaleDateString()})`,
+      value: pastDate.toISOString().split("T")[0],
     });
   }
-
   return ranges;
 };
 
 const pastWeekDateRanges = generatePastWeekDateRanges();
 
 export default function Products() {
+  const [loadingStock, setLoadingStock] = useState(false);
   const [overviewData, setOverviewData] = useState({
     total_cash: { value: 0 },
     total_transfers: { value: 0 },
@@ -48,12 +61,13 @@ export default function Products() {
   });
   const [productsList, setProductsList] = useState<ProductData[]>([]);
   const [selectedDateRange, setSelectedDateRange] = useState({
-    startDate: pastWeekDateRanges[0].value, // ✅ default immediately instead of setting inside useEffect
+    startDate: pastWeekDateRanges[0].value,
     endDate: pastWeekDateRanges[0].value,
   });
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoadingStock(true); // Start loading
       try {
         console.log("Fetching data for date:", selectedDateRange.startDate);
 
@@ -81,6 +95,8 @@ export default function Products() {
         setProductsList(products);
       } catch (error) {
         console.error("Failed to fetch bar data:", error);
+      } finally {
+        setLoadingStock(false); // Stop loading no matter what
       }
     };
 
@@ -97,18 +113,23 @@ export default function Products() {
         </label>
         <select
           id="dateRange"
+          disabled={loadingStock}
           className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          value={selectedDateRange.startDate} // keep the select value in sync
+          value={selectedDateRange.startDate}
           onChange={(e) => {
             const selectedDate = e.target.value;
             setSelectedDateRange({ startDate: selectedDate, endDate: selectedDate });
           }}
         >
-          {pastWeekDateRanges.map((range) => (
-            <option key={range.value} value={range.value}>
-              {range.label}
-            </option>
-          ))}
+          {loadingStock ? (
+            <option>... Getting Stock data</option>
+          ) : (
+            pastWeekDateRanges.map((range) => (
+              <option key={range.value} value={range.value}>
+                {range.label}
+              </option>
+            ))
+          )}
         </select>
       </div>
 
