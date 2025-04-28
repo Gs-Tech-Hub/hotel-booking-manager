@@ -25,12 +25,14 @@ export interface ExtendedProduct extends Product {
 export async function handleDepartmentRecord(
   startDate: string,
   endDate: string,
-  department: "bar_services" | "restaurant_services" | "hotel_services"  | "Games", // Department type
+  department: "bar_services" | "restaurant_services" | "hotel_services" | "Games", // Department type
   options: {
     inventoryEndpoint: keyof typeof strapiService;
     departmentStockField: string;
     otherStockField: string;
-  }
+    fetchInventory?: boolean; // Optional parameter to control fetching inventory
+  },
+  fetchInventory = true // New optional parameter to control fetching inventory
 ): Promise<{ overview: OverviewCardData; products: ExtendedProduct[] }> {
   const { inventoryEndpoint, departmentStockField, otherStockField } = options;
 
@@ -115,8 +117,11 @@ export async function handleDepartmentRecord(
           salesByProduct[game.documentId].units += qty;
           salesByProduct[game.documentId].amount += price * qty;
           itemTotal += price * qty;
+      
+          // Debugging log to check sales data being added
+          console.log(`Adding Game Sale: ${game.documentId}, Qty: ${qty}, Amount: ${price * qty}`);
         });
-      }
+      }      
     
       // Only if this item belongs to the selected department, track its payment
       if (departmentHasRecord) {
@@ -134,100 +139,104 @@ export async function handleDepartmentRecord(
 
     console.log("Sales by Product:", salesByProduct);
 
-    // --- Fetch inventory (NO department filter anymore) ---
-    const inventory = await strapiService[inventoryEndpoint](
-      {
-        populate: "*",
-        "pagination[pageSize]": 100,
+    let inventory: any[] = [];
+    if (fetchInventory) {
+      // --- Fetch inventory (NO department filter anymore) ---
+      inventory = await strapiService[inventoryEndpoint](
+        {
+          populate: "*",
+          "pagination[pageSize]": 100,
+        },
+        {},
+        {}
+      );
+
+      console.log("Fetched Inventory:", inventory);
+    }
+
+    // --- Map inventory with sales into Overview Cards ---
+    const products: ExtendedProduct[] = inventory.map((product: any) => {
+      const sales = salesByProduct[product.documentId] || { units: 0, amount: 0 };
+
+      let stockField = 0;
+      let otherStockField = 0;
+
+      // Dynamically determine the stock fields based on the department
+      if (department === "bar_services") {
+        stockField = product[departmentStockField] || 0;  // Bar-specific stock
+        otherStockField = product[otherStockField] || 0;  // For other products if needed
+      } else if (department === "restaurant_services") {
+        stockField = product[departmentStockField] || 0;  // Restaurant-specific stock
+        otherStockField = product[otherStockField] || 0;  // For other products if needed
+      } else if (department === "hotel_services") {
+        stockField = product[departmentStockField] || 0;  // Hotel-specific stock
+        otherStockField = product[otherStockField] || 0;  // For other products if needed
+      } else if (department === "Games") {
+        stockField = product[departmentStockField] || 0;  // Game-specific stock
+        otherStockField = product[otherStockField] || 0;  // For other products if needed
+      }
+
+      // Define flags for conditional display in the overview card
+      const isFood = department === "restaurant_services";
+      const isBar = department === "bar_services";
+      const isHotel = department === "hotel_services";
+      const isGame = department === "Games";
+
+      return {
+        name: String(product.name || "Unnamed Product"),
+        type: product.drink_type?.typeName || "",
+        price: Number(product.price) || 0,
+        stock: stockField,  // Use department-specific stock
+        other_stock: otherStockField,  // For other products
+        sold: sales.units,
+        amount: sales.amount,
+        profit: sales.amount - product.price * sales.units,
+        isFood,  // Flag for food items
+        isBar,   // Flag for bar items
+        isHotel, // Flag for hotel items
+        isGame, // Flag for game items,
+        bar_stock: product.bar_stock || 0,
+        drink_type: product.drink_type || null
+      };
+    });
+
+    // --- Generate overview data ---
+    const overview = products.reduce(
+      (acc, product) => {
+        acc.totalSales += product.amount;
+        acc.totalUnits += product.sold;
+        acc.totalProfit += product.profit;
+
+        // Track specific sales types
+        if (product.isBar) acc.barSales += product.amount;
+        if (product.isRestaurant) acc.foodSales += product.amount;
+        if (product.isHotel) acc.hotelSales += product.amount;
+        if (product.isGame) acc.gameSales += product.amount; // Add game sales if needed
+
+        return acc;
       },
-      {},
-      {}
+      {
+        cashSales: cashSales,            
+        totalTransfers: totalTransfers,
+        totalSales: 0,
+        totalUnits: 0,
+        totalProfit: 0,
+        barSales: 0,
+        foodSales: 0,
+        hotelSales: 0,
+        gameSales: 0, 
+      }
     );
 
-    console.log("Fetched Inventory:", inventory);
-
-// --- Map inventory with sales into Overview Cards ---
-const products: ExtendedProduct[]  = inventory.map((product: any) => {
-  const sales = salesByProduct[product.documentId] || { units: 0, amount: 0 };
-
-  let stockField = 0;
-  let otherStockField = 0;
-
-  // Dynamically determine the stock fields based on the department
-  if (department === "bar_services") {
-    stockField = product[departmentStockField] || 0;  // Bar-specific stock
-    otherStockField = product[otherStockField] || 0;  // For other products if needed
-  } else if (department === "restaurant_services") {
-    stockField = product[departmentStockField] || 0;  // Restaurant-specific stock
-    otherStockField = product[otherStockField] || 0;  // For other products if needed
-  } else if (department === "hotel_services") {
-    stockField = product[departmentStockField] || 0;  // Hotel-specific stock
-    otherStockField = product[otherStockField] || 0;  // For other products if needed
-  } else if (department === "Games") {
-    stockField = product[departmentStockField] || 0;  // Game-specific stock
-    otherStockField = product[otherStockField] || 0;  // For other products if needed
-  }
-
-  // Define flags for conditional display in the overview card
-  const isFood = department === "restaurant_services";
-  const isBar = department === "bar_services";
-  const isHotel = department === "hotel_services";
-  const isGame = department === "Games";
-
-  return {
-    name: String(product.name || "Unnamed Product"),
-    type: product.drink_type?.typeName || "",
-    price: Number(product.price) || 0,
-    stock: stockField,  // Use department-specific stock
-    other_stock: otherStockField,  // For other products
-    sold: sales.units,
-    amount: sales.amount,
-    profit: sales.amount - product.price * sales.units,
-    isFood,  // Flag for food items
-    isBar,   // Flag for bar items
-    isHotel, // Flag for hotel items
-    isGame, // Flag for game items
-  };
-});
-
-// --- Generate overview data ---
-const overview = products.reduce(
-  (acc, product) => {
-    acc.totalSales += product.amount;
-    acc.totalUnits += product.sold;
-    acc.totalProfit += product.profit;
-
-    // Track specific sales types
-    if (product.isBar) acc.barSales += product.amount;
-    if (product.isRestaurant) acc.foodSales += product.amount;
-    if (product.isHotel) acc.hotelSales += product.amount;
-    if (product.isGame) acc.gameSales += product.amount; // Add game sales if needed
-
-    return acc;
-  },
-  {
-    cashSales: cashSales,            
-    totalTransfers: totalTransfers,
-    totalSales: 0,
-    totalUnits: 0,
-    totalProfit: 0,
-    barSales: 0,
-    foodSales: 0,
-    hotelSales: 0,
-    gameSales: 0, // Add game sales if needed
-  }
-);
-
-// --- Return Overview Data with Conditional Flags ---
-return {
-  overview,
-  products: products.map((product) => ({
-    ...product,
-    showStock: product.isBar || product.isRestaurant || product.isHotel,  // Only show stock for relevant products
-    showProfit: product.isBar || product.isRestaurant || product.isHotel || product.isGame,  // Show profit where applicable
-  })),
-};
-
+    // --- Return Overview Data with Conditional Flags ---
+    return {
+      overview,
+      products: products.map((product) => ({
+        ...product,
+        showStock: product.isBar || product.isRestaurant || product.isHotel,  // Only show stock for relevant products
+        showProfit: product.isBar || product.isRestaurant || product.isHotel || product.isGame,  // Show profit where applicable
+      })),
+    };
   } catch (error) {
     console.error("Error in handleDepartmentRecord:", error);
     throw error;
