@@ -5,6 +5,8 @@ import { strapiService } from "@/utils/dataEndPoint";
 import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/Auth/context/auth-context";
+import { processOrder } from "@/utils/processOrder";
+import { paymentMethods } from "@/app/stores/useOrderStore";
 
 interface AddGameModalProps {
   isOpen: boolean;
@@ -16,6 +18,7 @@ interface AddGameModalProps {
     game_status: string;
   }) => void;
   defaultData?: {
+    id: number
     documentId: string;
     playerName: string;
     count: number;
@@ -35,14 +38,14 @@ export function AddGameModal({
   const [count, setCount] = useState<number>(1);
   const [amountPaid, setAmountPaid] = useState<number>(0);
   const [amountOwed, setAmountOwed] = useState<number>(500);
-  const [gameStatus, setGameStatus] = useState<string>("");
+  const [gameStatus, setGameStatus] = useState<string>("ongoing");
   const [lockedStatus, setLockedStatus] = useState<string>("");
   const [defaultCount, setDefaultCount] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("");
 
   const { user } = useAuth();
   const userRole = user?.role || "";
-
 
   const isLocked = lockedStatus === "completed" || lockedStatus === "cancelled";
 
@@ -78,6 +81,11 @@ export function AddGameModal({
       return;
     }
 
+    if (gameStatus === "completed" && !selectedPaymentMethod) {
+      toast.error("Please select a payment method before completing.");
+      return;
+    }
+
     const payload = {
       count,
       amount_paid: amountPaid,
@@ -88,23 +96,77 @@ export function AddGameModal({
     try {
       setIsLoading(true);
 
+      if (gameStatus === "completed") {
+        const paymentMethodObj = paymentMethods.find(
+          (method) => method.type === selectedPaymentMethod
+        );
+
+        if (!paymentMethodObj) {
+          toast.error("Invalid payment method selected.");
+          return;
+        }
+
+        const response = await processOrder({
+          order: {
+            ...payload,
+            items: [
+              {
+                id: defaultData?.id ?? 0,
+                documentId: defaultData?.documentId ?? '',
+                name: 'Game Session - ' + playerName,
+                price: 500 * count,
+                quantity: count,
+                department: 'Games'
+              }
+            ],
+            status: payload.game_status,
+          },
+          waiterId: user?.id || "",
+          customerId: null,
+          paymentMethod: paymentMethodObj,
+        });
+
+        if (!response.success) {
+          toast.error("Updating user games failed");
+          return;
+        }
+      }
+
       if (defaultData?.documentId) {
         await strapiService.updateGame(defaultData.documentId, payload);
       }
 
       toast.success("Game updated successfully!");
-      setLockedStatus(gameStatus); // Lock after successful update
+      setLockedStatus(gameStatus);
       onSubmit(payload);
-
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      onClose();
     } catch (error) {
       console.error("Update failed:", error);
       toast.error("Failed to save game. Please try again.");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleStatusChange = (newStatus: string) => {
+    if (newStatus === "cancelled") {
+      if (userRole !== "admin") {
+        toast.warn("Only a manager can cancel an ongoing game.");
+        return;
+      }
+      setAmountPaid(0);
+      setAmountOwed(0);
+      setCount(0);
+      setSelectedPaymentMethod("");
+    } else if (newStatus === "completed") {
+      setAmountPaid(amountOwed);
+      setAmountOwed(0);
+    } else if (newStatus === "ongoing") {
+      setAmountPaid(0);
+      setAmountOwed(count * 500);
+      setSelectedPaymentMethod("");
+    }
+    setGameStatus(newStatus);
   };
 
   const content = (
@@ -160,30 +222,7 @@ export function AddGameModal({
         </label>
         <select
           value={gameStatus}
-          onChange={(e) => {
-            const newStatus = e.target.value;
-            setGameStatus(newStatus);
-            if (newStatus === "cancelled") {
-              if (userRole !== "admin") {
-                toast.warn("Only a manager can cancel an ongoing game.");
-                return; // Prevent change if not a manager
-              }
-              setAmountPaid(0); // No payment if cancelled
-              setAmountOwed(0); // Nothing left to owe
-              setCount(0); // Reset games played
-              setGameStatus(newStatus);
-            } else if (newStatus === "completed") {
-              setAmountPaid(amountOwed); // Pay everything owed
-              setAmountOwed(0); // Nothing left to owe
-              setGameStatus(newStatus);
-            } else if (newStatus === "ongoing") {
-              setAmountPaid(0); // Reset payment if ongoing
-              setAmountOwed(count * 500); // Recalculate amount owed
-              setGameStatus(newStatus);
-            }
-            
-            
-          }}
+          onChange={(e) => handleStatusChange(e.target.value)}
           className="w-full px-3 py-2 mt-1 border rounded dark:bg-gray-800 dark:text-white"
         >
           <option value="ongoing">Ongoing</option>
@@ -191,6 +230,26 @@ export function AddGameModal({
           <option value="cancelled">Cancelled</option>
         </select>
       </div>
+
+      {gameStatus === "completed" && (
+        <div>
+          <label className="block mb-2 font-medium text-gray-700 dark:text-gray-300">
+            Payment Method
+          </label>
+          <select
+            value={selectedPaymentMethod}
+            onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+            className="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
+          >
+            <option value="">Select payment method</option>
+            {paymentMethods.map((method) => (
+              <option key={method.type} value={method.type}>
+                {method.type}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
     </fieldset>
   );
 

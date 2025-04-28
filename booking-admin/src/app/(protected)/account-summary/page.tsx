@@ -34,7 +34,7 @@ export default function AccountSummary() {
 
         const otherServicesData = await strapiService.getBookingItems({
           populate: "*",
-          "pagination[pageSize]": 50,
+          "pagination[pageSize]": 100,
           "filters[createdAt][$gte]": timeFrame.startDate,
           "filters[createdAt][$lte]": timeFrame.endDate,
         });
