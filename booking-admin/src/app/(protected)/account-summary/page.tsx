@@ -1,8 +1,9 @@
-'use client'
+  'use client'
 import React, { useEffect, useState } from "react";
-import OverviewCardsGroup from "./_components/overview-cards/overview-account-summary";
+import { OverviewCardsGroup } from "./_components/overview-cards";
 import { useRoleGuard } from "@/hooks/useRoleGuard";
 import { getAllDepartmentOverviews } from "./_components/allDepartmentRecords";
+import { handleBookingRecords } from "@/utils/handleBookingRecords";
 
 export default function AccountSummary() {
   useRoleGuard(["admin", "manager", "sales"]);
@@ -15,9 +16,11 @@ export default function AccountSummary() {
     totalProfit: null as number | null,
     barSales: 0,
     foodSales: 0,
-    hotelSales: 0,
+    hotelBooking: 0,
+    hotelBookingCash: 0,
+    hotelBookingTransfer: 0,
     gameSales: 0,
-    // products: [] as any[], // Added to store products
+    hotelServices: 0,
   });
 
   const [loading, setLoading] = useState(true);
@@ -32,22 +35,37 @@ export default function AccountSummary() {
       try {
         setLoading(true); // Start loading
 
+        const bookingOview = await handleBookingRecords(timeFrame);
+        console.log("booking data:", bookingOview);
+
         const departmentOverview = await getAllDepartmentOverviews(timeFrame.startDate, timeFrame.endDate);
 
         if (departmentOverview) {
           setOverviewData({
+            //general departments total
             cashSales: departmentOverview.cashSales,
             totalTransfers: departmentOverview.totalTransfers,
             totalSales: departmentOverview.totalSales,
+            //bar account
             totalUnits: departmentOverview.totalUnits,
             totalProfit: departmentOverview.totalProfit,
             barSales: departmentOverview.barSales,
+            //restaurant
             foodSales: departmentOverview.foodSales,
-            hotelSales: departmentOverview.hotelSales,
+            //swimming-pool/others
+            hotelServices: departmentOverview.hotelSales,
+            //games
             gameSales: departmentOverview.gameSales,
-            // products: departmentOverview.products, // Add the products data
+            //hote Records
+            hotelBooking: bookingOview.hotel.total,
+            hotelBookingCash: bookingOview.hotel.cash,
+            hotelBookingTransfer: bookingOview.hotel.online,
+
+            
           });
         }
+
+        console.log("check the hotel services data:", overviewData.cashSales)
 
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -61,7 +79,6 @@ export default function AccountSummary() {
 
   return (
     <div>
-      <h1>Sales Overview</h1>
       <div className="mb-4">
         <label>
           Start Date:
@@ -90,13 +107,32 @@ export default function AccountSummary() {
           />
         </label>
       </div>
+      <h1>SALES OVERVIEW</h1>
 
       {loading ? (
         <p>Loading...</p>
       ) : (
         <OverviewCardsGroup
-          overview={overviewData}  // Pass the full overview data
-        />
+        hotel={{
+          hotelBookingTotal: overviewData.hotelBooking,
+          Totalcash: (overviewData.cashSales + overviewData.hotelBookingCash),
+          totalTransfers: (overviewData.totalTransfers + overviewData.hotelBookingTransfer),
+          totalSales: (overviewData.hotelBooking + overviewData.totalSales),
+        }}
+        restaurant={{
+          foodSales: overviewData.foodSales,
+        }}
+        bar={{
+          barSales: overviewData.barSales,
+        }}
+        games={{
+          gameSales: overviewData.gameSales,
+        }}
+        hotel_services={{
+          hotelServiceSales: overviewData.hotelServices,
+        }}
+      />
+      
       )}
     </div>
   );
