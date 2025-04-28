@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { strapiService } from '@/utils/dataEndPoint';
 import { PaymentMethod } from '@/app/stores/useOrderStore';
-import { connect } from 'http2';
+import { Order } from '@/app/stores/useOrderStore';
 
 interface OrderItem {
   id: number;

@@ -1,77 +1,66 @@
 import { useOrderStore, Order } from "@/app/stores/useOrderStore";
-import { formatPrice } from "@/utils/priceHandler";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSortedOrders } from "@/hooks/useSorting"; // Sorting hook
+import OrderItem from "./order-item";
 
 export default function OrdersList({
   onViewOrderDetails,
 }: {
   onViewOrderDetails: (order: Order) => void;
 }) {
-  const orders = useOrderStore((state) => state.orders) || [];
+  const orders = useOrderStore((state) => state.orders);
+  const removeOrder = useOrderStore((state) => state.removeOrder);
+
   const [viewAll, setViewAll] = useState(false);
 
-  // Sort orders with "pending" first
-  const sortedOrders = [...orders].sort((a, b) => {
-    if (a.status === "active" && b.status !== "active") return -1;
-    if (a.status !== "active" && b.status === "active") return 1;
-    return 0;
-  });
+  // Sorting the orders using your sorting hook
+  const { displayedOrders } = useSortedOrders(orders, viewAll);
 
-  const displayedOrders = viewAll ? sortedOrders : sortedOrders.slice(0, 5);
+  const handleRemoveOrder = useCallback((id: string) => {
+    console.log("Removing order:", id);
+    removeOrder(id);
+  }, [removeOrder]);
 
-  const handleViewDetails = useCallback(
-    (order: Order) => {
-      onViewOrderDetails(order);
-    },
-    [onViewOrderDetails]
-  );
+  const handleToggleView = useCallback(() => {
+    setViewAll((prev) => !prev);
+  }, []);
+
+  const handleViewDetails = useCallback((order: Order) => {
+    onViewOrderDetails(order);
+  }, [onViewOrderDetails]);
+
+  useEffect(() => {
+    console.log("📦 Current Orders in State:", orders);
+    orders.forEach((order, index) => {
+      console.log(`Order #${index + 1}:`, order);
+    });
+  }, [orders]);
+
+  const shouldShowToggleButton = useMemo(() => orders.length > 5, [orders.length]);
 
   return (
     <div className="rounded-[10px] bg-white p-6 shadow-1 dark:bg-gray-dark">
       <h2 className="text-lg font-bold mb-4">Orders</h2>
+
       {orders.length === 0 ? (
         <p className="text-sm text-gray-500">No orders yet.</p>
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-            {displayedOrders.map((order) => {
-              const orderItems = Array.isArray(order.items) ? order.items : [];
-              const total = orderItems.reduce(
-                (sum, item) => sum + item.price * item.quantity,
-                0
-              );
-
-              return (
-                <div
-                  key={order.id}
-                  className="border rounded-lg p-4 shadow cursor-pointer hover:shadow-md transition"
-                  onClick={() => handleViewDetails(order)}
-                >
-                  <p className="font-bold text-lg mb-1">{order.customerName}</p>
-                  <p className="text-sm text-gray-600 mb-1">
-                    Total: {formatPrice(total, 'NGN')}
-                  </p>
-                  <p className="text-xs text-gray-500 mb-2">
-                    Table: {order.tableNumber}
-                  </p>
-                  <span
-                    className={`inline-block text-xs font-semibold px-2 py-1 rounded ${
-                      order.status === "completed"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }`}
-                  >
-                    {order.status}
-                  </span>
-                </div>
-              );
-            })}
+            {displayedOrders.map((order) => (
+              <OrderItem
+                key={order.id}
+                order={order}
+                onViewOrderDetails={handleViewDetails}
+                onRemoveOrder={handleRemoveOrder}
+              />
+            ))}
           </div>
 
-          {orders.length > 5 && (
+          {shouldShowToggleButton && (
             <div className="mt-4 text-center">
               <button
-                onClick={() => setViewAll((prev) => !prev)}
+                onClick={handleToggleView}
                 className="text-blue-600 hover:underline text-sm"
               >
                 {viewAll ? "View Less" : "View More"}

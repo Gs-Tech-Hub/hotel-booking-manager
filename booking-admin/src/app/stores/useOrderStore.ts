@@ -28,8 +28,6 @@ export const paymentMethods: PaymentMethod[] = [
   },
 ];
 
-
-
 export interface Order {
   id: string;
   customerName: string;
@@ -54,11 +52,11 @@ export interface updateItemQuantity {
 }
 
 interface OrderStore {
-  currentOrder: Order | null;
+  currentOrderId: string | null; // Store only the ID
   orders: Order[];
   setOrder: (order: Order) => void;
-  updateItemQuantity: (id: number, quantity: number) => void;
-  addItemToOrder: (item: CartItem) => void;
+  updateItemQuantity: (orderId: string, itemId: number, quantity: number) => void;
+  addItemToOrder: (orderId: string, newItem: CartItem) => void;
   removeItemFromOrder: (orderId: string, itemId: number) => void;
   setPaymentMethod: (orderId: string, method: PaymentMethod) => void;
   completeOrder: (orderId: string) => void;
@@ -67,14 +65,13 @@ interface OrderStore {
   addOrder: (order: Order) => void;
   removeOrder: (orderId: string) => void;
   updateOrderItem: (orderId: string, updatedItem: CartItem) => void;
-  // refreshOrders: () => Promise<void>;
   getOrderByCustomer: (customerName: string) => Order | undefined;
 }
 
 export const useOrderStore = create<OrderStore>()(
   persist(
     (set, get) => ({
-      currentOrder: null,
+      currentOrderId: null,
       orders: [],
 
       setOrder: (order) => {
@@ -82,68 +79,71 @@ export const useOrderStore = create<OrderStore>()(
           console.warn("Invalid order data:", order);
           return;
         }
-        set({ currentOrder: order });
+        set({ currentOrderId: order.id });
       },
 
-      updateItemQuantity: (itemId, newQty) => {
+      updateItemQuantity: (orderId, itemId, newQty) => {
         set((state) => {
-          const order = state.orders.find((o) =>
-            o.items.some((item) => item.id === itemId)
+          const updatedOrders = state.orders.map((order) =>
+            order.id === orderId
+              ? {
+                  ...order,
+                  items: order.items.map((item) =>
+                    item.id === itemId ? { ...item, quantity: newQty } : item
+                  ),
+                }
+              : order
           );
-          if (!order) return state;
-
-          const updatedItems = order.items.map((item) =>
-            item.id === itemId ? { ...item, quantity: newQty } : item
-          );
-
-          return {
-            orders: state.orders.map((o) =>
-              o.id === order.id ? { ...order, items: updatedItems } : o
-            ),
-          };
+          return { orders: updatedOrders };
         });
       },
 
-      removeItemFromOrder(orderId, itemId) {
-        const state = get();
-        const order = state.orders.find((o) => o.id === orderId);
-        if (!order) return;
+      addItemToOrder: (orderId, newItem) => {
+        set((state) => {
+          const updatedOrders = state.orders.map((order) =>
+            order.id === orderId
+              ? {
+                  ...order,
+                  items: order.items.some((item) => item.id === newItem.id)
+                    ? order.items.map((item) =>
+                        item.id === newItem.id
+                          ? { ...item, quantity: item.quantity + newItem.quantity }
+                          : item
+                      )
+                    : [...order.items, newItem],
+                }
+              : order
+          );
 
-        const updatedItems = order.items.filter((item) => item.id !== itemId);
-        const updatedOrders = state.orders.map((o) =>
-          o.id === orderId ? { ...o, items: updatedItems } : o
-        );
+          // Update currentOrder based on orderId
+          if (state.currentOrderId === orderId) {
+            return {
+              orders: updatedOrders,
+              currentOrderId: orderId,
+            };
+          }
 
-        set({
-          orders: updatedOrders,
-          currentOrder:
-            state.currentOrder?.id === orderId
-              ? { ...state.currentOrder, items: updatedItems }
-              : state.currentOrder,
+          return { orders: updatedOrders };
         });
       },
 
-      addItemToOrder: (newItem) => {
-        const state = get();
-        if (!state.currentOrder || newItem.quantity <= 0 || newItem.price < 0) {
-          console.warn("Invalid item:", newItem);
-          return;
-        }
+      removeItemFromOrder: (orderId, itemId) => {
+        set((state) => {
+          const updatedOrders = state.orders.map((order) =>
+            order.id === orderId
+              ? { ...order, items: order.items.filter((item) => item.id !== itemId) }
+              : order
+          );
 
-        const existing = state.currentOrder.items.find((i) => i.id === newItem.id);
-        const updatedItems = existing
-          ? state.currentOrder.items.map((i) =>
-              i.id === newItem.id
-                ? { ...i, quantity: i.quantity + newItem.quantity }
-                : i
-            )
-          : [...state.currentOrder.items, newItem];
+          // Update currentOrder based on orderId
+          if (state.currentOrderId === orderId) {
+            return {
+              orders: updatedOrders,
+              currentOrderId: orderId,
+            };
+          }
 
-        set({
-          currentOrder: {
-            ...state.currentOrder,
-            items: updatedItems,
-          },
+          return { orders: updatedOrders };
         });
       },
 
@@ -152,37 +152,20 @@ export const useOrderStore = create<OrderStore>()(
           const updatedOrders = state.orders.map((order) =>
             order.id === orderId ? { ...order, paymentMethod: method } : order
           );
-
-          const updatedCurrentOrder =
-            state.currentOrder?.id === orderId
-              ? { ...state.currentOrder, paymentMethod: method }
-              : state.currentOrder;
-
-          return {
-            orders: updatedOrders,
-            currentOrder: updatedCurrentOrder,
-          };
+          return { orders: updatedOrders };
         });
       },
 
       completeOrder: (orderId) => {
-        const state = get();
-        const updatedOrders = state.orders.map((order) =>
-          order.id === orderId ? { ...order, status: "completed" as const } : order
-        );
-
-        const updatedCurrentOrder =
-          state.currentOrder?.id === orderId
-            ? { ...state.currentOrder, status: "completed" as const }
-            : state.currentOrder;
-
-        set({
-          orders: updatedOrders,
-          currentOrder: updatedCurrentOrder?.id === orderId ? null : updatedCurrentOrder,
+        set((state) => {
+          const updatedOrders = state.orders.map((order) =>
+            order.id === orderId ? { ...order, status: "completed" as const } : order
+          );
+          return { orders: updatedOrders };
         });
       },
 
-      clearOrder: () => set({ currentOrder: null }),
+      clearOrder: () => set({ currentOrderId: null }),
 
       setOrders: (orders) => {
         if (!Array.isArray(orders)) {
@@ -202,8 +185,7 @@ export const useOrderStore = create<OrderStore>()(
       removeOrder: (orderId) => {
         set((state) => ({
           orders: state.orders.filter((o) => o.id !== orderId),
-          currentOrder:
-            state.currentOrder?.id === orderId ? null : state.currentOrder,
+          currentOrderId: state.currentOrderId === orderId ? null : state.currentOrderId,
         }));
       },
 
@@ -211,23 +193,26 @@ export const useOrderStore = create<OrderStore>()(
         set((state) => {
           const updatedOrders = state.orders.map((order) => {
             if (order.id === orderId) {
-              const updatedItems = order.items.map((item) =>
-                item.id === updatedItem.id ? { ...item, ...updatedItem } : item
-              );
+              const existingItem = order.items.find((item) => item.id === updatedItem.id);
+              const updatedItems = existingItem
+                ? order.items.map((item) =>
+                    item.id === updatedItem.id ? { ...item, ...updatedItem } : item
+                  )
+                : [...order.items, updatedItem];
               return { ...order, items: updatedItems };
             }
             return order;
           });
-          return { orders: updatedOrders };
+
+          const updatedCurrentOrder =
+            state.currentOrderId === orderId
+              ? updatedOrders.find((order) => order.id === orderId) || null
+              : state.currentOrderId;
+
+          return { orders: updatedOrders, currentOrder: updatedCurrentOrder };
         });
       },
-
-      // refreshOrders: async () => {
-      //   const fetched: Order[] = await strapiService.getOrders()(
-      //     (res) => res.json());
-      //   set({ orders: fetched });
-      // },
-
+      
       getOrderByCustomer: (customerName) => {
         return get().orders.find(
           (order) => order.customerName === customerName && order.status === "active"
@@ -239,7 +224,7 @@ export const useOrderStore = create<OrderStore>()(
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         orders: state.orders,
-        currentOrder: state.currentOrder,
+        currentOrderId: state.currentOrderId,
       }),
     }
   )

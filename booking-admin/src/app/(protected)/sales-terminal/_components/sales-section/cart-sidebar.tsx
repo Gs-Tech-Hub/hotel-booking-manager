@@ -19,8 +19,8 @@ export default function CartSidebar({
   const [tableNumber, setTableNumber] = useState("");
   const [waiterName, setWaiterName] = useState("");
   const [isOrderActive, setOrderActive] = useState(true);
-  const [discountPrice, setDiscountPrice] = useState<number | null>(null); // State for discount
-  const [showDiscountInput, setShowDiscountInput] = useState(false); // Toggle to show discount input field
+  const [discountPrice, setDiscountPrice] = useState<number | null>(null);
+  const [showDiscountInput, setShowDiscountInput] = useState(false);
 
   const cartItems = useCartStore((state) => state.cartItems);
   const setCartItems = useCartStore((state) => state.setCartItems);
@@ -46,6 +46,13 @@ export default function CartSidebar({
     }
   }, [prefillOrder, setCartItems, user]);
 
+  const cartTotal = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+
+  const finalTotal = discountPrice ? cartTotal - discountPrice : cartTotal;
+
   const handleCreateOrder = async () => {
     if (!customerName || !tableNumber || cartItems.length === 0) {
       toast.error("Please fill in all fields and add items to the cart.");
@@ -53,14 +60,14 @@ export default function CartSidebar({
     }
 
     const finalOrder: Order = {
-      id: Date.now().toString(),
+      id: prefillOrder?.id || Date.now().toString(),
       customerName,
       tableNumber,
       waiterId: user?.name || "",
       items: cartItems,
       status: "active",
-      totalAmount: cartTotal,
-      discount: discountPrice || 0, // Include discount in the order data
+      totalAmount: finalTotal,
+      discount: discountPrice || 0,
     };
 
     try {
@@ -81,17 +88,12 @@ export default function CartSidebar({
       setOrderActive(true);
 
       if (onClearPrefill) {
-        onClearPrefill(); // Clear prefill from parent
+        onClearPrefill();
       }
     } catch (error) {
-      toast.error(`Failed to process order: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(`Failed to process order: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   };
-
-  const cartTotal = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
 
   return (
     <div className="rounded-[10px] bg-white p-6 shadow-md dark:bg-gray-dark">
@@ -155,7 +157,11 @@ export default function CartSidebar({
               <input
                 type="number"
                 value={discountPrice ?? ""}
-                onChange={(e) => setDiscountPrice(parseFloat(e.target.value))}
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value);
+                    const maxDiscount = cartTotal;
+                    setDiscountPrice(value >= 0 ? Math.min(value, maxDiscount) : 0);
+                }}
                 className="w-full mt-1 px-3 py-2 border rounded"
                 placeholder="Enter new price"
               />
@@ -193,9 +199,8 @@ export default function CartSidebar({
           {cartItems.length > 0 && (
             <div className="flex justify-between mt-4 font-semibold">
               <span>Total:</span>
-              <span>{formatPrice(discountPrice ?? cartTotal, "NGN")}</span> {/* Display discounted total */}
+              <span>{formatPrice(finalTotal, "NGN")}</span> {/* Display discounted total */}
             </div>
-            
           )}
         </div>
 
