@@ -1,113 +1,58 @@
 'use client'
 import React, { useEffect, useState } from "react";
-import { OverviewCardsGroup } from "./_components/overview-cards";
+import OverviewCardsGroup from "./_components/overview-cards/overview-account-summary";
 import { useRoleGuard } from "@/hooks/useRoleGuard";
-import { strapiService } from "@/utils/dataEndPoint";
-import { Booking } from "@/types/bookingTypes";
-import { ServiceItem } from "@/types/serviceTypes";
+import { getAllDepartmentOverviews } from "./_components/allDepartmentRecords";
 
 export default function AccountSummary() {
   useRoleGuard(["admin", "manager", "sales"]);
 
   const [overviewData, setOverviewData] = useState({
-    hotel: { total: 0, cash: 0, online: 0, debt: 0 },
-    bar: { total: 0, cash: 0, online: 0, debt: 0 },
-    restaurant: { total: 0, cash: 0, online: 0, debt: 0 },
-    swimming_pool: { total: 0, cash: 0, online: 0, debt: 0 },
-    games: { total: 0, cash: 0, online: 0, debt: 0 },
+    cashSales: 0,
+    totalTransfers: 0,
+    totalSales: 0,
+    totalUnits: 0,
+    totalProfit: null as number | null,
+    barSales: 0,
+    foodSales: 0,
+    hotelSales: 0,
+    gameSales: 0,
+    // products: [] as any[], // Added to store products
   });
 
+  const [loading, setLoading] = useState(true);
+
   const [timeFrame, setTimeFrame] = useState({
-    startDate: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(), // Default: Last 30 days
+    startDate: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(),
     endDate: new Date().toISOString(),
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const bookingData = await strapiService.getBookings({
-          populate: "*",
-          "pagination[pageSize]": 50,
-          "filters[createdAt][$gte]": timeFrame.startDate,
-          "filters[createdAt][$lte]": timeFrame.endDate,
-        });
+        setLoading(true); // Start loading
 
-        const otherServicesData = await strapiService.getBookingItems({
-          populate: "*",
-          "pagination[pageSize]": 50,
-          "filters[createdAt][$gte]": timeFrame.startDate,
-          "filters[createdAt][$lte]": timeFrame.endDate,
-        });
+        const departmentOverview = await getAllDepartmentOverviews(timeFrame.startDate, timeFrame.endDate);
 
-        console.log("Booking Data:", bookingData);
-        console.log("Other Services Data:", otherServicesData);
-
-        const aggregatedData = {
-          hotel: { total: 0, cash: 0, online: 0, debt: 0 },
-          bar: { total: 0, cash: 0, online: 0, debt: 0 },
-          restaurant: { total: 0, cash: 0, online: 0, debt: 0 },
-          swimming_pool: { total: 0, cash: 0, online: 0, debt: 0 },
-          games: { total: 0, cash: 0, online: 0, debt: 0 },
-        };
-
-        // Process booking data
-        if (Array.isArray(bookingData)) {
-          bookingData.forEach((booking: Booking) => {
-            const roomPrice: number = booking.room?.price || 0;
-            const nights: number = booking.nights || 0;
-            const totalRoomPrice: number = roomPrice * nights;
-            const paymentStatus: string = booking.payment?.PaymentStatus || "debt";
-            const paymentMethod = (booking.payment?.paymentMethod || "cash") as "cash" | "online";
-
-            aggregatedData.hotel.total += totalRoomPrice;
-
-            if (paymentStatus === "success") {
-              aggregatedData.hotel[paymentMethod] += totalRoomPrice;
-            } else {
-              aggregatedData.hotel.debt += totalRoomPrice;
-            }
+        if (departmentOverview) {
+          setOverviewData({
+            cashSales: departmentOverview.cashSales,
+            totalTransfers: departmentOverview.totalTransfers,
+            totalSales: departmentOverview.totalSales,
+            totalUnits: departmentOverview.totalUnits,
+            totalProfit: departmentOverview.totalProfit,
+            barSales: departmentOverview.barSales,
+            foodSales: departmentOverview.foodSales,
+            hotelSales: departmentOverview.hotelSales,
+            gameSales: departmentOverview.gameSales,
+            // products: departmentOverview.products, // Add the products data
           });
-        } else {
-          console.warn("No booking data available or invalid format.");
         }
 
-        // Process other services data
-        if (Array.isArray(otherServicesData)) {
-          otherServicesData.forEach((service: ServiceItem) => {
-            const amountPaid: number = service.amount_paid || 0;
-            const paymentStatus: string = service.status || "debt";
-            const department: string = service.menu_category?.categoryName || "unknown";
-
-            if (department === "Bar") {
-              aggregatedData.bar.total += amountPaid;
-              if (paymentStatus === "success") {
-                aggregatedData.bar.cash += amountPaid;
-              } else {
-                aggregatedData.bar.debt += amountPaid;
-              }
-            } else if (department === "Restaurant") {
-              aggregatedData.restaurant.total += amountPaid;
-              if (paymentStatus === "success") {
-                aggregatedData.restaurant.cash += amountPaid;
-              } else {
-                aggregatedData.restaurant.debt += amountPaid;
-              }
-            } else if (department === "Swimming Pool") {
-              aggregatedData.swimming_pool.total += amountPaid;
-              if (paymentStatus === "success") {
-                aggregatedData.swimming_pool.cash += amountPaid;
-              } else {
-                aggregatedData.swimming_pool.debt += amountPaid;
-              }
-            }
-          });
-        } else {
-          console.warn("No other services data available or invalid format.");
-        }
-
-        setOverviewData(aggregatedData);
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false); // End loading
       }
     };
 
@@ -145,13 +90,14 @@ export default function AccountSummary() {
           />
         </label>
       </div>
-      <OverviewCardsGroup
-        hotel={overviewData.hotel}
-        restaurant={overviewData.restaurant}
-        bar={overviewData.bar}
-        swimming_pool={overviewData.swimming_pool}
-        games={overviewData.games} // Placeholder for games data
-      />
+
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <OverviewCardsGroup
+          overview={overviewData}  // Pass the full overview data
+        />
+      )}
     </div>
   );
 }

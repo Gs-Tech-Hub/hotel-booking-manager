@@ -57,6 +57,7 @@ export default function GamesListPage({ games }: { games: Games[] }) {
         defaultData={
           selectedGame
             ? {
+                id: selectedGame.id,
                 documentId: selectedGame.documentId,
                 playerName: selectedGame.customer.firstName,
                 count: selectedGame.count,

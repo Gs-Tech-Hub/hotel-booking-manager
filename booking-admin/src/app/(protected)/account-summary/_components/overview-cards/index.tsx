@@ -5,7 +5,7 @@ import { formatPrice } from "@/utils/priceHandler";
 type OverviewDataItem = {
     total: number; 
     cash: number; 
-    online: number; 
+    card_bank_transfer : number; 
     debt: number; 
 };
 
@@ -14,10 +14,10 @@ type OverviewProps = {
   restaurant: OverviewDataItem;
   bar: OverviewDataItem;
   games: OverviewDataItem;
-  swimming_pool: OverviewDataItem;
+  hotel_services: OverviewDataItem;
 };
 
-export function OverviewCardsGroup({  hotel, restaurant, bar, games, swimming_pool }: OverviewProps) {
+export function OverviewCardsGroup({  hotel, restaurant, bar, games, hotel_services }: OverviewProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3 2xl:gap-7.5">
   
@@ -54,8 +54,8 @@ export function OverviewCardsGroup({  hotel, restaurant, bar, games, swimming_po
      <OverviewCard
         label="Swimming Pool Sales Total"
         data={{
-          ...swimming_pool,
-          value: formatPrice((swimming_pool.total), 'NGN'),
+          ...hotel_services,
+          value: formatPrice((hotel_services.total), 'NGN'),
           date: 24
         }}
         Icon={icons.CheckOut}

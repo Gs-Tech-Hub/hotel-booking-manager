@@ -74,9 +74,9 @@ export default function Products() {
         const { overview, products } = await handleDepartmentRecord(
           selectedDateRange.startDate,
           selectedDateRange.endDate,
-          "bar_services",
+          "restaurant_services",
           {
-            inventoryEndpoint: "getDrinksList",
+            inventoryEndpoint: "getFoodItems",
             departmentStockField: "bar_stock",
             otherStockField: "restaurant_stock",
           }
@@ -145,12 +145,7 @@ export default function Products() {
 
       <div className="mt-4">
         <Suspense fallback={<ProductsListSkeleton />}>
-        <DrinksInventoryPage
-        products={productsList.map((product) => ({
-        ...product,
-       showStock: product.isBar 
-      }))}
-     />
+          <DrinksInventoryPage products={productsList} />
         </Suspense>
       </div>
     </div>

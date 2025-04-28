@@ -10,17 +10,17 @@ export default function CartSidebar({
   onCreateOrder,
   prefillOrder,
   onClearPrefill,
-
 }: {
   onCreateOrder: (order: Order) => void;
   prefillOrder?: Order | null;
   onClearPrefill?: () => void;
-
 }) {
   const [customerName, setCustomerName] = useState("");
   const [tableNumber, setTableNumber] = useState("");
   const [waiterName, setWaiterName] = useState("");
   const [isOrderActive, setOrderActive] = useState(true);
+  const [discountPrice, setDiscountPrice] = useState<number | null>(null); // State for discount
+  const [showDiscountInput, setShowDiscountInput] = useState(false); // Toggle to show discount input field
 
   const cartItems = useCartStore((state) => state.cartItems);
   const setCartItems = useCartStore((state) => state.setCartItems);
@@ -37,16 +37,14 @@ export default function CartSidebar({
   }, [user]);
 
   useEffect(() => {
-    if (prefillOrder ) {
+    if (prefillOrder) {
       setCustomerName(prefillOrder.customerName || "");
       setTableNumber(prefillOrder.tableNumber || "");
-      // setWaiterName(prefillOrder.waiterId || user?.name || "");
       setCartItems(prefillOrder.items || []);
       setOrderActive(true);
       toast.info("Order loaded into cart.");
     }
   }, [prefillOrder, setCartItems, user]);
-
 
   const handleCreateOrder = async () => {
     if (!customerName || !tableNumber || cartItems.length === 0) {
@@ -62,6 +60,7 @@ export default function CartSidebar({
       items: cartItems,
       status: "active",
       totalAmount: cartTotal,
+      discount: discountPrice || 0, // Include discount in the order data
     };
 
     try {
@@ -98,94 +97,116 @@ export default function CartSidebar({
     <div className="rounded-[10px] bg-white p-6 shadow-md dark:bg-gray-dark">
       <h2 className="text-lg font-bold">Order Management</h2>
 
-    
-        <div className="mt-4 space-y-4">
-         <Button
-              onClick={() => {
-                clearCart();
-                setCustomerName("");
-                setTableNumber("");
-                setWaiterName(user?.name || "");
-                setOrderActive(true);
-                toast.info("Cart and form reset.");
-                if (onClearPrefill) onClearPrefill();
-              }}
-              className="text-black bg-gray-200 px-4 py-2 rounded w-full"
-              label="Click to reset cart"
-              variant="dark"
-            />
-          <div>
-            <label className="block text-sm font-medium">Customer Name</label>
-            <input
-              type="text"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-              className="w-full mt-1 px-3 py-2 border rounded"
-              placeholder="Enter customer name"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Table Number</label>
-            <input
-              type="text"
-              value={tableNumber}
-              onChange={(e) => setTableNumber(e.target.value)}
-              className="w-full mt-1 px-3 py-2 border rounded"
-              placeholder="Enter table number"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Cashier</label>
-            <div className="w-full mt-1 px-3 py-2 border rounded bg-gray-100">
-              {waiterName || "Loading..."}
-            </div>
-          </div>
-
-          <div>
-            <h3 className="text-md font-semibold">Cart Summary</h3>
-            {cartItems.length === 0 ? (
-              <p className="text-sm text-gray-500 mt-1">Cart is empty.</p>
-            ) : (
-              <ul className="mt-2 space-y-2 text-sm">
-                {cartItems.map((item, index) => (
-                  <li key={index} className="flex justify-between items-center">
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => decrementItem(item.id)}
-                        className="px-2 py-1 bg-gray-200 text-sm rounded hover:bg-gray-300"
-                      >
-                        −
-                      </button>
-                      <span>
-                        {item.name} x {item.quantity}
-                      </span>
-                    </div>
-                    <span>
-                      {formatPrice(item.price * item.quantity, "NGN")}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {cartItems.length > 0 && (
-              <div className="flex justify-between mt-4 font-semibold">
-                <span>Total:</span>
-                <span>{formatPrice(cartTotal, "NGN")}</span>
-              </div>
-            )}
-          </div>
-
-          <Button
-            onClick={handleCreateOrder}
-            className="mt-4 text-white px-4 py-2 rounded w-full"
-            label="Submit Order"
-            variant="dark"
-            disabled={!isOrderActive}  // Disable submit button if the order is inactive
+      <div className="mt-4 space-y-4">
+        <Button
+          onClick={() => {
+            clearCart();
+            setCustomerName("");
+            setTableNumber("");
+            setWaiterName(user?.name || "");
+            setOrderActive(true);
+            toast.info("Cart and form reset.");
+            if (onClearPrefill) onClearPrefill();
+          }}
+          className="text-black bg-gray-200 px-4 py-2 rounded w-full"
+          label="Click to Reset Cart"
+          variant="dark"
+        />
+        <div>
+          <label className="block text-sm font-medium">Customer Name</label>
+          <input
+            type="text"
+            value={customerName}
+            onChange={(e) => setCustomerName(e.target.value)}
+            className="w-full mt-1 px-3 py-2 border rounded"
+            placeholder="Enter customer name"
           />
         </div>
+
+        <div>
+          <label className="block text-sm font-medium">Table Number</label>
+          <input
+            type="text"
+            value={tableNumber}
+            onChange={(e) => setTableNumber(e.target.value)}
+            className="w-full mt-1 px-3 py-2 border rounded"
+            placeholder="Enter table number"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">Cashier</label>
+          <div className="w-full mt-1 px-3 py-2 border rounded bg-gray-100">
+            {waiterName || "Loading..."}
+          </div>
+        </div>
+
+        {/* Staff Discount Section */}
+        <div>
+          <button
+            onClick={() => setShowDiscountInput(!showDiscountInput)}
+            className="text-blue-500 hover:underline"
+          >
+            Apply Staff Discount
+          </button>
+          {showDiscountInput && (
+            <div className="mt-2">
+              <label className="block text-sm font-medium">Enter Discount Price</label>
+              <input
+                type="number"
+                value={discountPrice ?? ""}
+                onChange={(e) => setDiscountPrice(parseFloat(e.target.value))}
+                className="w-full mt-1 px-3 py-2 border rounded"
+                placeholder="Enter new price"
+              />
+            </div>
+          )}
+        </div>
+
+        <div>
+          <h3 className="text-md font-semibold">Cart Summary</h3>
+          {cartItems.length === 0 ? (
+            <p className="text-sm text-gray-500 mt-1">Cart is empty.</p>
+          ) : (
+            <ul className="mt-2 space-y-2 text-sm">
+              {cartItems.map((item, index) => (
+                <li key={index} className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => decrementItem(item.id)}
+                      className="px-2 py-1 bg-gray-200 text-sm rounded hover:bg-gray-300"
+                    >
+                      −
+                    </button>
+                    <span>
+                      {item.name} x {item.quantity}
+                    </span>
+                  </div>
+                  <span>
+                    {formatPrice(item.price * item.quantity, "NGN")}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {cartItems.length > 0 && (
+            <div className="flex justify-between mt-4 font-semibold">
+              <span>Total:</span>
+              <span>{formatPrice(discountPrice ?? cartTotal, "NGN")}</span> {/* Display discounted total */}
+            </div>
+            
+          )}
+        </div>
+
+        <Button
+          onClick={handleCreateOrder}
+          className="mt-4 text-white px-4 py-2 rounded w-full"
+          label="Submit Order"
+          variant="dark"
+          disabled={!isOrderActive} // Disable submit button if the order is inactive
+        />
+      </div>
     </div>
   );
 }

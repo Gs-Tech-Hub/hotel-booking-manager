@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { strapiService } from '@/utils/dataEndPoint';
 import { PaymentMethod } from '@/app/stores/useOrderStore';
+import { connect } from 'http2';
 
 interface OrderItem {
   id: number;
@@ -92,6 +93,7 @@ export const processOrder = async ({
       let drinks: { id: string }[] | null = null;
       let food_items: { id: string }[] | null = null;
       let hotel_services: { id: string }[] | null = null;
+      let games: { id: string }[] | null = null;
       let menu_category: { id: string } | null = null;
 
       if (department === 'Bar') {
@@ -136,13 +138,25 @@ export const processOrder = async ({
         hotel_services = serviceIds.length > 0 ? serviceIds : null;
       }
 
+      if (department === 'Games') {
+        const gameIds: { id: string }[] = [];
+        for (const item of items) {
+          const res = await strapiService.getGamesList({ 'filters[documentId][$eq]': item.documentId });
+          const game = res?.[0];
+          console.log('Game Response:', game);
+          if (!game) throw new Error(`Game not found: ${item.documentId}`);
+          gameIds.push({ id: game.id });
+        }
+        games = gameIds.length > 0 ? gameIds : null;
+      };
+
       const bookingItemPayload = {
         quantity: totalQuantity,
         drinks,  
         food_items,  
         hotel_services,  
         menu_category,  
-        games: { set: [] },
+        games: games ? { connect: games } : null, // Connect to all game items
         amount_paid: totalAmount,
         payment_type: paymentMethod.id,
         status: null,
@@ -160,7 +174,7 @@ export const processOrder = async ({
 
     // === Final Order Creation ===
 
-const orderPayload = {
+  const orderPayload = {
   order_status: "Completed",
   total: totalAmount,   // Total amount for the order
   users_permissions_user:{ connect: {id: waiterId}},     // ID of the waiter handling the order

@@ -36,37 +36,42 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
       toast.warning("Please select a payment method.");
       return;
     }
-
+  
     setIsLoading(true);
-
+  
     try {
-      // Construct the finalOrder object using currentOrder data
+      // Corrected typo: finalOrder, not Order
       const finalOrder = {
         id: currentOrder.id,
         customerName: currentOrder.customerName,
         tableNumber: currentOrder.tableNumber,
-        waiterName: currentOrder.waiterId|| "",
+        waiterName: currentOrder.waiterId || "",
         items: currentOrder.items,
         status: "completed",
       };
+      
       console.log("Final Order:", finalOrder);
-      // Ensure user and documentId are available
+  
       if (!user?.id) {
         throw new Error("User document ID is missing.");
       }
-
-      // Process the order using the utility function
-      await processOrder({
+  
+      // Process the order first
+      const result = await processOrder({
         order: finalOrder,
-        waiterId: user?.id,
-        customerId: currentOrder?.customerId || null, 
-        paymentMethod: currentOrder.paymentMethod|| "",
-
+        waiterId: user.id,
+        customerId: currentOrder.customerId || null,
+        paymentMethod: currentOrder.paymentMethod || "",
       });
-
-      // Mark the order as completed
-      await completeOrder(order.id);
-
+  
+      // Check if processOrder was successful
+      if (!result || result.error) {
+        throw new Error(typeof result?.error === 'string' ? result.error : "Failed to process order.");
+      }
+  
+      // Only if processOrder succeeded, complete the order
+      await completeOrder(finalOrder.id);
+  
       toast.success("Order completed successfully!");
       onClose();
     } catch (error) {
@@ -75,6 +80,7 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
       setIsLoading(false);
     }
   };
+  
 
   const handleContinueSales = () => {
     // Close the modal without modifying state, keeping cart intact
