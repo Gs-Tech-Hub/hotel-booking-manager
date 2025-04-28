@@ -30,6 +30,7 @@ export async function getAllDepartmentOverviews(startDate: string, endDate: stri
       inventoryEndpoint: "getBookingItems",
       departmentStockField: "available_sessions",
       otherStockField: "available_sessions",
+      fetchInventory: false
     });
     console.log("Games Overview:", games);
 

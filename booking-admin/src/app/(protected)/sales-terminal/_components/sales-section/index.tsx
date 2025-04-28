@@ -64,10 +64,11 @@ export default function POSLayout(props: PosMenuProps) {
       items,
       status: 'active',
       totalAmount,
+      discount: 0, // Adding default discount of 0
     }; 
 
     setOrders([...orders, newOrder]);
-    setActiveOrder(newOrder); // 🛠️ ADD THIS LINE to set the active order
+    setActiveOrder(newOrder); 
     console.log('Order added to list:', newOrder);
   };
 
