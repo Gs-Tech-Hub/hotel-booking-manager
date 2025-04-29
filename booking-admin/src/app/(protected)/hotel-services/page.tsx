@@ -2,7 +2,7 @@
 'use client';
 import React, { useState, useEffect, Suspense } from 'react';
 import { strapiService } from '@/utils/dataEndPoint';
-import { SwimmingPoolList } from './products-table/pool-table';
+import { SwimmingPoolList } from './product-table/pool-table';
 
 export default function SwimmingPoolPage() {
     const [isLoading, setIsLoading] = useState(false);
@@ -74,7 +74,7 @@ export default function SwimmingPoolPage() {
     return (
         <div className="flex flex-col gap-4 p-4">
             <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold">Hotel Service Bookings</h1>
+                <h1 className="text-2xl font-bold">Service Bookings</h1>
 
                 <select
                     value={selectedDate}
