@@ -868,6 +868,48 @@ export interface ApiDrinkDrink extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiEmployeeOrderEmployeeOrder
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'employee_orders';
+  info: {
+    displayName: 'Employee Order';
+    pluralName: 'employee-orders';
+    singularName: 'employee-order';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    amount_paid: Schema.Attribute.Integer;
+    bookings: Schema.Attribute.Relation<'oneToMany', 'api::boooking.boooking'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    date_issued: Schema.Attribute.Date;
+    discount_amount: Schema.Attribute.Integer;
+    drinks: Schema.Attribute.Relation<'oneToMany', 'api::drink.drink'>;
+    food_items: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::food-item.food-item'
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::employee-order.employee-order'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    total: Schema.Attribute.Integer;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    users_permissions_user: Schema.Attribute.Relation<
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiFloorPlanFloorPlan extends Struct.CollectionTypeSchema {
   collectionName: 'floor_plans';
   info: {
@@ -2019,6 +2061,7 @@ declare module '@strapi/strapi' {
       'api::customer.customer': ApiCustomerCustomer;
       'api::drink-type.drink-type': ApiDrinkTypeDrinkType;
       'api::drink.drink': ApiDrinkDrink;
+      'api::employee-order.employee-order': ApiEmployeeOrderEmployeeOrder;
       'api::floor-plan.floor-plan': ApiFloorPlanFloorPlan;
       'api::food-item.food-item': ApiFoodItemFoodItem;
       'api::food-type.food-type': ApiFoodTypeFoodType;

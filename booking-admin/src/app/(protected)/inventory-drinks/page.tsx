@@ -26,7 +26,7 @@ export default function Bar() {
       try {
         const productsData = await strapiService.getDrinksList({
           'populate': '*',
-          'pagination[pageSize]': 50,
+          'pagination[pageSize]': 120,
         });
   
         const products = productsData;

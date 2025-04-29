@@ -3,7 +3,6 @@ import { strapiService } from "@/utils/dataEndPoint";
 import { Product } from "@/app/(protected)/bar/_components/products-table/products-table";
 
 export interface OverviewCardData {
-  // products: any[];
   cashSales: number;
   totalTransfers: number;
   totalSales: number;
@@ -12,32 +11,34 @@ export interface OverviewCardData {
   barSales: number;
   foodSales: number;
   hotelSales: number;
-  gameSales: number; // Add game sales if needed
+  gameSales: number;
 }
 
 export interface ExtendedProduct extends Product {
   isRestaurant?: boolean;
-  isGame?: boolean; // Flag for game items
+  isGame?: boolean;
+  isBar?: boolean;
+  isHotel?: boolean;
+  showStock?: boolean;
+  showProfit?: boolean;
 }
-
-
 
 export async function handleDepartmentRecord(
   startDate: string,
   endDate: string,
-  department: "bar_services" | "restaurant_services" | "hotel_services" | "Games", // Department type
+  department: "bar_services" | "restaurant_services" | "hotel_services" | "Games",
   options: {
     inventoryEndpoint: keyof typeof strapiService;
     departmentStockField: string;
     otherStockField: string;
-    fetchInventory?: boolean; // Optional parameter to control fetching inventory
+    fetchInventory?: boolean;
   },
-  fetchInventory = true // New optional parameter to control fetching inventory
+  fetchInventory = true
 ): Promise<{ overview: OverviewCardData; products: ExtendedProduct[] }> {
   const { inventoryEndpoint, departmentStockField, otherStockField } = options;
 
   try {
-    // --- Fetch booking items with drinks, food, and services ---
+    // Fetch booking items
     const bookingItems = await strapiService.getBookingItems({
       "pagination[pageSize]": 70,
       "filters[createdAt][$gte]": formatDateRange(startDate),
@@ -47,101 +48,60 @@ export async function handleDepartmentRecord(
 
     console.log("Fetched Booking Items:", bookingItems);
 
-    // --- Track cash, transfers, and product sales in one pass ---
     let cashSales = 0;
     let totalTransfers = 0;
+    let totalUnits = 0;
+    let totalAmount = 0;
+
     let salesByProduct: Record<string, { units: number; amount: number }> = {};
-    let totalAmountCalculated = 0; // Track the total amount calculated from individual prices
 
     bookingItems.forEach((item: any) => {
       const paymentMethod = item.payment_type?.types?.trim().toLowerCase();
-      const totalItemAmountPaid = item.amount_paid || 0;
-    
-      let departmentHasRecord = false;
-      let itemTotal = 0; // Track the total for this item within the specific department
-    
+      const amountPaid = item.amount_paid || 0;
+
+      let products: any[] = [];
+
       if (department === "bar_services" && item.drinks?.length > 0) {
-        departmentHasRecord = true;
-        item.drinks.forEach((drink: any) => {
-          if (!drink?.documentId) return;
-          if (!salesByProduct[drink.documentId]) {
-            salesByProduct[drink.documentId] = { units: 0, amount: 0 };
-          }
-          const qty = item.quantity || 0;
-          const price = drink.price || 0;
-          salesByProduct[drink.documentId].units += qty;
-          salesByProduct[drink.documentId].amount += price * qty;
-          itemTotal += price * qty;
-        });
+        products = item.drinks;
+      } else if (department === "restaurant_services" && item.food_items?.length > 0) {
+        products = item.food_items;
+      } else if (department === "hotel_services" && item.hotel_services?.length > 0) {
+        products = item.hotel_services;
+      } else if (department === "Games" && item.games?.length > 0) {
+        products = item.games;
       }
-    
-      if (department === "restaurant_services" && item.food_items?.length > 0) {
-        departmentHasRecord = true;
-        item.food_items.forEach((food: any) => {
-          if (!food?.documentId) return;
-          if (!salesByProduct[food.documentId]) {
-            salesByProduct[food.documentId] = { units: 0, amount: 0 };
-          }
-          const qty = item.quantity || 0;
-          const price = food.price || 0;
-          salesByProduct[food.documentId].units += qty;
-          salesByProduct[food.documentId].amount += price * qty;
-          itemTotal += price * qty;
-        });
-      }
-    
-      if (department === "hotel_services" && item.hotel_services?.length > 0) {
-        departmentHasRecord = true;
-        item.hotel_services.forEach((service: any) => {
-          if (!service?.documentId) return;
-          if (!salesByProduct[service.documentId]) {
-            salesByProduct[service.documentId] = { units: 0, amount: 0 };
-          }
-          const qty = item.quantity || 0;
-          const price = service.price || 0;
-          salesByProduct[service.documentId].units += qty;
-          salesByProduct[service.documentId].amount += price * qty;
-          itemTotal += price * qty;
-        });
-      }
-    
-      if (department === "Games" && item.games?.length > 0) {
-        departmentHasRecord = true;
-        item.games.forEach((game: any) => {
-          if (!game?.documentId) return;
-          if (!salesByProduct[game.documentId]) {
-            salesByProduct[game.documentId] = { units: 0, amount: 0 };
-          }
-          const qty = game.count || 0;  // for games use 'count'
-          const price = game.amount_paid || 0; // game amount paid might differ per session
-          salesByProduct[game.documentId].units += qty;
-          salesByProduct[game.documentId].amount += price * qty;
-          itemTotal += price * qty;
-      
-          // Debugging log to check sales data being added
-          console.log(`Adding Game Sale: ${game.documentId}, Qty: ${qty}, Amount: ${price * qty}`);
-        });
-      }      
-    
-      // Only if this item belongs to the selected department, track its payment
-      if (departmentHasRecord) {
+
+      if (products.length > 0) {
+        const count = item.count || 1; // default 1 if missing
+        const itemUnits = products.length * count;
+        const itemAmount = amountPaid; // assume full item paid
+
+        totalUnits += itemUnits;
+        totalAmount += itemAmount;
+
+        // Handle sales breakdown by payment method
         if (paymentMethod === "cash") {
-          cashSales += totalItemAmountPaid;
+          cashSales += itemAmount;
         } else {
-          totalTransfers += totalItemAmountPaid;
+          totalTransfers += itemAmount;
         }
-        totalAmountCalculated += itemTotal;
+
+        // Track each product sale
+        products.forEach((prod: any) => {
+          if (!prod?.documentId) return;
+          if (!salesByProduct[prod.documentId]) {
+            salesByProduct[prod.documentId] = { units: 0, amount: 0 };
+          }
+          salesByProduct[prod.documentId].units += count;
+          salesByProduct[prod.documentId].amount += (prod.price || 0) * count;
+        });
       }
     });
-    
-    // Now you can use `totalAmountCalculated` to compare with the `amount_paid`
-    // or track total sales for each type of item
 
     console.log("Sales by Product:", salesByProduct);
 
     let inventory: any[] = [];
     if (fetchInventory) {
-      // --- Fetch inventory (NO department filter anymore) ---
       inventory = await strapiService[inventoryEndpoint](
         {
           populate: "*",
@@ -150,108 +110,57 @@ export async function handleDepartmentRecord(
         {},
         {}
       );
-
       console.log("Fetched Inventory:", inventory);
     }
 
-    // --- Map inventory with sales into Overview Cards ---
     const products: ExtendedProduct[] = inventory.map((product: any) => {
       const sales = salesByProduct[product.documentId] || { units: 0, amount: 0 };
-
-      let stockField = 0;
-      let otherStockField = 0;
-
-      // Dynamically determine the stock fields based on the department
-      if (department === "bar_services") {
-        stockField = product[departmentStockField] || 0;  // Bar-specific stock
-        otherStockField = product[otherStockField] || 0;  // For other products if needed
-      } else if (department === "restaurant_services") {
-        stockField = product[departmentStockField] || 0;  // Restaurant-specific stock
-        otherStockField = product[otherStockField] || 0;  // For other products if needed
-      } else if (department === "hotel_services") {
-        stockField = product[departmentStockField] || 0;  // Hotel-specific stock
-        otherStockField = product[otherStockField] || 0;  // For other products if needed
-      } else if (department === "Games") {
-        stockField = product[departmentStockField] || 0;  // Game-specific stock
-        otherStockField = product[otherStockField] || 0;  // For other products if needed
-      }
-
-      // Define flags for conditional display in the overview card
-      const isFood = department === "restaurant_services";
-      const isBar = department === "bar_services";
-      const isHotel = department === "hotel_services";
-      const isGame = department === "Games";
 
       return {
         name: String(product.name || "Unnamed Product"),
         type: product.drink_type?.typeName || "",
         price: Number(product.price) || 0,
-        stock: stockField,  // Use department-specific stock
-        other_stock: otherStockField,  // For other products
+        stock: product[departmentStockField] || 0,
+        other_stock: product[otherStockField] || 0,
         sold: sales.units,
         amount: sales.amount,
-        profit: sales.amount - product.price * sales.units,
-        isFood,  // Flag for food items
-        isBar,   // Flag for bar items
-        isHotel, // Flag for hotel items
-        isGame, // Flag for game items,
+        profit: sales.amount - (product.price * sales.units),
+        isBar: department === "bar_services",
+        isRestaurant: department === "restaurant_services",
+        isHotel: department === "hotel_services",
+        isGame: department === "Games",
         bar_stock: product.bar_stock || 0,
-        drink_type: product.drink_type || null
+        drink_type: product.drink_type || null,
+        showStock: true,
+        showProfit: true,
       };
     });
 
-    // --- Generate overview data ---
-    const overview = products.reduce(
-      (acc, product) => {
-        acc.totalSales += product.amount;
-        acc.totalUnits += product.sold;
-        acc.totalProfit += product.profit;
-
-        // Track specific sales types
-        if (product.isBar) acc.barSales += product.amount;
-        if (product.isRestaurant) acc.foodSales += product.amount;
-        if (product.isHotel) acc.hotelSales += product.amount;
-        if (product.isGame) acc.gameSales += product.amount; // Add game sales if needed
-
-        return acc;
-      },
-      {
-        cashSales: cashSales,            
-        totalTransfers: totalTransfers,
-        totalSales: 0,
-        totalUnits: 0,
-        totalProfit: 0,
-        barSales: 0,
-        foodSales: 0,
-        hotelSales: 0,
-        gameSales: 0, 
-      }
-    );
-
-    // --- Return Overview Data with Conditional Flags ---
-    return {
-      overview,
-      products: products.map((product) => ({
-        ...product,
-        showStock: product.isBar || product.isRestaurant || product.isHotel,  // Only show stock for relevant products
-        showProfit: product.isBar || product.isRestaurant || product.isHotel || product.isGame,  // Show profit where applicable
-      })),
+    const overview: OverviewCardData = {
+      cashSales,
+      totalTransfers,
+      totalSales: totalAmount,
+      totalUnits,
+      totalProfit: products.reduce((acc, p) => acc + p.profit, 0),
+      barSales: department === "bar_services" ? totalAmount : 0,
+      foodSales: department === "restaurant_services" ? totalAmount : 0,
+      hotelSales: department === "hotel_services" ? totalAmount : 0,
+      gameSales: department === "Games" ? totalAmount : 0,
     };
+
+    return { overview, products };
   } catch (error) {
     console.error("Error in handleDepartmentRecord:", error);
     throw error;
   }
 }
 
-
-// --- Format date helper (unchanged) ---
 function formatDateRange(date: string, endOfDay = false): string {
   const d = new Date(date);
   if (endOfDay) {
-    d.setHours(23, 59, 59, 999); // move to end of day
+    d.setHours(23, 59, 59, 999);
   } else {
-    d.setHours(0, 0, 0, 0); // move to start of day
+    d.setHours(0, 0, 0, 0);
   }
   return d.toISOString();
 }
-

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui-elements/button";
 import { useCartStore } from "@/app/stores/useCartStore";
@@ -5,6 +7,7 @@ import { toast } from "react-toastify";
 import { Order, useOrderStore } from "@/app/stores/useOrderStore";
 import { formatPrice } from "@/utils/priceHandler";
 import { useAuth } from "@/components/Auth/context/auth-context";
+import { strapiService } from "@/utils/dataEndPoint";
 
 export default function CartSidebar({
   onCreateOrder,
@@ -18,9 +21,11 @@ export default function CartSidebar({
   const [customerName, setCustomerName] = useState("");
   const [tableNumber, setTableNumber] = useState("");
   const [waiterName, setWaiterName] = useState("");
+  const [staffList, setStaffList] = useState<any[]>([]);
   const [isOrderActive, setOrderActive] = useState(true);
-  const [discountPrice, setDiscountPrice] = useState<number | null>(null); // State for discount
-  const [showDiscountInput, setShowDiscountInput] = useState(false); // Toggle to show discount input field
+  const [discountPrice, setDiscountPrice] = useState<number | null>(null);
+  const [showDiscountInput, setShowDiscountInput] = useState(false);
+  const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
 
   const cartItems = useCartStore((state) => state.cartItems);
   const setCartItems = useCartStore((state) => state.setCartItems);
@@ -44,7 +49,26 @@ export default function CartSidebar({
       setOrderActive(true);
       toast.info("Order loaded into cart.");
     }
-  }, [prefillOrder, setCartItems, user]);
+  }, [prefillOrder, setCartItems]);
+
+  useEffect(() => {
+    async function fetchStaff() {
+      try {
+        const staffs = await strapiService.getUsers();
+        setStaffList(staffs);
+      } catch (error) {
+        console.error("Failed to fetch staff list", error);
+      }
+    }
+    fetchStaff();
+  }, []);
+
+  const cartTotal = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+
+  const finalTotal = discountPrice ? Math.max(cartTotal - discountPrice, 0) : cartTotal;
 
   const handleCreateOrder = async () => {
     if (!customerName || !tableNumber || cartItems.length === 0) {
@@ -53,20 +77,21 @@ export default function CartSidebar({
     }
 
     const finalOrder: Order = {
-      id: Date.now().toString(),
+      id: prefillOrder?.id || Date.now().toString(),
       customerName,
       tableNumber,
       waiterId: user?.name || "",
       items: cartItems,
       status: "active",
-      totalAmount: cartTotal,
-      discount: discountPrice || 0, // Include discount in the order data
+      totalAmount: finalTotal,
+      discount: discountPrice || 0,
+      selectedStaffId: selectedStaffId ?? null,
     };
 
     try {
       if (prefillOrder?.id) {
         cartItems.forEach((updatedItem) => {
-          updateOrderItem(prefillOrder.id, updatedItem);
+          updateOrderItem(prefillOrder.id!, updatedItem);
         });
         toast.success("Order updated successfully!");
       } else {
@@ -79,19 +104,16 @@ export default function CartSidebar({
       setTableNumber("");
       setWaiterName(user?.name || "");
       setOrderActive(true);
+      setDiscountPrice(null);
+      setSelectedStaffId(null);
 
       if (onClearPrefill) {
-        onClearPrefill(); // Clear prefill from parent
+        onClearPrefill();
       }
     } catch (error) {
-      toast.error(`Failed to process order: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(`Failed to process order: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   };
-
-  const cartTotal = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
 
   return (
     <div className="rounded-[10px] bg-white p-6 shadow-md dark:bg-gray-dark">
@@ -105,6 +127,8 @@ export default function CartSidebar({
             setTableNumber("");
             setWaiterName(user?.name || "");
             setOrderActive(true);
+            setDiscountPrice(null);
+            setSelectedStaffId(null);
             toast.info("Cart and form reset.");
             if (onClearPrefill) onClearPrefill();
           }}
@@ -112,6 +136,7 @@ export default function CartSidebar({
           label="Click to Reset Cart"
           variant="dark"
         />
+
         <div>
           <label className="block text-sm font-medium">Customer Name</label>
           <input
@@ -149,20 +174,54 @@ export default function CartSidebar({
           >
             Apply Staff Discount
           </button>
+
           {showDiscountInput && (
             <div className="mt-2">
-              <label className="block text-sm font-medium">Enter Discount Price</label>
-              <input
-                type="number"
-                value={discountPrice ?? ""}
-                onChange={(e) => setDiscountPrice(parseFloat(e.target.value))}
-                className="w-full mt-1 px-3 py-2 border rounded"
-                placeholder="Enter new price"
-              />
+              <label className="block text-sm font-medium mb-1">Select Staff Member</label>
+              <select
+                value={selectedStaffId ?? ""}
+                onChange={(e) => {
+                  setSelectedStaffId(e.target.value || null);
+                  setDiscountPrice(null);
+                }}
+                className="w-full px-3 py-2 border rounded"
+              >
+                <option value="">-- Select a Staff Member --</option>
+                {staffList.map((staff: any) => (
+                  <option key={staff.id} value={staff.id}>
+                    {staff.username}
+                  </option>
+                ))}
+              </select>
+
+              {selectedStaffId && (
+                <div className="mt-4">
+                  <label className="block text-sm font-medium">Enter Discount Amount</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={cartTotal}
+                    step="0.01"
+                    value={discountPrice ?? ""}
+                    onChange={(e) => {
+                      let value = parseFloat(e.target.value);
+                      if (isNaN(value)) value = 0;
+                      value = Math.max(0, Math.min(value, cartTotal));
+                      setDiscountPrice(value);
+                    }}
+                    className="w-full mt-1 px-3 py-2 border rounded"
+                    placeholder={`Enter discount (₦0 - ₦${cartTotal})`}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Discount must be between ₦0 and {formatPrice(cartTotal, "NGN")}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
 
+        {/* Cart Summary */}
         <div>
           <h3 className="text-md font-semibold">Cart Summary</h3>
           {cartItems.length === 0 ? (
@@ -193,18 +252,18 @@ export default function CartSidebar({
           {cartItems.length > 0 && (
             <div className="flex justify-between mt-4 font-semibold">
               <span>Total:</span>
-              <span>{formatPrice(discountPrice ?? cartTotal, "NGN")}</span> {/* Display discounted total */}
+              <span>{formatPrice(finalTotal, "NGN")}</span>
             </div>
-            
           )}
         </div>
 
+        {/* Submit Order Button */}
         <Button
           onClick={handleCreateOrder}
           className="mt-4 text-white px-4 py-2 rounded w-full"
           label="Submit Order"
           variant="dark"
-          disabled={!isOrderActive} // Disable submit button if the order is inactive
+          disabled={!isOrderActive}
         />
       </div>
     </div>

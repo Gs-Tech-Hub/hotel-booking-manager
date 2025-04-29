@@ -47,6 +47,8 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
         tableNumber: currentOrder.tableNumber,
         waiterName: currentOrder.waiterId || "",
         items: currentOrder.items,
+        discount: currentOrder.discount ?? 0,
+        selectedStaffId: currentOrder.selectedStaffId,
         status: "completed",
       };
       

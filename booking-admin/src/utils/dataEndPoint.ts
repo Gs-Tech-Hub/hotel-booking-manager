@@ -342,6 +342,16 @@ async updateDrinksList(drinkId: string | number, drinkData: any) {
     }
   },
 
+   //get users
+  async getUsers(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`users${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result;
+  },
+
   async getUserProfileWithRole(userId: number) {
     try {
       console.log('Fetching user profile for ID:', userId);
@@ -388,6 +398,16 @@ async updateDrinksList(drinkId: string | number, drinkData: any) {
     if (result.error) throw new Error(result.error);
     return result.data;
   },
+
+  // Create a new employee order with discount
+  async createEmployeeOrder (orderData: any) {
+    const result = await apiHandlerInstance.createData({ 
+      endpoint: "employee-orders", 
+      data: orderData 
+    });
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  }, 
   
   
   
