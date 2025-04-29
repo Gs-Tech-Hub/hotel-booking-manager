@@ -117,9 +117,11 @@ export function AddGameModal({
                 price: 500 * count,
                 quantity: count,
                 department: 'Games'
+                
               }
             ],
             status: payload.game_status,
+            discount: 0,
           },
           waiterId: user?.id || "",
           customerId: null,

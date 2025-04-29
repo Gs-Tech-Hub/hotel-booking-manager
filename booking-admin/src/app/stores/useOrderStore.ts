@@ -40,7 +40,8 @@ export interface Order {
   waiterId: string;
   items: CartItem[];
   status: "active" | "completed";
-  discount: number;
+  discount?: number;
+  selectedStaffId?: string | null;
 }
 
 export type OrderStatus = "active" | "completed";

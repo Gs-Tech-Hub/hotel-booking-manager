@@ -1,0 +1,46 @@
+{
+  "kind": "collectionType",
+  "collectionName": "employee_orders",
+  "info": {
+    "singularName": "employee-order",
+    "pluralName": "employee-orders",
+    "displayName": "Employee Order"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "users_permissions_user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "food_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::food-item.food-item"
+    },
+    "drinks": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::drink.drink"
+    },
+    "bookings": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::boooking.boooking"
+    },
+    "total": {
+      "type": "integer"
+    },
+    "discount_amount": {
+      "type": "integer"
+    },
+    "date_issued": {
+      "type": "date"
+    },
+    "amount_paid": {
+      "type": "integer"
+    }
+  }
+}
