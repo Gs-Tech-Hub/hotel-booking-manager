@@ -21,9 +21,9 @@
       "relation": "oneToOne",
       "target": "plugin::users-permissions.user"
     },
-    "booking_item": {
+    "booking_items": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "oneToMany",
       "target": "api::booking-item.booking-item"
     },
     "payment": {

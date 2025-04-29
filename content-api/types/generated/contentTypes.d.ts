@@ -1203,8 +1203,8 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    booking_item: Schema.Attribute.Relation<
-      'oneToOne',
+    booking_items: Schema.Attribute.Relation<
+      'oneToMany',
       'api::booking-item.booking-item'
     >;
     createdAt: Schema.Attribute.DateTime;
