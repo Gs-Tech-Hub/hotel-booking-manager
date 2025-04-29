@@ -57,6 +57,11 @@
       "relation": "oneToMany",
       "target": "api::game.game"
     },
+    "payment_type": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::payment-type.payment-type"
+    },
    "status": {
    "type": "enumeration",
    "enum": ["pending", "confirmed", "in_progress", "completed", "cancelled"],
