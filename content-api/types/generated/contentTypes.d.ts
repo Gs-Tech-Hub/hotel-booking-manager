@@ -872,6 +872,7 @@ export interface ApiEmployeeOrderEmployeeOrder
   extends Struct.CollectionTypeSchema {
   collectionName: 'employee_orders';
   info: {
+    description: '';
     displayName: 'Employee Order';
     pluralName: 'employee-orders';
     singularName: 'employee-order';
@@ -891,6 +892,10 @@ export interface ApiEmployeeOrderEmployeeOrder
     food_items: Schema.Attribute.Relation<
       'oneToMany',
       'api::food-item.food-item'
+    >;
+    hotel_service: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::hotel-service.hotel-service'
     >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<

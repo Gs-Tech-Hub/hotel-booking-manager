@@ -4,7 +4,8 @@
   "info": {
     "singularName": "employee-order",
     "pluralName": "employee-orders",
-    "displayName": "Employee Order"
+    "displayName": "Employee Order",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -41,6 +42,11 @@
     },
     "amount_paid": {
       "type": "integer"
+    },
+    "hotel_service": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::hotel-service.hotel-service"
     }
   }
 }
