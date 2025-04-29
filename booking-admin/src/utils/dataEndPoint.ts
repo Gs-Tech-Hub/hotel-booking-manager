@@ -347,7 +347,7 @@ async updateDrinksList(drinkId: string | number, drinkData: any) {
     const queryString = params
       ? '?' + new URLSearchParams(params as Record<string, string>).toString()
       : '';
-    const result = await apiHandlerInstance.fetchData(`users${queryString}`);
+    const result: { data?: any[]; error?: string } = await apiHandlerInstance.fetchData(`users${queryString}`);
     if (result.error) throw new Error(result.error);
     return result;
   },

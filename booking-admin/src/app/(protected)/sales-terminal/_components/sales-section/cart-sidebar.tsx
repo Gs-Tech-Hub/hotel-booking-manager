@@ -54,8 +54,10 @@ export default function CartSidebar({
   useEffect(() => {
     async function fetchStaff() {
       try {
-        const staffs = await strapiService.getUsers();
-        setStaffList(staffs);
+        const response = await strapiService.getUsers();
+        if (response.data) {
+          setStaffList(response.data);
+        }
       } catch (error) {
         console.error("Failed to fetch staff list", error);
       }
