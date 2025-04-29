@@ -9,7 +9,7 @@ interface OrderItemProps {
 }
 
 function OrderItem({ order, onViewOrderDetails, onRemoveOrder }: OrderItemProps) {
-  const total = order.items?.reduce((sum, item) => sum + item.price * item.quantity, 0) ?? 0;
+  const total = order.finalPrice ?? order.totalAmount; // Use finalPrice if it exists
 
   return (
     <div

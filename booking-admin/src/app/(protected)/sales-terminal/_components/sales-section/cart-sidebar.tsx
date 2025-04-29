@@ -9,6 +9,11 @@ import { formatPrice } from "@/utils/priceHandler";
 import { useAuth } from "@/components/Auth/context/auth-context";
 import { strapiService } from "@/utils/dataEndPoint";
 
+interface StaffUser {
+  id: string;
+  username: string;
+}
+
 export default function CartSidebar({
   onCreateOrder,
   prefillOrder,
@@ -19,11 +24,13 @@ export default function CartSidebar({
   onClearPrefill?: () => void;
 }) {
   const [customerName, setCustomerName] = useState("");
+  const [inputDiscount, setInputDiscount] = useState<string>("");
   const [tableNumber, setTableNumber] = useState("");
   const [waiterName, setWaiterName] = useState("");
-  const [staffList, setStaffList] = useState<any[]>([]);
+  const [staffList, setStaffList] = useState<StaffUser[]>([]);
   const [isOrderActive, setOrderActive] = useState(true);
-  const [discountPrice, setDiscountPrice] = useState<number | null>(null);
+  const discountPrice = useOrderStore((state) => state.discountPrice);
+  const setDiscountPrice = useOrderStore((state) => state.setDiscountPrice);
   const [showDiscountInput, setShowDiscountInput] = useState(false);
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
 
@@ -31,7 +38,6 @@ export default function CartSidebar({
   const setCartItems = useCartStore((state) => state.setCartItems);
   const clearCart = useCartStore((state) => state.clearCart);
   const decrementItem = useCartStore((state) => state.decrementItem);
-  const updateOrderItem = useOrderStore((state) => state.updateOrderItem);
 
   const { user } = useAuth();
 
@@ -42,21 +48,30 @@ export default function CartSidebar({
   }, [user]);
 
   useEffect(() => {
-    if (prefillOrder) {
+    if (prefillOrder?.id) {
+      console.log("Prefill Order:", prefillOrder);
+
       setCustomerName(prefillOrder.customerName || "");
       setTableNumber(prefillOrder.tableNumber || "");
       setCartItems(prefillOrder.items || []);
       setOrderActive(true);
+      setWaiterName(prefillOrder.waiterId || user?.name || "");
+      setSelectedStaffId(prefillOrder.selectedStaffId || null);
+      setInputDiscount((prefillOrder.discountPrice || 0).toString());
+      setDiscountPrice(prefillOrder.selectedStaffId || '', prefillOrder.discountPrice || 0);
+
       toast.info("Order loaded into cart.");
+    } else {
+      console.log("No prefill order provided.");
     }
-  }, [prefillOrder, setCartItems]);
+  }, [prefillOrder, setCartItems, setDiscountPrice, user]);
 
   useEffect(() => {
     async function fetchStaff() {
       try {
         const response = await strapiService.getUsers();
-        if (response.data) {
-          setStaffList(response.data);
+        if (Array.isArray(response)) {
+          setStaffList(response);
         }
       } catch (error) {
         console.error("Failed to fetch staff list", error);
@@ -70,7 +85,25 @@ export default function CartSidebar({
     0
   );
 
-  const finalTotal = discountPrice ? Math.max(cartTotal - discountPrice, 0) : cartTotal;
+  const finalTotal = useOrderStore((state) => {
+    const order = state.orders.find((order) => order.id === prefillOrder?.id);
+    if (order) {
+      return Math.max(order.totalAmount - (order.discountPrice || 0), 0);
+    }
+    return cartTotal - (parseFloat(inputDiscount) || 0); // Fallback for new orders
+  });
+
+  useEffect(() => {
+    console.log("CartSidebar State:", {
+      customerName,
+      tableNumber,
+      waiterName,
+      cartItems,
+      inputDiscount,
+      selectedStaffId,
+      finalTotal,
+    });
+  }, [customerName, tableNumber, waiterName, cartItems, inputDiscount, selectedStaffId, finalTotal]);
 
   const handleCreateOrder = async () => {
     if (!customerName || !tableNumber || cartItems.length === 0) {
@@ -82,38 +115,38 @@ export default function CartSidebar({
       id: prefillOrder?.id || Date.now().toString(),
       customerName,
       tableNumber,
-      waiterId: user?.name || "",
+      waiterId: waiterName,
       items: cartItems,
       status: "active",
-      totalAmount: finalTotal,
-      discount: discountPrice || 0,
-      selectedStaffId: selectedStaffId ?? null,
+      totalAmount: cartTotal,
+      discountPrice: parseFloat(inputDiscount) || 0,
+      finalPrice: finalTotal,
+      selectedStaffId: selectedStaffId || '',
     };
 
+    console.log("Final Order to be created:", finalOrder);
+
     try {
-      if (prefillOrder?.id) {
-        cartItems.forEach((updatedItem) => {
-          updateOrderItem(prefillOrder.id!, updatedItem);
-        });
-        toast.success("Order updated successfully!");
-      } else {
-        onCreateOrder(finalOrder);
-        toast.success("Order submitted successfully!");
-      }
+      onCreateOrder(finalOrder); // Pass the correct order data
+      toast.success("Order submitted successfully!");
 
       clearCart();
       setCustomerName("");
       setTableNumber("");
       setWaiterName(user?.name || "");
-      setOrderActive(true);
-      setDiscountPrice(null);
       setSelectedStaffId(null);
+      setInputDiscount("");
+      setDiscountPrice("", 0);
+      setOrderActive(true);
 
-      if (onClearPrefill) {
-        onClearPrefill();
-      }
+      if (onClearPrefill) {onClearPrefill()};
     } catch (error) {
-      toast.error(`Failed to process order: ${error instanceof Error ? error.message : "Unknown error"}`);
+      console.error("Error creating order:", error);
+      toast.error(
+        `Failed to process order: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   };
 
@@ -128,9 +161,10 @@ export default function CartSidebar({
             setCustomerName("");
             setTableNumber("");
             setWaiterName(user?.name || "");
-            setOrderActive(true);
-            setDiscountPrice(null);
             setSelectedStaffId(null);
+            setInputDiscount("");
+            setDiscountPrice("", 0);
+            setOrderActive(true);
             toast.info("Cart and form reset.");
             if (onClearPrefill) onClearPrefill();
           }}
@@ -168,7 +202,6 @@ export default function CartSidebar({
           </div>
         </div>
 
-        {/* Staff Discount Section */}
         <div>
           <button
             onClick={() => setShowDiscountInput(!showDiscountInput)}
@@ -179,51 +212,55 @@ export default function CartSidebar({
 
           {showDiscountInput && (
             <div className="mt-2">
-              <label className="block text-sm font-medium mb-1">Select Staff Member</label>
+              <label className="block text-sm font-medium mb-1">
+                Select Staff Member
+              </label>
               <select
                 value={selectedStaffId ?? ""}
                 onChange={(e) => {
-                  setSelectedStaffId(e.target.value || null);
-                  setDiscountPrice(null);
+                  const newStaffId = e.target.value || null;
+                  setSelectedStaffId(newStaffId);
+                  const parsed = parseFloat(inputDiscount);
+                  if (!isNaN(parsed)) {
+                    const valid = Math.max(0, Math.min(parsed, cartTotal));
+                    setDiscountPrice(newStaffId ?? '', valid);
+                  }
                 }}
                 className="w-full px-3 py-2 border rounded"
               >
                 <option value="">-- Select a Staff Member --</option>
-                {staffList.map((staff: any) => (
+                {staffList.map((staff) => (
                   <option key={staff.id} value={staff.id}>
                     {staff.username}
                   </option>
                 ))}
               </select>
 
-              {selectedStaffId && (
-                <div className="mt-4">
-                  <label className="block text-sm font-medium">Enter Discount Amount</label>
-                  <input
-                    type="number"
-                    min={0}
-                    max={cartTotal}
-                    step="0.01"
-                    value={discountPrice ?? ""}
-                    onChange={(e) => {
-                      let value = parseFloat(e.target.value);
-                      if (isNaN(value)) value = 0;
-                      value = Math.max(0, Math.min(value, cartTotal));
-                      setDiscountPrice(value);
-                    }}
-                    className="w-full mt-1 px-3 py-2 border rounded"
-                    placeholder={`Enter discount (₦0 - ₦${cartTotal})`}
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Discount must be between ₦0 and {formatPrice(cartTotal, "NGN")}
-                  </p>
-                </div>
-              )}
+              <div className="mt-2">
+                <label className="block text-sm font-medium mb-1">
+                  Enter Discount Amount
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  max={cartTotal}
+                  step="0.01"
+                  value={inputDiscount}
+                  onChange={(e) => setInputDiscount(e.target.value)}
+                  onBlur={() => {
+                    const value = parseFloat(inputDiscount);
+                    if (isNaN(value)) return;
+                    const validDiscount = Math.max(0, Math.min(value, cartTotal));
+                    setDiscountPrice(prefillOrder?.id || '', validDiscount); // Use prefillOrder ID
+                  }}
+                  className="w-full mt-1 px-3 py-2 border rounded"
+                  placeholder={`Enter discount (₦0 - ₦${cartTotal})`}
+                />
+              </div>
             </div>
           )}
         </div>
 
-        {/* Cart Summary */}
         <div>
           <h3 className="text-md font-semibold">Cart Summary</h3>
           {cartItems.length === 0 ? (
@@ -231,7 +268,10 @@ export default function CartSidebar({
           ) : (
             <ul className="mt-2 space-y-2 text-sm">
               {cartItems.map((item, index) => (
-                <li key={index} className="flex justify-between items-center">
+                <li
+                  key={index}
+                  className="flex justify-between items-center"
+                >
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => decrementItem(item.id)}
@@ -259,13 +299,20 @@ export default function CartSidebar({
           )}
         </div>
 
-        {/* Submit Order Button */}
+        {(!customerName || !tableNumber || cartItems.length === 0) && (
+          <p className="text-sm text-red-500 mt-2">
+            Please ensure customer name, table number, and at least one cart item are provided.
+          </p>
+        )}
+
         <Button
           onClick={handleCreateOrder}
           className="mt-4 text-white px-4 py-2 rounded w-full"
           label="Submit Order"
           variant="dark"
-          disabled={!isOrderActive}
+          disabled={
+            !isOrderActive || !customerName || !tableNumber || cartItems.length === 0
+          }
         />
       </div>
     </div>

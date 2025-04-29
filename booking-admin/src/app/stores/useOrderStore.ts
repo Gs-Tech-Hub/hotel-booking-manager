@@ -32,16 +32,13 @@ export interface Order {
   id: string;
   customerName: string;
   tableNumber?: string;
-  orderTime?: string;
-  orderDate?: string;
-  totalAmount: number;
-  paymentMethod?: PaymentMethod;
-  customerId?: string;
   waiterId: string;
   items: CartItem[];
   status: "active" | "completed";
-  discount?: number;
-  selectedStaffId?: string | null;
+  totalAmount: number;
+  discountPrice?: number; // Discount applied to the order
+  finalPrice?: number; // Final price after discount
+  selectedStaffId?: string; // Staff ID associated with the discount
 }
 
 export type OrderStatus = "active" | "completed";
@@ -55,6 +52,7 @@ export interface updateItemQuantity {
 interface OrderStore {
   currentOrderId: string | null; // Store only the ID
   orders: Order[];
+  discountPrice?: { [orderId: string]: number };
   setOrder: (order: Order) => void;
   updateItemQuantity: (orderId: string, itemId: number, quantity: number) => void;
   addItemToOrder: (orderId: string, newItem: CartItem) => void;
@@ -66,6 +64,7 @@ interface OrderStore {
   addOrder: (order: Order) => void;
   removeOrder: (orderId: string) => void;
   updateOrderItem: (orderId: string, updatedItem: CartItem) => void;
+  setDiscountPrice: (orderId: string, discountPrice: number) => void;
   getOrderByCustomer: (customerName: string) => Order | undefined;
 }
 
@@ -178,8 +177,9 @@ export const useOrderStore = create<OrderStore>()(
 
       addOrder: (order) => {
         if (!order || !Array.isArray(order.items)) return;
+        const finalPrice = Math.max(order.totalAmount - (order.discountPrice || 0), 0);
         set((state) => ({
-          orders: [...state.orders, order],
+          orders: [...state.orders, { ...order, finalPrice }],
         }));
       },
 
@@ -194,13 +194,12 @@ export const useOrderStore = create<OrderStore>()(
         set((state) => {
           const updatedOrders = state.orders.map((order) => {
             if (order.id === orderId) {
-              const existingItem = order.items.find((item) => item.id === updatedItem.id);
-              const updatedItems = existingItem
-                ? order.items.map((item) =>
-                    item.id === updatedItem.id ? { ...item, ...updatedItem } : item
-                  )
-                : [...order.items, updatedItem];
-              return { ...order, items: updatedItems };
+              const updatedItems = order.items.map((item) =>
+                item.id === updatedItem.id ? { ...item, ...updatedItem } : item
+              );
+              const totalAmount = updatedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+              const finalPrice = Math.max(totalAmount - (order.discountPrice || 0), 0);
+              return { ...order, items: updatedItems, totalAmount, finalPrice };
             }
             return order;
           });
@@ -212,6 +211,25 @@ export const useOrderStore = create<OrderStore>()(
 
           return { orders: updatedOrders, currentOrder: updatedCurrentOrder };
         });
+      },
+
+      //set discount for order
+      setDiscountPrice: (orderId, discountPrice) => {
+        set((state) => {
+          const updatedOrders = state.orders.map((order) => {
+            if (order.id === orderId) {
+              const finalPrice = Math.max(order.totalAmount - discountPrice, 0); // Ensure no negative price
+              return { ...order, discountPrice, finalPrice };
+            }
+            return order;
+          });
+
+          return { orders: updatedOrders };
+        });
+      },
+
+      getDiscountForStaff: (orderId: string) => {
+        return get().discountPrice?.[orderId];
       },
       
       getOrderByCustomer: (customerName) => {
