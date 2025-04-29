@@ -81,8 +81,8 @@ export const NAV_DATA: NavSection[] = [
              roles: ["admin", "bar"] 
           },
           { 
-            title: "Swimming", 
-            url: "/swimming-pool", 
+            title: "Services", 
+            url: "/hotel-services", 
             roles: ["admin", "bar"] 
           },
           { 
