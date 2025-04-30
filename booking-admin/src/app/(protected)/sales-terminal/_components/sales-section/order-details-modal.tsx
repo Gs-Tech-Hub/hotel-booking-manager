@@ -47,9 +47,12 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
         tableNumber: currentOrder.tableNumber,
         waiterName: currentOrder.waiterId || "",
         items: currentOrder.items,
-        discount: currentOrder.discount ?? 0,
+        discountPrice: currentOrder.discountPrice ?? 0,
         selectedStaffId: currentOrder.selectedStaffId,
-        status: "completed",
+        status: "completed" as const,
+        waiterId: currentOrder.waiterId || "",
+        totalAmount: currentOrder.totalAmount,
+        finalPrice: currentOrder.finalPrice
       };
       
       console.log("Final Order:", finalOrder);
@@ -62,7 +65,6 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
       const result = await processOrder({
         order: finalOrder,
         waiterId: user.id,
-        customerId: currentOrder.customerId || null,
         paymentMethod: currentOrder.paymentMethod || "",
       });
   

@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { strapiService } from '@/utils/dataEndPoint';
-import { PaymentMethod } from '@/app/stores/useOrderStore';
+import { PaymentMethod, Order } from '@/app/stores/useOrderStore';
 
 interface OrderItem {
   id: number;
@@ -11,14 +11,6 @@ interface OrderItem {
   paymentMethod?: string;
   department?: string;
   menu_category?: string;
-  discount?: number;
-  selectedStaffId?: string | null;
-}
-
-interface Order {
-  items: OrderItem[];
-  status: string;
-  discount: number;
 }
 
 interface ConnectedItem {
@@ -61,17 +53,18 @@ export const processOrder = async ({
         if (!found) throw new Error(`${type} not found: ${item.documentId}`);
         ids.push({ id: found.id });
 
-        const amount = item.price * item.quantity;
-        if (item.discount && item.selectedStaffId && amount > 0) {
+        // Handle discounts and staff ID
+        if (order.discountPrice && order.selectedStaffId && order.finalPrice) {
+          console.log(`discount present: ${order.discountPrice}`);
           const discountPayload: any = {
-            quantity: item.quantity,
-            amount,
-            discount: item.discount,
-            staff: { connect: { id: item.selectedStaffId } },
+            amount_paid: order.finalPrice,
+            discount_amount: order.discountPrice,
+            total: order.totalAmount,
+            users_permissions_user: { connect: { id: order.selectedStaffId } },
           };
           discountPayload[type] = { connect: { id: found.id } };
           employeeOrders.push(discountPayload);
-        }
+          console.log(`Employee order created:`, JSON.stringify(employeeOrders, null, 2));        }
       }
       return ids;
     };
@@ -83,64 +76,32 @@ export const processOrder = async ({
 
       const deptTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
       totalOrderAmount += deptTotal;
-      const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
 
       let drinks: ConnectedItem[] | null = null;
       let food_items: ConnectedItem[] | null = null;
       let hotel_services: ConnectedItem[] | null = null;
-      let games: ConnectedItem[] | null = null;
-      let menu_category: { id: string } | null = null;
 
       if (department === 'Bar') {
-        // Stock update
-        for (const item of items) {
-          const drinkRes = await strapiService.getDrinksList({ 'filters[documentId][$eq]': item.documentId });
-          const drinkItem = drinkRes?.[0];
-          if (!drinkItem) throw new Error(`Drink not found: ${item.documentId}`);
-          const currentStock = drinkItem.bar_stock ?? 0;
-          const newStock = currentStock - item.quantity;
-
-          if (newStock < 0) throw new Error(`Insufficient stock for drink "${item.name}"`);
-          await strapiService.updateDrinksList(drinkItem.documentId, { bar_stock: newStock });
-          console.log(`Updated stock for "${item.name}": ${currentStock} → ${newStock}`);
-        }
-
         drinks = await fetchAndCollect(items, strapiService.getDrinksList, 'drinks');
       }
 
       if (department === 'Restaurant') {
         food_items = await fetchAndCollect(items, strapiService.getFoodItems, 'food_items');
-
-        const uniqueCategories = Array.from(new Set(items.map(i => i.menu_category).filter(Boolean)));
-        if (uniqueCategories.length > 1) {
-          throw new Error('Multiple menu categories found in restaurant order');
-        }
-        if (uniqueCategories[0]) {
-          const catRes = await strapiService.getMenuCategory({ 'filters[documentId][$eq]': uniqueCategories[0] });
-          if (catRes?.[0]) {
-            menu_category = { id: catRes[0].id };
-          }
-        }
       }
 
       if (department === 'Hotel-Services') {
         hotel_services = await fetchAndCollect(items, strapiService.getHotelServices, 'hotel_services');
       }
 
-      if (department === 'Games') {
-        games = await fetchAndCollect(items, strapiService.getGamesList, 'games');
-      }
-
       const bookingItemPayload = {
-        quantity: totalQuantity,
+        quantity: items.reduce((sum, item) => sum + item.quantity, 0),
         drinks,
         food_items,
         hotel_services,
-        menu_category,
-        games: games ? { connect: games } : null,
         amount_paid: deptTotal,
         payment_type: paymentMethod.id,
         status: null,
+        menu_category: null,
       };
 
       const bookingItemRes = await strapiService.createBookingItem(bookingItemPayload);
@@ -161,12 +122,17 @@ export const processOrder = async ({
 
     if (employeeOrders.length > 0) {
       for (const empOrder of employeeOrders) {
-        if (empOrder.amount > 0) {
+        if (empOrder.amount_paid > 0) {
           await strapiService.createEmployeeOrder(empOrder);
           console.log('Employee order created:', empOrder);
         }
       }
     }
+
+   // Ensure all employee orders were processed
+    if (order.discountPrice && employeeOrders.length === 0) {
+      throw new Error('Order processing failed: Discount price exists but no employee orders were created.');
+    } 
 
     return { success: true, orderId: orderRes.documentId };
 

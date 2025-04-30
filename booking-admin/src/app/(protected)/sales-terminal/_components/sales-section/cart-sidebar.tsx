@@ -29,7 +29,6 @@ export default function CartSidebar({
   const [waiterName, setWaiterName] = useState("");
   const [staffList, setStaffList] = useState<StaffUser[]>([]);
   const [isOrderActive, setOrderActive] = useState(true);
-  const discountPrice = useOrderStore((state) => state.discountPrice);
   const setDiscountPrice = useOrderStore((state) => state.setDiscountPrice);
   const [showDiscountInput, setShowDiscountInput] = useState(false);
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
@@ -127,9 +126,20 @@ export default function CartSidebar({
     console.log("Final Order to be created:", finalOrder);
 
     try {
-      onCreateOrder(finalOrder); // Pass the correct order data
-      toast.success("Order submitted successfully!");
+      if (prefillOrder?.id) {
+        // Update the existing order
+        const updatedOrders = useOrderStore.getState().orders.map((order) =>
+          order.id === prefillOrder.id ? { ...order, ...finalOrder } : order
+        );
+        useOrderStore.setState({ orders: updatedOrders });
+        toast.success("Order updated successfully!");
+      } else {
+        // Create a new order
+        onCreateOrder(finalOrder);
+        toast.success("Order submitted successfully!");
+      }
 
+      // Reset all fields
       clearCart();
       setCustomerName("");
       setTableNumber("");
@@ -139,7 +149,7 @@ export default function CartSidebar({
       setDiscountPrice("", 0);
       setOrderActive(true);
 
-      if (onClearPrefill) {onClearPrefill()};
+      if (onClearPrefill) onClearPrefill();
     } catch (error) {
       console.error("Error creating order:", error);
       toast.error(
