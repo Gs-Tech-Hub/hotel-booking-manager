@@ -44,6 +44,16 @@ export const NAV_DATA: NavSection[] = [
             url: "/account-summary",
             roles: ["admin", "receptionist", "manager"],
           },
+          {
+            title: "Employee Summary",
+            url: "/employee",
+            roles: ["admin", "receptionist", "manager"],
+          },
+          // {
+          //   title: "Order List",
+          //   url: "/account-summary/order-items",
+          //   roles: ["admin", "receptionist", "manager"],
+          // },
         ],
       },
       {

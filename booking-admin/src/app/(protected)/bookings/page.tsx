@@ -1,15 +1,23 @@
-    'use client'
-import React from "react"
+'use client'
+import React, { useState } from "react"
 import { GuestList } from "../(home)/_components/guest-list"
-import CreateBookingForm from "./create-booking-form"
+import { Button } from "@/components/ui-elements/button"
+import { useRouter } from "next/navigation"
 
-export default function BookingsPage () {
+export default function BookingsPage() {
 
-    return (
-        <div>
-        <GuestList />
-        <CreateBookingForm 
+  const router = useRouter();
+ 
+  return (
+    <div className="relative">
+        <Button
+          onClick={() => router.push('/bookings/new-booking')}
+          className="btn btn-primary my-3"
+          label="Create New Booking"
         />
-        </div>
-    )
+      <div>
+      </div> 
+      <GuestList />
+    </div>
+  )
 }

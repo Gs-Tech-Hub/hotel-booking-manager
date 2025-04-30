@@ -408,10 +408,24 @@ async updateDrinksList(drinkId: string | number, drinkData: any) {
     if (result.error) throw new Error(result.error);
     return result.data;
   }, 
-  
-  
-  
- 
+
+  async getEmployeeOrders(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`employee-orders${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  } ,
+
+  async getEmployeeSummary(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`employee-summaries${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
   
   // Additional utility methods can be added here following the same pattern
 };
