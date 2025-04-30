@@ -919,6 +919,46 @@ export interface ApiEmployeeOrderEmployeeOrder
   };
 }
 
+export interface ApiEmployeeSummaryEmployeeSummary
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'employee_summaries';
+  info: {
+    displayName: 'Employee Summary';
+    pluralName: 'employee-summaries';
+    singularName: 'employee-summary';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    debt_shortage: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    fines_debits: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::employee-summary.employee-summary'
+    > &
+      Schema.Attribute.Private;
+    order_discount_total: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    salary_advanced: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    salary_advanced_status: Schema.Attribute.Enumeration<
+      ['pending', 'approved', 'rejected', 'settled']
+    > &
+      Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    users_permissions_user: Schema.Attribute.Relation<
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiFloorPlanFloorPlan extends Struct.CollectionTypeSchema {
   collectionName: 'floor_plans';
   info: {
@@ -2071,6 +2111,7 @@ declare module '@strapi/strapi' {
       'api::drink-type.drink-type': ApiDrinkTypeDrinkType;
       'api::drink.drink': ApiDrinkDrink;
       'api::employee-order.employee-order': ApiEmployeeOrderEmployeeOrder;
+      'api::employee-summary.employee-summary': ApiEmployeeSummaryEmployeeSummary;
       'api::floor-plan.floor-plan': ApiFloorPlanFloorPlan;
       'api::food-item.food-item': ApiFoodItemFoodItem;
       'api::food-type.food-type': ApiFoodTypeFoodType;
