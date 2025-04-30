@@ -1,0 +1,41 @@
+{
+  "kind": "collectionType",
+  "collectionName": "employee_summaries",
+  "info": {
+    "singularName": "employee-summary",
+    "pluralName": "employee-summaries",
+    "displayName": "Employee Summary"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "users_permissions_user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "private": false
+    },
+    "order_discount_total": {
+      "type": "decimal",
+      "required": true
+    },
+    "debt_shortage": {
+      "type": "decimal",
+      "required": true
+    },
+    "fines_debits": {
+      "type": "decimal",
+      "required": true
+    },
+    "salary_advanced": {
+      "type": "decimal",
+      "required": true
+    },
+    "salary_advanced_status": {
+      "type": "enumeration",
+      "enum": ["pending", "approved", "rejected", "settled"],
+      "required": true
+    }
+  }
+}
