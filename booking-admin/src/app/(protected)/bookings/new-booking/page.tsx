@@ -1,62 +1,69 @@
 'use client';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import InputGroup from "@/components/FormElements/InputGroup";
-import { Select } from "@/components/FormElements/select";
 import { Button } from "@/components/ui-elements/button";
-
-interface Booking {
-  checkin: string;
-  checkout: string;
-  guests: number;
-  nights: number;
-  totalPrice: number;
-  customer: {
-    firstName: string;
-    lastName: string;
-    phone: string;
-    email: string;
-  };
-  payment: {
-    paymentMethod: string;
-    transactionID: string;
-    PaymentStatus: string;
-  };
-  room: {
-    title: string;
-    price: number;
-    imgUrl: string;
-  };
-}
-
-const initialBookingState: Booking = {
-  checkin: "",
-  checkout: "",
-  guests: 1,
-  nights: 1,
-  totalPrice: 0,
-  customer: {
-    firstName: "",
-    lastName: "",
-    phone: "",
-    email: "",
-  },
-  payment: {
-    paymentMethod: "online",
-    transactionID: "",
-    PaymentStatus: "success",
-  },
-  room: {
-    title: "",
-    price: 0,
-    imgUrl: "",
-  },
-};
+import { Booking } from "@/types/bookingTypes";
+import { strapiService } from "@/utils/dataEndPoint";
+import { getRoomsLeft } from "@/utils/getavailableDate";
+import Image from "next/image";
 
 const CreateBookingForm: React.FC = () => {
-  const [formData, setFormData] = useState<Booking>(initialBookingState);
-  const [currentStep, setCurrentStep] = useState(1);
+  const [step, setStep] = useState(1); // Track the current step
+  const [formData, setFormData] = useState<Booking>({
+    checkin: "",
+    checkout: "",
+    guests: 1,
+    nights: 1,
+    totalPrice: 0,
+    customer: { firstName: "", lastName: "", phone: "", email: "" },
+    payment: { paymentMethod: "cash", paymentStatus: "success" },
+    room: { title: "", price: 0, imgUrl: "" },
+  });
+  const [roomData, setRoomData] = useState<any[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState<any | null>(null);
+  const [unavailableDates, setUnavailableDates] = useState<Set<string>>(new Set());
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  useEffect(() => {
+    const fetchRoomsAndAvailability = async () => {
+      try {
+        const rooms = await strapiService.getRooms();
+        setRoomData(rooms);
+
+        if (rooms.length > 0) {
+          setSelectedRoom(selectedRoom);
+
+          const today = new Date();
+          const threeMonthsLater = new Date();
+          threeMonthsLater.setMonth(today.getMonth() + 3);
+
+          const unavailable = new Set<string>();
+          for (
+            let date = new Date(today);
+            date <= threeMonthsLater;
+            date.setDate(date.getDate() + 1)
+          ) {
+            const formattedDate = date.toISOString().split("T")[0];
+            const roomsLeft = await getRoomsLeft({
+              roomId: selectedRoom.id,
+              availableRooms: selectedRoom.availability,
+              startDate: formattedDate,
+              endDate: formattedDate,
+            });
+            if (roomsLeft === 0) {
+              unavailable.add(formattedDate);
+            }
+          }
+          setUnavailableDates(unavailable);
+        }
+      } catch (error) {
+        console.error("Error fetching rooms or availability:", error);
+      }
+    };
+
+    fetchRoomsAndAvailability();
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -64,10 +71,7 @@ const CreateBookingForm: React.FC = () => {
     }));
   };
 
-  const handleNestedChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-    key: keyof Booking
-  ) => {
+  const handleNestedChange = (e: React.ChangeEvent<HTMLInputElement>, key: keyof Booking) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -78,107 +82,145 @@ const CreateBookingForm: React.FC = () => {
     }));
   };
 
-  const handleNext = () => setCurrentStep((prev) => prev + 1);
-  const handleBack = () => setCurrentStep((prev) => prev - 1);
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("New Booking Data:", formData);
-    // Add API call or logic to create a new booking
+    if (name === "checkin" || name === "checkout") {
+      const { checkin, checkout } = {
+        ...formData,
+        [name]: value,
+      } as Pick<Booking, 'checkin' | 'checkout'>;
+
+      if (checkin && checkout) {
+        const checkinDate = new Date(checkin);
+        const checkoutDate = new Date(checkout);
+
+        if (checkoutDate <= checkinDate) {
+          alert("Checkout date must be greater than check-in date.");
+          return;
+        }
+
+        const nights = Math.ceil(
+          (checkoutDate.getTime() - checkinDate.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
+        if (nights > 0 && selectedRoom) {
+          setFormData((prev) => ({
+            ...prev,
+            nights,
+            totalPrice: nights * selectedRoom.price,
+          }));
+        }
+      }
+    }
   };
+
+  const isDateDisabled = (date: string) => unavailableDates.has(date);
+
+  const handleNextStep = () => setStep((prev) => prev + 1);
+  const handlePreviousStep = () => setStep((prev) => prev - 1);
 
   return (
     <div className="grid rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
-      <form onSubmit={handleSubmit} className="create-booking-form">
+      <form className="create-booking-form">
         <h2 className="text-xl font-bold mb-4">Create Booking</h2>
 
-        {currentStep === 1 && (
+        {step === 1 && (
           <>
-            <h3 className="text-lg font-semibold mt-6 mb-4">Room Details</h3>
-            <InputGroup
-              label="Room Title"
-              type="text"
-              name="title"
-              value={formData.room.title}
-              handleChange={(e) => handleNestedChange(e, "room")}
-              className="mb-4"
-              placeholder=""
-            />
-            <InputGroup
-              label="Room Price"
-              type="number"
-              name="price"
-              value={formData.room.price.toString()}
-              handleChange={(e) => handleNestedChange(e, "room")}
-              className="mb-4"
-              placeholder=""
-            />
-            <InputGroup
-              label="Room Image URL"
-              type="text"
-              name="imgUrl"
-              value={formData.room.imgUrl}
-              handleChange={(e) => handleNestedChange(e, "room")}
-              className="mb-4"
-              placeholder=""
-            />
+            <label htmlFor="room-select" className="block text-body-sm font-medium text-dark dark:text-white">
+              Select Room
+            </label>
+            <select
+              id="room-select"
+              value={selectedRoom?.id || ""}
+              onChange={(e) => {
+                const room = roomData.find((r) => r.id === Number(e.target.value));
+                setSelectedRoom(room || null);
+              }}
+              className="w-full appearance-none rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
+            >
+              <option value="" disabled>
+                Select a room
+              </option>
+              {roomData.map((room) => (
+                <option key={room.id} value={room.id}>
+                  {room.title}
+                </option>
+              ))}
+            </select>
+
+            {selectedRoom && (
+              <div className="room-preview mt-4">
+                <h4 className="text-lg font-semibold">Room Details</h4>
+                <p>
+                  <strong>Price:</strong> {selectedRoom.price}
+                </p>
+                <Image
+                  src={selectedRoom.imgUrl}
+                  alt={selectedRoom.title}
+                  width={300}
+                  height={300}
+                  className="rounded-lg mt-2"
+                  style={{ width: "100%", maxWidth: "300px" }}
+                />
+              </div>
+            )}
+            <div className="mt-5">
+            <Button label="Next" variant="primary" onClick={handleNextStep} />
+            </div>
           </>
         )}
 
-        {currentStep === 2 && (
+        {step === 2 && (
           <>
-            <h3 className="text-lg font-semibold mt-6 mb-4">General Booking Details</h3>
+            <h3 className="text-lg font-semibold mt-6 mb-4">Booking Details</h3>
             <InputGroup
               label="Check-in Date"
               type="date"
               name="checkin"
               value={formData.checkin}
-              handleChange={handleChange}
+              handleChange={handleDateChange}
               className="mb-4"
-              placeholder=""
+              min={new Date().toISOString().split("T")[0]}
+              max={new Date(new Date().setMonth(new Date().getMonth() + 3))
+                .toISOString()
+                .split("T")[0]}
+              disabledDates={unavailableDates}
             />
             <InputGroup
               label="Check-out Date"
               type="date"
               name="checkout"
               value={formData.checkout}
-              handleChange={handleChange}
+              handleChange={handleDateChange}
               className="mb-4"
-              placeholder=""
+              min={formData.checkin || new Date().toISOString().split("T")[0]}
+              max={new Date(new Date().setMonth(new Date().getMonth() + 3))
+                .toISOString()
+                .split("T")[0]}
+              disabledDates={unavailableDates}
             />
-            <InputGroup
-              label="Guests"
-              type="number"
-              name="guests"
-              value={formData.guests.toString()}
-              handleChange={handleChange}
-              className="mb-4"
-              placeholder=""
-            />
-            <InputGroup
-              label="Nights"
-              type="number"
-              name="nights"
-              value={formData.nights.toString()}
-              handleChange={handleChange}
-              className="mb-4"
-              placeholder=""
-            />
-            <InputGroup
-              label="Total Price"
-              type="number"
-              name="totalPrice"
-              value={formData.totalPrice.toString()}
-              handleChange={handleChange}
-              className="mb-4"
-              placeholder=""
-            />
+
+            <p>
+              <strong>Nights:</strong> {formData.nights}
+            </p>
+            <p>
+              <strong>Total Price:</strong> {formData.totalPrice}
+            </p>
+            <div className="mt-5 flex justify-between">
+            <Button label="Previous" variant="primary" onClick={handlePreviousStep} />
+            <Button label="Next" variant="primary" onClick={handleNextStep} />
+          </div>
           </>
         )}
 
-        {currentStep === 3 && (
+        {step === 3 && (
           <>
-            <h3 className="text-lg font-semibold mt-6 mb-4">Customer Details</h3>
+            <h3 className="text-lg font-semibold mt-6 mb-4">Customer Information</h3>
             <InputGroup
               label="First Name"
               type="text"
@@ -186,7 +228,6 @@ const CreateBookingForm: React.FC = () => {
               value={formData.customer.firstName}
               handleChange={(e) => handleNestedChange(e, "customer")}
               className="mb-4"
-              placeholder=""
             />
             <InputGroup
               label="Last Name"
@@ -195,7 +236,6 @@ const CreateBookingForm: React.FC = () => {
               value={formData.customer.lastName}
               handleChange={(e) => handleNestedChange(e, "customer")}
               className="mb-4"
-              placeholder=""
             />
             <InputGroup
               label="Phone"
@@ -204,7 +244,6 @@ const CreateBookingForm: React.FC = () => {
               value={formData.customer.phone}
               handleChange={(e) => handleNestedChange(e, "customer")}
               className="mb-4"
-              placeholder=""
             />
             <InputGroup
               label="Email"
@@ -213,71 +252,39 @@ const CreateBookingForm: React.FC = () => {
               value={formData.customer.email}
               handleChange={(e) => handleNestedChange(e, "customer")}
               className="mb-4"
-              placeholder=""
             />
+          <div className="mt-5 flex justify-between">
+          <Button label="Previous" variant="primary" onClick={handlePreviousStep} />
+          <Button label="Next" variant="primary" onClick={handleNextStep} />
+         </div>
           </>
         )}
 
-        {currentStep === 4 && (
+        {step === 4 && (
           <>
-            <h3 className="text-lg font-semibold mt-6 mb-4">Payment Details</h3>
-            <Select
-              label="Payment Method"
-              value={formData.payment.paymentMethod}
-              onChange={(e) => handleNestedChange(e, "payment")}
-              items={[
-                { label: "Online", value: "online" },
-                { label: "Cash", value: "cash" },
-              ]}
-              className="mb-4"
-              placeholder="Select payment method"
-            />
+            <h3 className="text-lg font-semibold mt-6 mb-4">Payment Information</h3>
             <InputGroup
-              label="Transaction ID"
+              label="Payment Method"
               type="text"
-              name="transactionID"
-              value={formData.payment.transactionID}
+              name="paymentMethod"
+              value={formData.payment.paymentMethod}
               handleChange={(e) => handleNestedChange(e, "payment")}
               className="mb-4"
-              placeholder=""
             />
-            <Select
+            <InputGroup
               label="Payment Status"
-              value={formData.payment.PaymentStatus}
-              onChange={(e) => handleNestedChange(e, "payment")}
-              items={[
-                { label: "Success", value: "success" },
-                { label: "Debt", value: "debt" },
-              ]}
+              type="text"
+              name="paymentStatus"
+              value={formData.payment.paymentStatus}
+              handleChange={(e) => handleNestedChange(e, "payment")}
               className="mb-4"
-              placeholder="Select payment status"
             />
+          <div className="mt-5 flex justify-between">
+          <Button label="Previous" variant="primary" onClick={handlePreviousStep} />
+          <Button label="Submit" variant="primary" onClick={() => console.log("Booking Data:", formData)} />
+           </div>
           </>
         )}
-
-        <div className="flex justify-between mt-6">
-          {currentStep > 1 && (
-            <Button
-              label="Back"
-              variant="outlinePrimary"
-              onClick={handleBack}
-              className="mr-2"
-            />
-          )}
-          {currentStep < 4 ? (
-            <Button
-              label="Next"
-              variant="primary"
-              onClick={handleNext}
-            />
-          ) : (
-            <Button
-              label="Submit"
-              variant="primary"
-              onClick={(e) => handleSubmit(e)}
-            />
-          )}
-        </div>
       </form>
     </div>
   );

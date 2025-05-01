@@ -1,19 +1,33 @@
-      // Process booking data
-    export  interface Room {
-        price?: number;
-       }
-       
-      export     interface Payment {
-               PaymentStatus?: 'success' | 'debt';
-               paymentMethod?: 'cash' | 'online';
-           }
-       
-         export  interface Booking {
-               room?: Room;
-               nights?: number;
-               payment?: Payment;
-           }
-       
-       export  interface BookingResponse {
-               data: Booking[];
-           }
+export interface Room {
+    title?: string;
+    price?: number;
+    imgUrl?: string; // renamed from imgUrl for consistency
+  }
+  
+  export interface Payment {
+    paymentMethod?: 'cash' | 'bank_transfer' | 'card';
+    paymentStatus?: 'success' | 'pending' | 'declined'; 
+  }
+  
+  export interface Customer {
+    firstName: string;
+    lastName: string;
+    phone: string;
+    email: string;
+  }
+  
+  export interface Booking {
+    checkin: string;
+    checkout: string;
+    guests: number;
+    nights: number;
+    totalPrice: number;
+    customer: Customer;
+    payment: Payment;
+    room: Room;
+  }
+  
+  export interface BookingResponse {
+    data: Booking[];
+  }
+  

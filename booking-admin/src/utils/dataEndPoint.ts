@@ -426,6 +426,16 @@ async updateDrinksList(drinkId: string | number, drinkData: any) {
     if (result.error) throw new Error(result.error);
     return result.data;
   },
+
+  //get rooms
+  async getRooms(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+    ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+    : '';
+    const result = await apiHandlerInstance.fetchData(`rooms${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
   
   // Additional utility methods can be added here following the same pattern
 };

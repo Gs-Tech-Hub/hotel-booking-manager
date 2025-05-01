@@ -10,11 +10,11 @@ export default function BookingsPage() {
  
   return (
     <div className="relative">
-        <Button
+      <Button
           onClick={() => router.push('/bookings/new-booking')}
           className="btn btn-primary my-3"
           label="Create New Booking"
-        />
+      />
       <div>
       </div> 
       <GuestList />

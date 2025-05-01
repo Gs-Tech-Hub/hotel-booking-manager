@@ -2,31 +2,58 @@ import React, { createContext } from "react";
 
 type SelectContextType = {
   value: string | number;
-  onChange: (value: string) => void;
+  onChange: (value: string | number) => void;
 };
 
 const SelectContext = createContext<SelectContextType | null>(null);
 
+type SelectProps = {
+  value: string | number;
+  onChange: (value: string | number) => void;
+  items: { value: string | number; label: string }[];
+  placeholder?: string;
+  disabled?: boolean;
+  error?: string;
+  className?: string;
+};
+
 export function Select({
   value,
   onChange,
-  children,
+  items,
+  placeholder = "Select an option",
+  disabled = false,
+  error,
   className = "",
-}: {
-  value: string | number;
-  onChange: (value: string) => void;
-  children: React.ReactNode;
-  className?: string;
-}) {
+}: SelectProps) {
   return (
-    <SelectContext.Provider value={{ value, onChange }}>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={`border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary ${className}`}
-      >
-        {children}
-      </select>
-    </SelectContext.Provider>
+    <div className={`relative ${className}`}>
+      <SelectContext.Provider value={{ value, onChange }}>
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={disabled}
+          className={`border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary ${
+            disabled ? "bg-gray-100 cursor-not-allowed" : "bg-white"
+          } ${error ? "border-red-500" : "border-gray-300"}`}
+        >
+          <option value="" disabled hidden>
+            {placeholder}
+          </option>
+          {items.length > 0 ? (
+            items.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.label}
+              </option>
+            ))
+          ) : (
+            <option value="" disabled>
+              No options available
+            </option>
+          )}
+        </select>
+      </SelectContext.Provider>
+      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+    </div>
   );
 }
