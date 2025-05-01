@@ -10,7 +10,7 @@ export interface MenuItem {
   available: number;
   quantity?: number; // Optional for initial state
   department?: string; // Optional for initial state
-  productCount?: [{id: number}];
+  productCountId?: [{id: number}];
 }
 
 export interface CartItem extends MenuItem {

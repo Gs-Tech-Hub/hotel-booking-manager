@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
 import { processOrder } from "@/utils/processOrderTest";
 import { useAuth } from "@/components/Auth/context/auth-context"; // Assuming useAuth is imported
-import { strapiService } from "@/utils/dataEndPoint";
+import { handleProductCounts } from "@/utils/handleProductCounts";
 
 interface OrderDetailsModalProps {
   order: Order;
@@ -64,7 +64,7 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
 
       //Process product-count
         console.log('currentOderItems:', currentOrder.items);
-      const productCountIds = await strapiService.createProductCount(currentOrder.items);
+      const productCountIds = await handleProductCounts(currentOrder.items);
       console.log('product-counts:', productCountIds);
   
       // Process the order first
