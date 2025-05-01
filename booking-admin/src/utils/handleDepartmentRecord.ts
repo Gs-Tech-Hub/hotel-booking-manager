@@ -40,7 +40,7 @@ export async function handleDepartmentRecord(
   try {
     // Fetch booking items
     const bookingItems = await strapiService.getBookingItems({
-      "pagination[pageSize]": 70,
+      "pagination[pageSize]": 200,
       "filters[createdAt][$gte]": formatDateRange(startDate),
       "filters[createdAt][$lte]": formatDateRange(endDate, true),
       "populate": "*",
