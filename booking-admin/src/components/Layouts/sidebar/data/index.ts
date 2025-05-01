@@ -49,11 +49,11 @@ export const NAV_DATA: NavSection[] = [
             url: "/employee",
             roles: ["admin", "receptionist", "manager"],
           },
-          // {
-          //   title: "Order List",
-          //   url: "/account-summary/order-items",
-          //   roles: ["admin", "receptionist", "manager"],
-          // },
+          {
+            title: "Order List",
+            url: "/account-summary/order-items",
+            roles: ["admin", "receptionist", "manager"],
+          },
         ],
       },
       {

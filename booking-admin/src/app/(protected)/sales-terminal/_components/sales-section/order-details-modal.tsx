@@ -4,7 +4,7 @@ import { Button } from "@/components/ui-elements/button";
 import { Modal } from "@/components/ui-elements/modal";
 import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
-import { processOrder } from "@/utils/processOrderTest";
+import { processOrder } from "@/utils/processOrder";
 import { useAuth } from "@/components/Auth/context/auth-context"; // Assuming useAuth is imported
 import { handleProductCounts } from "@/utils/handleProductCounts";
 

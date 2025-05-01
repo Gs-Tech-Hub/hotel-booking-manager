@@ -447,6 +447,12 @@ async updateDrinksList(drinkId: string | number, drinkData: any) {
     return result.data;
   },
   
+  getProductCounts(params?: Record<string, string | number | boolean>) {  
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    return apiHandlerInstance.fetchData(`product-counts${queryString}`);
+  },
   
   // Additional utility methods can be added here following the same pattern
 };

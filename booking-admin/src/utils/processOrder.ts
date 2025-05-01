@@ -11,6 +11,7 @@ interface OrderItem {
   paymentMethod?: string;
   department?: string;
   menu_category?: string;
+  productCountId?: [{id: number}];
 }
 
 interface ConnectedItem {
@@ -80,6 +81,7 @@ export const processOrder = async ({
       let drinks: ConnectedItem[] | null = null;
       let food_items: ConnectedItem[] | null = null;
       let hotel_services: ConnectedItem[] | null = null;
+      let product_count: ConnectedItem[] | null = null;
 
       if (department === 'Bar') {
         drinks = await fetchAndCollect(items, strapiService.getDrinksList, 'drinks');
@@ -93,14 +95,24 @@ export const processOrder = async ({
         hotel_services = await fetchAndCollect(items, strapiService.getHotelServices, 'hotel_services');
       }
 
+      if (department === 'Product-Count') {
+        product_count = await fetchAndCollect(items, strapiService.getProductCounts, 'product_count');  
+      }
+
+
+      const product_counts = items
+      .flatMap((item) => item.productCountId || [])
+      .map((pc) => ({ id: pc.id }));
+
       const bookingItemPayload = {
         quantity: items.reduce((sum, item) => sum + item.quantity, 0),
         drinks,
         food_items,
+        product_count, 
         hotel_services,
         amount_paid: deptTotal,
         payment_type: paymentMethod.id,
-        status: null,
+        status: "completed",
         menu_category: null,
       };
 
