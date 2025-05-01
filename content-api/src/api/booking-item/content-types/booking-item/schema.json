@@ -69,7 +69,7 @@
    },
 "product_count": {
   "type": "relation",
-  "relation": "oneToOne",
+  "relation": "oneToMany",
   "target": "api::product-count.product-count"
 }
   }

@@ -626,7 +626,7 @@ export interface ApiBookingItemBookingItem extends Struct.CollectionTypeSchema {
       'api::payment-type.payment-type'
     >;
     product_count: Schema.Attribute.Relation<
-      'oneToOne',
+      'oneToMany',
       'api::product-count.product-count'
     >;
     publishedAt: Schema.Attribute.DateTime;
