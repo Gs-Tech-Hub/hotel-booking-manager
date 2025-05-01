@@ -66,7 +66,11 @@
    "type": "enumeration",
    "enum": ["pending", "confirmed", "in_progress", "completed", "cancelled"],
    "default": "pending"
+   },
+"product_count": {
+  "type": "relation",
+  "relation": "oneToOne",
+  "target": "api::product-count.product-count"
 }
-
   }
 }

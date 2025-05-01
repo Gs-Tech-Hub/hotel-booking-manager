@@ -625,6 +625,10 @@ export interface ApiBookingItemBookingItem extends Struct.CollectionTypeSchema {
       'oneToOne',
       'api::payment-type.payment-type'
     >;
+    product_count: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::product-count.product-count'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     quantity: Schema.Attribute.Integer;
     status: Schema.Attribute.Enumeration<
@@ -685,6 +689,10 @@ export interface ApiBoookingBoooking extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     nights: Schema.Attribute.Integer;
     payment: Schema.Attribute.Relation<'oneToOne', 'api::payment.payment'>;
+    product_count: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::product-count.product-count'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     restaurant: Schema.Attribute.Relation<
       'oneToOne',
@@ -1360,6 +1368,41 @@ export interface ApiPaymentPayment extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     totalPrice: Schema.Attribute.Integer;
     transactionID: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiProductCountProductCount
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'product_counts';
+  info: {
+    displayName: 'product count';
+    pluralName: 'product-counts';
+    singularName: 'product-count';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    drink: Schema.Attribute.Relation<'oneToOne', 'api::drink.drink'>;
+    food_item: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::food-item.food-item'
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::product-count.product-count'
+    > &
+      Schema.Attribute.Private;
+    product_count: Schema.Attribute.Integer;
+    publishedAt: Schema.Attribute.DateTime;
+    total_amount: Schema.Attribute.Integer;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -2124,6 +2167,7 @@ declare module '@strapi/strapi' {
       'api::payment-detail.payment-detail': ApiPaymentDetailPaymentDetail;
       'api::payment-type.payment-type': ApiPaymentTypePaymentType;
       'api::payment.payment': ApiPaymentPayment;
+      'api::product-count.product-count': ApiProductCountProductCount;
       'api::promo-coupon.promo-coupon': ApiPromoCouponPromoCoupon;
       'api::restaurant.restaurant': ApiRestaurantRestaurant;
       'api::room.room': ApiRoomRoom;

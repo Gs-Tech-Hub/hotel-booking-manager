@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "product_counts",
+  "info": {
+    "singularName": "product-count",
+    "pluralName": "product-counts",
+    "displayName": "product count"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "drink": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::drink.drink"
+    },
+    "food_item": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::food-item.food-item"
+    },
+    "product_count": {
+      "type": "integer"
+    },
+    "total_amount": {
+      "type": "integer"
+    }
+  }
+}

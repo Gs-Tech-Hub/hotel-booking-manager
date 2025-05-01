@@ -91,6 +91,11 @@
     },
     "booking_status": {
       "type": "string"
+    },
+    "product_count": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::product-count.product-count"
     }
   }
 }
