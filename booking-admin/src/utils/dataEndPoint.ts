@@ -436,6 +436,17 @@ async updateDrinksList(drinkId: string | number, drinkData: any) {
     if (result.error) throw new Error(result.error);
     return result.data;
   },
+
+  //create product count
+  async createProductCount(productCountData: any) {
+    const result = await apiHandlerInstance.createData({ 
+      endpoint: "product-counts", 
+      data: productCountData 
+    });
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
+  
   
   // Additional utility methods can be added here following the same pattern
 };

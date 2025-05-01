@@ -4,8 +4,9 @@ import { Button } from "@/components/ui-elements/button";
 import { Modal } from "@/components/ui-elements/modal";
 import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
-import { processOrder } from "@/utils/processOrder";
+import { processOrder } from "@/utils/processOrderTest";
 import { useAuth } from "@/components/Auth/context/auth-context"; // Assuming useAuth is imported
+import { strapiService } from "@/utils/dataEndPoint";
 
 interface OrderDetailsModalProps {
   order: Order;
@@ -60,6 +61,11 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
       if (!user?.id) {
         throw new Error("User document ID is missing.");
       }
+
+      //Process product-count
+        console.log('currentOderItems:', currentOrder.items);
+      const productCountIds = await strapiService.createProductCount(currentOrder.items);
+      console.log('product-counts:', productCountIds);
   
       // Process the order first
       const result = await processOrder({

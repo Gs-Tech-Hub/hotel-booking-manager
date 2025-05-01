@@ -28,6 +28,7 @@ export interface Order {
   finalPrice?: number;
   selectedStaffId?: string;
   paymentMethod?: PaymentMethod;
+  product_count_id?: [{}];
 }
 
 export type OrderStatus = "active" | "completed";
