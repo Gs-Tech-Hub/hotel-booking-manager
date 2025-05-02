@@ -21,15 +21,15 @@ export const handleProductCounts = async (items: CartItem[]) => {
     try {
       const productCountRes = await strapiService.createProductCount(data);
       if (productCountRes?.id) {
-        productCounts[productCountRes.productCountIds] = productCountRes.id; // Map item ID to productCountId
+        productCounts[item.id] = productCountRes.id; // Map CartItem.id to the returned product_count ID
       } else {
         throw new Error(`Failed to create product-count for item: ${item.name}`);
       }
     } catch (error) {
-      console.error('Error creating product-count:', error);
+      console.error(`Error creating product-count for ${item.name}:`, error);
     }
   }
 
-  console.log('Generated productCounts:', productCounts);
-  return productCounts; // Return as an object of numbers
+  console.log('✅ Generated productCounts:', productCounts);
+  return productCounts;
 };

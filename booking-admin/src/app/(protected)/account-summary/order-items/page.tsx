@@ -1,4 +1,5 @@
 'use client'
+import { strapiService } from '@/utils/dataEndPoint'
 import React, { useEffect, useState } from 'react'
 
 type FoodItem = {
@@ -23,19 +24,20 @@ export default function FoodItemsList() {
   const fetchBookingItems = async () => {
     setLoading(true)
     try {
-      const res = await fetch(
-        'https://hotel-booking-manager-api.onrender.com/api/booking-items?populate=*&pagination[pageSize]=100'
-      )
-      const json = await res.json()
+      const res = await strapiService.getBookingItems({
+        "pagination[pageSize]": "100",
+        "pagination[page]": "2",
+        "populate": "*"
+      })
 
-      if (Array.isArray(json.data)) {
+      if (Array.isArray(res)) {
         // Filter only those booking items that have non-empty food_items
-        const itemsWithFood = json.data.filter((item: BookingItem) =>
+        const itemsWithFood = res.filter((item: BookingItem) =>
           Array.isArray(item.food_items) && item.food_items.length > 0
         )
         setBookingItems(itemsWithFood)
       } else {
-        console.warn('Unexpected API format:', json)
+        console.warn('Unexpected API format:', res)
         setBookingItems([])
       }
     } catch (err) {

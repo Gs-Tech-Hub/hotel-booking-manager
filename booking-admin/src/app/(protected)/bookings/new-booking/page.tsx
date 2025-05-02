@@ -16,7 +16,7 @@ const CreateBookingForm: React.FC = () => {
     nights: 1,
     totalPrice: 0,
     customer: { firstName: "", lastName: "", phone: "", email: "" },
-    payment: { paymentMethod: "cash", paymentStatus: "success" },
+    payment: { paymentMethod: "cash", paymentStatus: "pending" },
     room: { title: "", price: 0, imgUrl: "" },
   });
   const [roomData, setRoomData] = useState<any[]>([]);
@@ -123,6 +123,33 @@ const CreateBookingForm: React.FC = () => {
 
   const handleNextStep = () => setStep((prev) => prev + 1);
   const handlePreviousStep = () => setStep((prev) => prev - 1);
+
+  const handleBookingSubmission = async (formData: Booking) => {
+    try {
+      // Call the createBooking function
+      const bookingResponse = await strapiService.createBooking(formData);
+
+      // Extract necessary data from the response
+      const { documentId, customer, totalPrice, checkin, checkout, room } = bookingResponse;
+
+      // Construct URL parameters
+      const urlParams = new URLSearchParams({
+        bookingId: documentId,
+        email: customer.email,
+        amount: totalPrice.toString(),
+        checkIn: checkin,
+        checkOut: checkout,
+        room: room.title,
+        roomImage: room.imgUrl,
+      });
+
+      // Redirect to the booking-confirmation page
+      window.location.href = `/booking-confirmation?${urlParams.toString()}`;
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      alert("Failed to create booking. Please try again.");
+    }
+  };
 
   return (
     <div className="grid rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
@@ -265,23 +292,37 @@ const CreateBookingForm: React.FC = () => {
             <h3 className="text-lg font-semibold mt-6 mb-4">Payment Information</h3>
             <InputGroup
               label="Payment Method"
-              type="text"
+              type="select"
               name="paymentMethod"
               value={formData.payment.paymentMethod}
               handleChange={(e) => handleNestedChange(e, "payment")}
               className="mb-4"
+              options={[
+                { value: "cash", label: "Cash" },
+                { value: "bank_transfer", label: "Bank Transfer" },
+                { value: "card", label: "Debit Card" },
+              ]}
             />
             <InputGroup
               label="Payment Status"
-              type="text"
+              type="select"
               name="paymentStatus"
               value={formData.payment.paymentStatus}
               handleChange={(e) => handleNestedChange(e, "payment")}
               className="mb-4"
+              options={[
+                { value: "success", label: "Success" },
+                { value: "pending", label: "Pending" },
+                { value: "failed", label: "Failed" },
+              ]}
             />
           <div className="mt-5 flex justify-between">
           <Button label="Previous" variant="primary" onClick={handlePreviousStep} />
-          <Button label="Submit" variant="primary" onClick={() => console.log("Booking Data:", formData)} />
+          <Button
+            label="Submit"
+            variant="primary"
+            onClick={() => handleBookingSubmission(formData)}
+          />
            </div>
           </>
         )}

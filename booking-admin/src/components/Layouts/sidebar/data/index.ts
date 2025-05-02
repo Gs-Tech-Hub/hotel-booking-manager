@@ -21,18 +21,26 @@ export const NAV_DATA: NavSection[] = [
         items: [],
       },
       {
-        title: "Rooms",
-        icon: Icons.RoomsIcon,
-        url: "/rooms",
+        title: "Human Resources",
+        icon: Icons.HomeIcon,
         roles: ["admin", "receptionist", "manager"],
-        items: [],
-      },
-      {
-        title: "Events Booking",
-        icon: Icons.EventIcon,
-        url: "/events-booking",
-        roles: ["admin", "receptionist", "manager"],
-        items: [],
+        items: [
+          {
+            title: "Employee",
+            url: "/employee",
+            roles: ["admin", "receptionist", "manager"],
+          },
+          {
+            title: "Roles",
+            url: "/roles",
+            roles: ["super-admin"],
+          },
+          {
+            title: "Job Applications",
+            url: "/job-applications",
+            roles: ["admin"],
+          },
+        ],
       },
       {
         title: "Account",
@@ -45,14 +53,9 @@ export const NAV_DATA: NavSection[] = [
             roles: ["admin", "receptionist", "manager"],
           },
           {
-            title: "Employee Summary",
-            url: "/employee",
-            roles: ["admin", "receptionist", "manager"],
-          },
-          {
             title: "Order List",
             url: "/account-summary/order-items",
-            roles: ["admin", "receptionist", "manager"],
+            roles: ["super-admin"],
           },
         ],
       },
@@ -101,6 +104,20 @@ export const NAV_DATA: NavSection[] = [
             roles: ["admin", "bar", "kitchen", "games", "receptionist", "manager"] 
           },
         ],
+      },
+      {
+        title: "Rooms",
+        icon: Icons.RoomsIcon,
+        url: "/rooms",
+        roles: ["admin", "receptionist", "manager"],
+        items: [],
+      },
+      {
+        title: "Events",
+        icon: Icons.EventIcon,
+        url: "/events-booking",
+        roles: ["admin", "receptionist", "manager"],
+        items: [],
       },
     ],
   },

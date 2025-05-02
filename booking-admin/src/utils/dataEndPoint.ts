@@ -453,6 +453,16 @@ async updateDrinksList(drinkId: string | number, drinkData: any) {
       : '';
     return apiHandlerInstance.fetchData(`product-counts${queryString}`);
   },
+
+  //get job-application
+  async getJobApplications(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`job-applications${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
   
   // Additional utility methods can be added here following the same pattern
 };

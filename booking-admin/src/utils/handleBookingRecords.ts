@@ -6,7 +6,7 @@ export async function handleBookingRecords(timeFrame: { startDate: string, endDa
     // Fetch booking data
     const bookingData = await strapiService.getBookings({
       populate: "*",
-      "pagination[pageSize]": 70,
+      "pagination[pageSize]": 100,
       "filters[createdAt][$gte]": timeFrame.startDate,
       "filters[createdAt][$lte]": timeFrame.endDate,
     });
@@ -27,7 +27,7 @@ export async function handleBookingRecords(timeFrame: { startDate: string, endDa
         const totalRoomPrice: number = roomPrice * nights;
   
         // Determine the payment status and method
-        const paymentStatus: string = booking.payment?.PaymentStatus || "debt";
+        const paymentStatus: string = booking.payment?.paymentStatus || "debt";
         const paymentMethod = (booking.payment?.paymentMethod || "cash") as "cash" | "online";
   
         // Add total to hotel aggregation

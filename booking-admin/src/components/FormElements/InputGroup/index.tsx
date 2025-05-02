@@ -20,6 +20,8 @@ type InputGroupProps = {
   min?: string;
   max?: string;
   disabledDates?: {};
+  options?: Array<{ value: string; label: string }>;
+
 };
 
 const InputGroup: React.FC<InputGroupProps> = ({

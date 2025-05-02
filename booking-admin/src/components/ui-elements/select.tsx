@@ -5,6 +5,10 @@ type SelectContextType = {
   onChange: (value: string | number) => void;
 };
 
+interface SelectOption {
+  label: string;
+  value: string;
+}
 const SelectContext = createContext<SelectContextType | null>(null);
 
 type SelectProps = {
@@ -16,6 +20,8 @@ type SelectProps = {
   error?: string;
   className?: string;
   children?: React.ReactNode;
+  options?: SelectOption[];
+
 };
 
 export function Select({
@@ -26,7 +32,8 @@ export function Select({
   disabled = false,
   error,
   className = "",
-  children
+  children,
+  options
 }: SelectProps) {
   return (
     <div className={`relative ${className}`}>
