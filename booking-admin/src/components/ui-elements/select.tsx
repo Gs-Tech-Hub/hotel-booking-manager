@@ -1,4 +1,4 @@
-import React, { createContext } from "react";
+import React, { createContext, ReactNode } from "react";
 
 type SelectContextType = {
   value: string | number;
@@ -10,21 +10,23 @@ const SelectContext = createContext<SelectContextType | null>(null);
 type SelectProps = {
   value: string | number;
   onChange: (value: string | number) => void;
-  items: { value: string | number; label: string }[];
+  items?: { value: string | number; label: string }[];
   placeholder?: string;
   disabled?: boolean;
   error?: string;
   className?: string;
+  children?: React.ReactNode;
 };
 
 export function Select({
   value,
   onChange,
-  items,
+  items = [],
   placeholder = "Select an option",
   disabled = false,
   error,
   className = "",
+  children
 }: SelectProps) {
   return (
     <div className={`relative ${className}`}>
@@ -51,6 +53,8 @@ export function Select({
               No options available
             </option>
           )}
+          {children}
+
         </select>
       </SelectContext.Provider>
       {error && <p className="mt-1 text-sm text-red-500">{error}</p>}

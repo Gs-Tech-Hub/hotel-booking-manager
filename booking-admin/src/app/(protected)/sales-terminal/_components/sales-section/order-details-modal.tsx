@@ -41,7 +41,6 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
     setIsLoading(true);
   
     try {
-      // Corrected typo: finalOrder, not Order
       const finalOrder = {
         id: currentOrder.id,
         customerName: currentOrder.customerName,
@@ -53,7 +52,8 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
         status: "completed" as const,
         waiterId: currentOrder.waiterId || "",
         totalAmount: currentOrder.totalAmount,
-        finalPrice: currentOrder.finalPrice
+        finalPrice: currentOrder.finalPrice,
+
       };
       
       console.log("Final Order:", finalOrder);
@@ -64,14 +64,20 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
 
       //Process product-count
         console.log('currentOderItems:', currentOrder.items);
+      const orderItems = currentOrder.items.map(item => ({
+        ...item,
+        productCountId: item.productCountId ? item.productCountId.map(p => ({ productCountId: p.id })) : []
+      }));
       const productCountIds = await handleProductCounts(currentOrder.items);
-      console.log('product-counts:', productCountIds);
   
       // Process the order first
       const result = await processOrder({
         order: finalOrder,
         waiterId: user.id,
         paymentMethod: currentOrder.paymentMethod || "",
+        productCountIds: Object.entries(productCountIds).map(([, productCountId]) => ({
+          productCountId,
+        })),
       });
   
       // Check if processOrder was successful
