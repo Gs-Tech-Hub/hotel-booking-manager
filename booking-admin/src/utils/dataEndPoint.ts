@@ -78,7 +78,7 @@ export const strapiService = {
   // Booking related methods
   async createBooking(bookingData: any) {
     const result = await apiHandlerInstance.createData({ 
-      endpoint: "bookings", 
+      endpoint: "boookings", 
       data: bookingData 
     });
     if (result.error) throw new Error(result.error);

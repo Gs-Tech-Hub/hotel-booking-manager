@@ -37,7 +37,7 @@ export const NAV_DATA: NavSection[] = [
           },
           {
             title: "Job Applications",
-            url: "/job-applications",
+            url: "employee/job-applications",
             roles: ["admin"],
           },
         ],

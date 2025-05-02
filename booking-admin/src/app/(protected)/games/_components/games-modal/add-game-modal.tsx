@@ -108,6 +108,10 @@ export function AddGameModal({
 
         const response = await processOrder({
           order: {
+            id: (defaultData?.id ?? 0).toString(),
+            customerName: playerName,
+            totalAmount: 500 * count,
+            waiterId: user?.id || "",
             ...payload,
             items: [
               {
@@ -116,16 +120,16 @@ export function AddGameModal({
                 name: 'Game Session - ' + playerName,
                 price: 500 * count,
                 quantity: count,
-                department: 'Games'
-                
+                department: 'Games',
+                available: 1
               }
             ],
-            status: payload.game_status,
-            discount: 0,
+            status: payload.game_status === 'completed' ? 'completed' : 'active',
           },
           waiterId: user?.id || "",
           customerId: null,
           paymentMethod: paymentMethodObj,
+          productCountIds: [],
         });
 
         if (!response.success) {

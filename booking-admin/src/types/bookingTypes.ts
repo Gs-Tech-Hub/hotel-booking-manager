@@ -6,14 +6,16 @@ export interface Room {
   
   export interface Payment {
     paymentMethod?: 'cash' | 'bank_transfer' | 'card';
-    paymentStatus?: 'success' | 'pending' | 'declined'; 
+    PaymentStatus?: 'success' | 'pending' | 'declined'; 
   }
   
   export interface Customer {
-    firstName: string;
-    lastName: string;
-    phone: string;
-    email: string;
+    id?: number;
+    documentId?: string;
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    email?: string;
   }
   
   export interface Booking {

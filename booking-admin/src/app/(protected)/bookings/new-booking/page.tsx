@@ -2,26 +2,31 @@
 import React, { useState, useEffect } from "react";
 import InputGroup from "@/components/FormElements/InputGroup";
 import { Button } from "@/components/ui-elements/button";
-import { Booking } from "@/types/bookingTypes";
+import { Booking, Customer } from "@/types/bookingTypes";
 import { strapiService } from "@/utils/dataEndPoint";
-import { getRoomsLeft } from "@/utils/getavailableDate";
 import Image from "next/image";
+import { useRouter } from "next/navigation"; // Import useRouter
+import { toast } from "react-toastify";
+import { AddNewCustomerModal } from "@/app/(protected)/bookings/new-booking/add-new-user-modal"; // Import AddNewCustomerModal
 
 const CreateBookingForm: React.FC = () => {
-  const [step, setStep] = useState(1); // Track the current step
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<Booking>({
     checkin: "",
     checkout: "",
     guests: 1,
     nights: 1,
     totalPrice: 0,
-    customer: { firstName: "", lastName: "", phone: "", email: "" },
-    payment: { paymentMethod: "cash", paymentStatus: "pending" },
-    room: { title: "", price: 0, imgUrl: "" },
+    customer: {  documentId: "", firstName: "", lastName: "", phone: "", email: "" },
+    payment: { paymentMethod: "cash", PaymentStatus: "pending" },
+    room: { title: "", price: 0,  },
   });
   const [roomData, setRoomData] = useState<any[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<any | null>(null);
   const [unavailableDates, setUnavailableDates] = useState<Set<string>>(new Set());
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [customerId, setCustomerId] = useState<number | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchRoomsAndAvailability = async () => {
@@ -30,30 +35,13 @@ const CreateBookingForm: React.FC = () => {
         setRoomData(rooms);
 
         if (rooms.length > 0) {
-          setSelectedRoom(selectedRoom);
+          const firstRoom = rooms[0];
+          setSelectedRoom(firstRoom);
 
           const today = new Date();
           const threeMonthsLater = new Date();
           threeMonthsLater.setMonth(today.getMonth() + 3);
 
-          const unavailable = new Set<string>();
-          for (
-            let date = new Date(today);
-            date <= threeMonthsLater;
-            date.setDate(date.getDate() + 1)
-          ) {
-            const formattedDate = date.toISOString().split("T")[0];
-            const roomsLeft = await getRoomsLeft({
-              roomId: selectedRoom.id,
-              availableRooms: selectedRoom.availability,
-              startDate: formattedDate,
-              endDate: formattedDate,
-            });
-            if (roomsLeft === 0) {
-              unavailable.add(formattedDate);
-            }
-          }
-          setUnavailableDates(unavailable);
         }
       } catch (error) {
         console.error("Error fetching rooms or availability:", error);
@@ -71,7 +59,7 @@ const CreateBookingForm: React.FC = () => {
     }));
   };
 
-  const handleNestedChange = (e: React.ChangeEvent<HTMLInputElement>, key: keyof Booking) => {
+  const handleNestedChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, key: keyof Booking) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -121,39 +109,73 @@ const CreateBookingForm: React.FC = () => {
 
   const isDateDisabled = (date: string) => unavailableDates.has(date);
 
-  const handleNextStep = () => setStep((prev) => prev + 1);
-  const handlePreviousStep = () => setStep((prev) => prev - 1);
+  const handleNextStep = () => {
+    setStep((prev) => prev + 1);
+  };
 
-  const handleBookingSubmission = async (formData: Booking) => {
+  const handlePreviousStep = () => {
+    setStep((prev) => {
+      if (prev === 2) {
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          nights: 1,
+          totalPrice: 0,
+        }));
+      }
+      return prev - 1;
+    });
+  };
+
+  const handleBookingSubmission = async () => {
     try {
-      // Call the createBooking function
-      const bookingResponse = await strapiService.createBooking(formData);
+      if (!customerId) {
+        toast.error("Please select or create a customer first.");
+        return;
+      }
 
-      // Extract necessary data from the response
-      const { documentId, customer, totalPrice, checkin, checkout, room } = bookingResponse;
+      // Destructure the necessary fields from formData
+      const { checkin, checkout, guests, nights, totalPrice, payment } = formData;
 
-      // Construct URL parameters
-      const urlParams = new URLSearchParams({
-        bookingId: documentId,
-        email: customer.email,
-        amount: totalPrice.toString(),
-        checkIn: checkin,
-        checkOut: checkout,
-        room: room.title,
-        roomImage: room.imgUrl,
+    
+
+      // Post the payload directly
+      const response = await strapiService.createBooking({
+        checkin,
+        checkout,
+        guests,
+        nights,
+        totalPrice,
+        customer: customerId, // Use the customer ID
+        room: selectedRoom?.documentId, // Use the room's documentId
+        payment,
       });
 
-      // Redirect to the booking-confirmation page
-      window.location.href = `/booking-confirmation?${urlParams.toString()}`;
+      const bookingResponse = await response;
+      toast.success("Booking created successfully!");
+
+      // Redirect to the booking summary page
+      router.push(`/booking-confirmation?bookingId=
+        ${bookingResponse.documentId}
+        &amount=${bookingResponse.totalPrice}
+        &checkIn=${bookingResponse.checkin}
+        &checkOut=${bookingResponse.checkout}
+        &room=${selectedRoom.title}
+      `);
     } catch (error) {
       console.error("Error creating booking:", error);
-      alert("Failed to create booking. Please try again.");
+      toast.error("Failed to create booking. Please try again.");
     }
   };
 
   return (
     <div className="grid rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
-      <form className="create-booking-form">
+      <form
+        className="create-booking-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleBookingSubmission();
+        }}
+      >
         <h2 className="text-xl font-bold mb-4">Create Booking</h2>
 
         {step === 1 && (
@@ -170,9 +192,7 @@ const CreateBookingForm: React.FC = () => {
               }}
               className="w-full appearance-none rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
             >
-              <option value="" disabled>
-                Select a room
-              </option>
+              <option value="" disabled>Select a room</option>
               {roomData.map((room) => (
                 <option key={room.id} value={room.id}>
                   {room.title}
@@ -183,9 +203,7 @@ const CreateBookingForm: React.FC = () => {
             {selectedRoom && (
               <div className="room-preview mt-4">
                 <h4 className="text-lg font-semibold">Room Details</h4>
-                <p>
-                  <strong>Price:</strong> {selectedRoom.price}
-                </p>
+                <p><strong>Price:</strong> {selectedRoom.price}</p>
                 <Image
                   src={selectedRoom.imgUrl}
                   alt={selectedRoom.title}
@@ -197,7 +215,7 @@ const CreateBookingForm: React.FC = () => {
               </div>
             )}
             <div className="mt-5">
-            <Button label="Next" variant="primary" onClick={handleNextStep} />
+              <Button label="Next" variant="primary" onClick={handleNextStep} />
             </div>
           </>
         )}
@@ -213,9 +231,7 @@ const CreateBookingForm: React.FC = () => {
               handleChange={handleDateChange}
               className="mb-4"
               min={new Date().toISOString().split("T")[0]}
-              max={new Date(new Date().setMonth(new Date().getMonth() + 3))
-                .toISOString()
-                .split("T")[0]}
+              max={new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString().split("T")[0]}
               disabledDates={unavailableDates}
             />
             <InputGroup
@@ -226,107 +242,108 @@ const CreateBookingForm: React.FC = () => {
               handleChange={handleDateChange}
               className="mb-4"
               min={formData.checkin || new Date().toISOString().split("T")[0]}
-              max={new Date(new Date().setMonth(new Date().getMonth() + 3))
-                .toISOString()
-                .split("T")[0]}
+              max={new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString().split("T")[0]}
               disabledDates={unavailableDates}
             />
+            <p><strong>Nights:</strong> {formData.nights}</p>
+            <p><strong>Total Price:</strong> {formData.totalPrice}</p>
 
-            <p>
-              <strong>Nights:</strong> {formData.nights}
-            </p>
-            <p>
-              <strong>Total Price:</strong> {formData.totalPrice}
-            </p>
             <div className="mt-5 flex justify-between">
-            <Button label="Previous" variant="primary" onClick={handlePreviousStep} />
-            <Button label="Next" variant="primary" onClick={handleNextStep} />
-          </div>
+              <Button label="Previous" variant="primary" onClick={handlePreviousStep} />
+              <Button
+                label="Next"
+                variant="primary"
+                onClick={handleNextStep}
+              />
+            </div>
           </>
         )}
 
         {step === 3 && (
           <>
-            <h3 className="text-lg font-semibold mt-6 mb-4">Customer Information</h3>
-            <InputGroup
-              label="First Name"
-              type="text"
-              name="firstName"
-              value={formData.customer.firstName}
-              handleChange={(e) => handleNestedChange(e, "customer")}
-              className="mb-4"
-            />
-            <InputGroup
-              label="Last Name"
-              type="text"
-              name="lastName"
-              value={formData.customer.lastName}
-              handleChange={(e) => handleNestedChange(e, "customer")}
-              className="mb-4"
-            />
-            <InputGroup
-              label="Phone"
-              type="text"
-              name="phone"
-              value={formData.customer.phone}
-              handleChange={(e) => handleNestedChange(e, "customer")}
-              className="mb-4"
-            />
-            <InputGroup
-              label="Email"
-              type="email"
-              name="email"
-              value={formData.customer.email}
-              handleChange={(e) => handleNestedChange(e, "customer")}
-              className="mb-4"
-            />
-          <div className="mt-5 flex justify-between">
-          <Button label="Previous" variant="primary" onClick={handlePreviousStep} />
-          <Button label="Next" variant="primary" onClick={handleNextStep} />
-         </div>
+            <h3 className="text-lg font-semibold mt-6 mb-4">Payment Information</h3>
+            <label htmlFor="payment-method" className="block text-body-sm font-medium text-dark dark:text-white">
+              Payment Method
+            </label>
+            <select
+              id="payment-method"
+              name="paymentMethod"
+              value={formData.payment.paymentMethod}
+              onChange={(e) => handleNestedChange(e, "payment")}
+              className="w-full appearance-none rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary mb-4"
+            >
+              <option value="cash">Cash</option>
+              <option value="bank_transfer">Bank Transfer</option>
+              <option value="card">Debit Card</option>
+            </select>
+
+            <label htmlFor="payment-status" className="block text-body-sm font-medium text-dark dark:text-white">
+              Payment Status
+            </label>
+            <select
+              id="payment-status"
+              name="paymentStatus"
+              value={formData.payment.PaymentStatus}
+              onChange={(e) => handleNestedChange(e, "payment")}
+              className="w-full appearance-none rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary mb-4"
+            >
+              <option value="success">Success</option>
+              <option value="pending">Pending</option>
+              <option value="failed">Failed</option>
+            </select>
+
+            <div className="mt-5 flex justify-between">
+              <Button label="Previous" variant="primary" onClick={handlePreviousStep} />
+              <Button label="Next" variant="primary" onClick={handleNextStep} />
+            </div>
           </>
         )}
 
         {step === 4 && (
           <>
-            <h3 className="text-lg font-semibold mt-6 mb-4">Payment Information</h3>
-            <InputGroup
-              label="Payment Method"
-              type="select"
-              name="paymentMethod"
-              value={formData.payment.paymentMethod}
-              handleChange={(e) => handleNestedChange(e, "payment")}
+            <h3 className="text-lg font-semibold mt-6 mb-4">Customer Information</h3>
+            <Button
+              label="Select or Create Customer"
+              variant="primary"
+              onClick={() => setIsCustomerModalOpen(true)}
               className="mb-4"
-              options={[
-                { value: "cash", label: "Cash" },
-                { value: "bank_transfer", label: "Bank Transfer" },
-                { value: "card", label: "Debit Card" },
-              ]}
             />
-            <InputGroup
-              label="Payment Status"
-              type="select"
-              name="paymentStatus"
-              value={formData.payment.paymentStatus}
-              handleChange={(e) => handleNestedChange(e, "payment")}
-              className="mb-4"
-              options={[
-                { value: "success", label: "Success" },
-                { value: "pending", label: "Pending" },
-                { value: "failed", label: "Failed" },
-              ]}
-            />
-          <div className="mt-5 flex justify-between">
-          <Button label="Previous" variant="primary" onClick={handlePreviousStep} />
-          <Button
-            label="Submit"
-            variant="primary"
-            onClick={() => handleBookingSubmission(formData)}
-          />
-           </div>
+            <p>
+              <strong>Selected Customer:</strong>{" "}
+              {formData.customer.firstName
+                ? `${formData.customer.firstName} ${formData.customer.lastName}`
+                : "None"}
+            </p>
+
+            <h3 className="text-lg font-semibold mt-6 mb-4">Confirm Booking</h3>
+            <div className="mt-5 flex justify-between">
+              <Button label="Previous" variant="primary" onClick={handlePreviousStep} />
+              <Button
+                label="Submit"
+                variant="primary"
+                onClick={handleBookingSubmission}
+                disabled={!customerId} // Disable until a customer is selected or created
+              />
+            </div>
           </>
         )}
       </form>
+
+      <AddNewCustomerModal
+        isOpen={isCustomerModalOpen}
+        onClose={() => setIsCustomerModalOpen(false)}
+        onSubmit={(customer: Customer) => {
+          setCustomerId(customer.id ?? null); 
+          setFormData((prev) => ({
+            ...prev,
+            customer: {
+              ...prev.customer,
+              documentId: customer.documentId, // Save the documentId
+            },
+          }));
+          setIsCustomerModalOpen(false);
+        }}
+      />
     </div>
   );
 };

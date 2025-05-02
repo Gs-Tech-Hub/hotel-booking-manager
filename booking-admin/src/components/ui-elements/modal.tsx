@@ -4,6 +4,7 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
+  children?: React.ReactNode;
   content: React.ReactNode;
   footer?: React.ReactNode;
 }

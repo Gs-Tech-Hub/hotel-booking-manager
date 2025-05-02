@@ -4,6 +4,15 @@ import { Button } from "@/components/ui-elements/button";
 import { strapiService } from "@/utils/dataEndPoint";
 import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
+
+const validatePhone = (phone: string) => {
+    const phoneNumber = parsePhoneNumberFromString(phone, 'NG'); // or 'US', 'GH', etc.
+    if (!phoneNumber || !phoneNumber.isValid()) {
+      return 'Invalid phone number';
+    }
+    return '';
+  };
 
 interface CreateGameModalProps {
   isOpen: boolean;
@@ -19,6 +28,8 @@ export function CreateGameModal({ isOpen, onClose, onSubmit }: CreateGameModalPr
   const [newUserPhone, setNewUserPhone] = useState("");
   const [newUserEmail, setNewUserEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+    const [phoneError, setPhoneError] = useState('');
+  
 
   const handleLookup = async () => {
     if (!playerInput.trim()) {
@@ -49,6 +60,14 @@ export function CreateGameModal({ isOpen, onClose, onSubmit }: CreateGameModalPr
     if (!newUserName || !newUserLastName || !newUserPhone || !newUserEmail) {
       toast.warning("All fields are required.");
       return;
+    }
+
+    const phoneValidationError = validatePhone(newUserPhone);
+    if (phoneValidationError) {
+      setPhoneError(phoneValidationError);
+      return;
+    } else {
+      setPhoneError('');
     }
 
     setIsLoading(true);
@@ -105,21 +124,34 @@ export function CreateGameModal({ isOpen, onClose, onSubmit }: CreateGameModalPr
         />
       </div>
       <div>
-        <label>Phone Number</label>
-        <input
-          value={newUserPhone}
-          onChange={(e) => setNewUserPhone(e.target.value)}
-          className="w-full px-3 py-2 mt-1 border rounded"
-          placeholder="Enter phone number"
-        />
+            <label>Phone Number</label>
+            <input
+                value={newUserPhone}
+                onChange={(e) => {
+                setNewUserPhone(e.target.value);
+                if (phoneError) {
+                    setPhoneError(''); // Clear error while typing
+                }
+                }}
+                className={`w-full px-3 py-2 mt-1 border rounded ${phoneError ? 'border-red-500' : ''}`}
+                placeholder="Enter phone number"
+            />
+            {phoneError && (
+                <p className="text-red-600 text-sm mt-1">{phoneError}</p>
+            )}
       </div>
       <div>
         <label>Email</label>
         <input
           type="email"
           value={newUserEmail}
-          onChange={(e) => setNewUserEmail(e.target.value)}
-          className="w-full px-3 py-2 mt-1 border rounded"
+          onChange={(e) => {
+            setNewUserEmail(e.target.value);
+            if (phoneError) {
+              setPhoneError(''); // Clear error while typing
+            }
+          }}
+          className={`w-full px-3 py-2 mt-1 border rounded  ${phoneError ? 'border-red-500' : ''}`}
           placeholder="Enter email"
         />
       </div>
@@ -129,8 +161,13 @@ export function CreateGameModal({ isOpen, onClose, onSubmit }: CreateGameModalPr
       <label>Enter Phone Number</label>
       <input
         value={playerInput}
-        onChange={(e) => setPlayerInput(e.target.value)}
-        className="w-full px-3 py-2 mt-1 border rounded"
+        onChange={(e) => {
+          setPlayerInput(e.target.value);
+          if (phoneError) {
+            setPhoneError('');
+          }
+        }}
+        className={`w-full px-3 py-2 mt-1 border rounded  ${phoneError ? 'border-red-500' : ''}`}
         placeholder="e.g. 08123456789"
       />
     </div>
