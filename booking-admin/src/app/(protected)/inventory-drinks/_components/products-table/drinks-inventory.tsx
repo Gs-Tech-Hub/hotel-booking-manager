@@ -35,7 +35,7 @@ export default function DrinksInventoryPage({ products }: { products: Product[] 
         <StockTransferModal products={products} />
 
         <div className="flex gap-2 flex-wrap">
-        <Select value={typeFilter} onChange={setTypeFilter}>
+        <Select value={typeFilter} onChange={(value) => setTypeFilter(String(value))}>
             <SelectItem value="">All Types</SelectItem>
             {drinkTypes.map(type => (
               <SelectItem key={type} value={type}>
@@ -44,7 +44,7 @@ export default function DrinksInventoryPage({ products }: { products: Product[] 
             ))}
           </Select>
 
-          <Select value={sortKey} onChange={setSortKey}>
+          <Select value={sortKey} onChange={(value) => setSortKey(String(value))}>
             <SelectItem value="">Sort by</SelectItem>
             <SelectItem value="price">Price</SelectItem>
             <SelectItem value="quantity">Quantity</SelectItem>

@@ -64,10 +64,10 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
 
       //Process product-count
         console.log('currentOderItems:', currentOrder.items);
-      const orderItems = currentOrder.items.map(item => ({
-        ...item,
-        productCountId: item.productCountId ? item.productCountId.map(p => ({ productCountId: p.id })) : []
-      }));
+      // const orderItems = currentOrder.items.map(item => ({
+      //   ...item,
+      //   productCountId: item.productCountId ? item.productCountId.map(p => ({ productCountId: p.id })) : []
+      // }));
       const productCountIds = await handleProductCounts(currentOrder.items);
   
       // Process the order first

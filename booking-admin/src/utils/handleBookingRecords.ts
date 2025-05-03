@@ -27,7 +27,7 @@ export async function handleBookingRecords(timeFrame: { startDate: string, endDa
         const totalRoomPrice: number = roomPrice * nights;
   
         // Determine the payment status and method
-        const paymentStatus: string = booking.payment?.paymentStatus || "debt";
+        const paymentStatus: string = booking.payment?.PaymentStatus || "debt";
         const paymentMethod = (booking.payment?.paymentMethod || "cash") as "cash" | "online";
   
         // Add total to hotel aggregation

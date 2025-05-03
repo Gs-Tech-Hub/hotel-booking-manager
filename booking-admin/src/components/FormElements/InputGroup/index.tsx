@@ -19,7 +19,7 @@ type InputGroupProps = {
   defaultValue?: string;
   min?: string;
   max?: string;
-  disabledDates?: {};
+  // disabledDates?: {};
   options?: Array<{ value: string; label: string }>;
 
 };

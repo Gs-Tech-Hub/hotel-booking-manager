@@ -28,7 +28,7 @@ export default function DrinksInventoryPage({ products }: { products: Product[] 
         <Button className="bg-primary text-white hover:bg-primary/90" label="+ Add Product" />
 
         <div className="flex gap-2 flex-wrap">
-          <Select value={typeFilter} onChange={setTypeFilter}>
+          <Select value={typeFilter} onChange={(value) => setTypeFilter(String(value))}>
             <SelectItem value="">All Types</SelectItem>
             <SelectItem value="Soft">Soft</SelectItem>
             <SelectItem value="Alcoholic">Alcoholic</SelectItem>
@@ -37,7 +37,7 @@ export default function DrinksInventoryPage({ products }: { products: Product[] 
             <SelectItem value="Other">Other</SelectItem>
           </Select>
 
-          <Select value={sortKey} onChange={setSortKey}>
+          <Select value={sortKey} onChange={(value) => setSortKey(String(value))}>
             <SelectItem value="">Sort by</SelectItem>
             <SelectItem value="price">Price</SelectItem>
             <SelectItem value="quantity">Quantity</SelectItem>

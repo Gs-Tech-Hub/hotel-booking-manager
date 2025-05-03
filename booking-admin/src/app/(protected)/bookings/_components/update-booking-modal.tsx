@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+/* eslint-disable */
+
+import React  from "react";
 import { Modal } from "@/components/ui-elements/modal";
 import { Button } from "@/components/ui-elements/button";
 import UpdateBookingForm from "@/app/(protected)/bookings/_components/update-booking-form"
@@ -14,12 +16,11 @@ export default function UpdateCustomerBooking ({
        isOpen,
        onClose,
        booking,
-       onSubmit,
     
     }: 
        UpdateCustomerBookingProps )
           {
-    const handleSubmit = (updatedBooking: any) => {
+    const handleSubmit = () => {
         // Handle the form submission
         onClose();
     };

@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode } from "react";
+import React, { createContext } from "react";
 
 type SelectContextType = {
   value: string | number;
@@ -33,7 +33,6 @@ export function Select({
   error,
   className = "",
   children,
-  options
 }: SelectProps) {
   return (
     <div className={`relative ${className}`}>

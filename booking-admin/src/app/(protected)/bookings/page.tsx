@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from "react"
+import React from "react"
 import { Button } from "@/components/ui-elements/button"
 import { useRouter } from "next/navigation"
 import { InterActiveGuestList } from "./_components/interactive-guest-list"
