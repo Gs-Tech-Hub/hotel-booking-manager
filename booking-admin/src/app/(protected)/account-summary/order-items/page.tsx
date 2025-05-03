@@ -26,7 +26,7 @@ export default function FoodItemsList() {
     try {
       const res = await strapiService.getBookingItems({
         "pagination[pageSize]": "100",
-        "pagination[page]": "2",
+        "pagination[page]": "3",
         "populate": "*"
       })
 
