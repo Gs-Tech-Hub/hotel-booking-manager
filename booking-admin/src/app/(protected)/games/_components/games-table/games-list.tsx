@@ -76,14 +76,14 @@ export default function GamesListPage({ games }: { games: Games[] }) {
         />
 
         <div className="flex gap-2 flex-wrap">
-          <Select value={statusFilter} onChange={setStatusFilter}>
+          <Select value={statusFilter} onChange={(value) => setStatusFilter(String(value))}>
             <SelectItem value="">All Status</SelectItem>
             <SelectItem value="ongoing">Ongoing</SelectItem>
             <SelectItem value="completed">Completed</SelectItem>
             <SelectItem value="cancelled">Cancelled</SelectItem>
           </Select>
 
-          <Select value={sortKey} onChange={(value: string) => setSortKey(value as "" | "count" | "amount_paid" | "createdAt")}>
+          <Select value={sortKey} onChange={(value: string | number) => setSortKey(value.toString() as "" | "count" | "amount_paid" | "createdAt")}>
             <SelectItem value="">Sort by</SelectItem>
             <SelectItem value="count">Games Played</SelectItem>
             <SelectItem value="amount_paid">Amount Paid</SelectItem>

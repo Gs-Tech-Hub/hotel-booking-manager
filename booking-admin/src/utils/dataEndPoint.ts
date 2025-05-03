@@ -89,6 +89,17 @@ export const strapiService = {
     const booking = await this.createBooking(bookingData);
     return booking.documentId;
   },
+
+  // update booking
+  async updateBooking(bookingId: string | number, bookingData: any) {
+    const result = await apiHandlerInstance.updateData({ 
+      endpoint: "boookings", 
+      id: bookingId, 
+      updatedData: bookingData 
+    });
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
   
   //get bookings
   async getBookings(params?: Record<string, string | number | boolean>) {

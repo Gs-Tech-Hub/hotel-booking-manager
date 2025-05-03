@@ -1,8 +1,8 @@
 'use client'
 import React, { useState } from "react"
-import { GuestList } from "../(home)/_components/guest-list"
 import { Button } from "@/components/ui-elements/button"
 import { useRouter } from "next/navigation"
+import { InterActiveGuestList } from "./_components/interactive-guest-list"
 
 export default function BookingsPage() {
 
@@ -17,7 +17,7 @@ export default function BookingsPage() {
       />
       <div>
       </div> 
-      <GuestList />
+      <InterActiveGuestList />
     </div>
   )
 }

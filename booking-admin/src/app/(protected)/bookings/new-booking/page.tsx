@@ -7,7 +7,7 @@ import { strapiService } from "@/utils/dataEndPoint";
 import Image from "next/image";
 import { useRouter } from "next/navigation"; // Import useRouter
 import { toast } from "react-toastify";
-import { AddNewCustomerModal } from "@/app/(protected)/bookings/new-booking/add-new-user-modal"; // Import AddNewCustomerModal
+import { AddNewCustomerModal } from "@/app/(protected)/bookings/_components/add-new-user-modal"; // Import AddNewCustomerModal
 
 const CreateBookingForm: React.FC = () => {
   const [step, setStep] = useState(1);
