@@ -59,16 +59,32 @@ export const processOrder = async ({
       for (const item of items) {
         const res = await fetchFn({ 'filters[documentId][$eq]': item.documentId });
         console.log(`Response for ${type} with documentId ${item.documentId}:`, res);
-
+        
         const found = res?.[0];
         if (!found) {
           console.error(`${type} not found: ${item.documentId}`);
           throw new Error(`${type} not found: ${item.documentId}`);
         }
 
+        if (order.discountPrice && order.selectedStaffId) {
+          const discountPayload: any = {
+            discount_amount: order.discountPrice,
+            total: order.totalAmount,
+            amount_paid: order.finalPrice,
+            users_permissions_user: { connect: { id: order.selectedStaffId } },
+          };
+          discountPayload[type] = { connect: { id: found.id } };
+
+          console.log(`Adding employee order for ${type}:`, discountPayload);
+          employeeOrders.push(discountPayload);
+        } else {
+          console.log(`Skipping employee order for ${type}: missing discount or staff ID`);
+        }
+
         ids.push({ id: found.id });
         console.log(`Collected ID for ${type}:`, found.id);
       }
+      
 
       console.log(`Final collected IDs for ${type}:`, ids);
       return ids;
@@ -140,7 +156,7 @@ export const processOrder = async ({
 
     if (employeeOrders.length > 0) {
       for (const empOrder of employeeOrders) {
-        if (empOrder.amount_paid > 0) {
+        if (empOrder) {
           await strapiService.createEmployeeOrder(empOrder);
           console.log('Employee order created:', empOrder);
         }

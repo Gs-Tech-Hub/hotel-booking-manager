@@ -26,7 +26,7 @@ export default function AccountSummary() {
   const [loading, setLoading] = useState(true);
 
   const [timeFrame, setTimeFrame] = useState({
-    startDate: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(),
+    startDate: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
     endDate: new Date().toISOString(),
   });
 

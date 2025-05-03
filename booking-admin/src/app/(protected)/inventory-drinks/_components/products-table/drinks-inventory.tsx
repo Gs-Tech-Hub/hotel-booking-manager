@@ -6,6 +6,7 @@ import { Select } from "@/components/ui-elements/select";
 import { SelectItem } from "@/components/ui-elements/select-item";
 import { ProductsList, Product } from "./products-table";
 import StockTransferModal from "./product-transfer-modal";
+import StockAddModal from "../products-add/product-add-modal";
 
 export default function DrinksInventoryPage({ products }: { products: Product[] }) {
   const [typeFilter, setTypeFilter] = useState("");
@@ -31,7 +32,7 @@ export default function DrinksInventoryPage({ products }: { products: Product[] 
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-4">
-        <Button className="bg-primary text-white hover:bg-primary/90" label="+ Add Product" />
+        <StockAddModal products={products} />
         <StockTransferModal products={products} />
 
         <div className="flex gap-2 flex-wrap">

@@ -94,7 +94,12 @@ export async function handleDepartmentRecord(
     fetchInventory?: boolean;
   },
   fetchInventory = true
-): Promise<{ overview: OverviewCardData; products: ExtendedProduct[]; paymentDetailsByOrder: Record<string, { paymentMethod: string; amountPaid: number }> }> {
+): Promise<{
+  overview: OverviewCardData;
+  products: ExtendedProduct[];
+  paymentDetailsByOrder: Record<string, { paymentMethod: string; amountPaid: number }>;
+  drinksList?: { name: string; count: number }[]; // Added drinksList as an optional property
+}> {
   const { inventoryEndpoint, departmentStockField, otherStockField } = options;
 
   try {
@@ -106,6 +111,15 @@ export async function handleDepartmentRecord(
     });
 
     console.log("Fetched Booking Items:", bookingItems);
+
+    const allDrinks = bookingItems
+      .filter((item: any) => Array.isArray(item.drinks) && item.drinks.length > 0) // Filter items with drinks
+      .flatMap((item: any) => item.drinks.map((drink: any) => ({
+        name: drink.name || "Unnamed Drink",
+        count:  drink.quantity || 0,
+      }))); // Map and flatten drinks into a single array
+
+    console.log("Combined Drinks List:", allDrinks);
 
     let cashSales = 0;
     let totalTransfers = 0;
@@ -244,7 +258,10 @@ export async function handleDepartmentRecord(
 
     console.log("Overview Data:", overview);
 
-    return { overview, products, paymentDetailsByOrder };
+    // Return drinksList only for bar_services
+    return department === "bar_services"
+      ? { overview, products, paymentDetailsByOrder, drinksList: allDrinks }
+      : { overview, products, paymentDetailsByOrder };
   } catch (error) {
     console.error("Error in handleDepartmentRecord:", error);
     throw error;
