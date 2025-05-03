@@ -1,8 +1,8 @@
 'use client'
 import { strapiService } from "@/utils/dataEndPoint"
-import { EmployeeSummaryTable } from "./_components/employee-summary-table"
+import { EmployeeSummaryTable } from "./_components/emp-tables/employee-summary-table"
 import { Suspense, useEffect, useState } from "react"
-import EmployeeOrdersTable from "./_components/employee-order-table"
+import EmployeeOrdersTable from "./_components/emp-tables/employee-order-table"
 import { Button } from "@/components/ui-elements/button"
 
 export default function EmployeeSummaryPage() {
@@ -35,6 +35,8 @@ export default function EmployeeSummaryPage() {
                     variant="primary" 
                     onClick={() => setShowSummary(!showSummary)} 
                 />
+
+            
             </div>
             <Suspense>
                 {showSummary ? (

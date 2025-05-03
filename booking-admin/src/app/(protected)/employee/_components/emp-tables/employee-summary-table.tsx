@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui-elements/button";
 import {
   Table,
   TableBody,
@@ -8,6 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatPrice } from "@/utils/priceHandler";
+import CreateEmployeeSummaryModal from "../add-summary-form/create-emp-summary-modal";
 
 export function EmployeeSummaryTable({
   employeeDetails,
@@ -100,12 +100,7 @@ export function EmployeeSummaryTable({
         </div>
       </TableCell>
       <TableCell>
-        <Button
-         label="View Details"
-         variant={"outlinePrimary"}
-         size={"small"}
-         >
-        </Button>
+      <CreateEmployeeSummaryModal   />
       </TableCell>
     </TableRow>
   ))}
