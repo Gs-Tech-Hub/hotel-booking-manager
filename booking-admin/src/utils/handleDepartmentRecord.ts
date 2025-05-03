@@ -124,7 +124,16 @@ export async function handleDepartmentRecord(
 
       paymentDetailsByOrder[item.id] = { paymentMethod, amountPaid };
 
-      if (Array.isArray(item.product_count) && item.product_count.length > 0) {
+      if (department === "Games" && Array.isArray(item.games) && item.games.length > 0) {
+        // Handle games differently by aggregating `amount_paid`
+        for (const game of item.games) {
+          const gameAmount = game.amount_paid || 0;
+          totals.totalAmount += gameAmount;
+          totals.departmentSales += gameAmount;
+
+          console.log(`Game Amount Paid: ${gameAmount} | Total Amount: ${totals.totalAmount}`);
+        }
+      } else if (Array.isArray(item.product_count) && item.product_count.length > 0) {
         // Process items with product_count
         for (const pcEntry of item.product_count) {
           const relatedData = await strapiService.getProductCounts({
