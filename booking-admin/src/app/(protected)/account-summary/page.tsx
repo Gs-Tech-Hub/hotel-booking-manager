@@ -1,19 +1,19 @@
-  'use client'
+'use client'
 import React, { useEffect, useState } from "react";
 import { OverviewCardsGroup } from "./_components/overview-cards";
 import { useRoleGuard } from "@/hooks/useRoleGuard";
 import { getAllDepartmentOverviews } from "./_components/allDepartmentRecords";
-import { handleBookingRecords } from "@/utils/handleBookingRecords";
+import { Spinner } from "@/components/Spinner";
 
 export default function AccountSummary() {
   useRoleGuard(["admin", "manager", "sales"]);
 
-  const [overviewData, setOverviewData] = useState({
+  const demoData = {
     cashSales: 0,
     totalTransfers: 0,
     totalSales: 0,
     totalUnits: 0,
-    totalProfit: null as number | null,
+    totalProfit: 0,
     barSales: 0,
     foodSales: 0,
     hotelBooking: 0,
@@ -21,56 +21,34 @@ export default function AccountSummary() {
     hotelBookingTransfer: 0,
     gameSales: 0,
     hotelServices: 0,
-  });
+  };
 
+  const [overviewData, setOverviewData] = useState(demoData);
   const [loading, setLoading] = useState(true);
 
   const [timeFrame, setTimeFrame] = useState({
-    startDate: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(),
+    startDate: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
     endDate: new Date().toISOString(),
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true); // Start loading
+        setLoading(true);
 
-        const bookingOview = await handleBookingRecords(timeFrame);
-        console.log("booking data:", bookingOview);
+        const departmentOverview = await getAllDepartmentOverviews(
+          timeFrame.startDate,
+          timeFrame.endDate
+        );
 
-        const departmentOverview = await getAllDepartmentOverviews(timeFrame.startDate, timeFrame.endDate);
-
-        if (departmentOverview) {
-          setOverviewData({
-            //general departments total
-            cashSales: departmentOverview.cashSales,
-            totalTransfers: departmentOverview.totalTransfers,
-            totalSales: departmentOverview.totalSales,
-            //bar account
-            totalUnits: departmentOverview.totalUnits,
-            totalProfit: departmentOverview.totalProfit,
-            barSales: departmentOverview.barSales,
-            //restaurant
-            foodSales: departmentOverview.foodSales,
-            //swimming-pool/others
-            hotelServices: departmentOverview.hotelSales,
-            //games
-            gameSales: departmentOverview.gameSales,
-            //hote Records
-            hotelBooking: bookingOview.hotel.total,
-            hotelBookingCash: bookingOview.hotel.cash,
-            hotelBookingTransfer: bookingOview.hotel.online,
-
-            
-          });
-        }
-
-        console.log("check the hotel services data:", overviewData.cashSales)
-
+        setOverviewData((prev) => ({
+          ...prev,
+          ...departmentOverview,
+        }));
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
-        setLoading(false); // End loading
+        setLoading(false);
       }
     };
 
@@ -108,31 +86,51 @@ export default function AccountSummary() {
         </label>
       </div>
       <h1>SALES OVERVIEW</h1>
-
       {loading ? (
-        <p>Loading...</p>
+        <div>
+          <Spinner />
+          <OverviewCardsGroup
+            hotel={{
+              hotelBookingTotal: demoData.hotelBooking,
+              Totalcash: demoData.cashSales,
+              totalTransfers: demoData.totalTransfers,
+              totalSales: demoData.totalSales,
+            }}
+            restaurant={{
+              foodSales: demoData.foodSales,
+            }}
+            bar={{
+              barSales: demoData.barSales,
+            }}
+            games={{
+              gameSales: demoData.gameSales,
+            }}
+            hotel_services={{
+              hotelServiceSales: demoData.hotelServices,
+            }}
+          />
+        </div>
       ) : (
         <OverviewCardsGroup
-        hotel={{
-          hotelBookingTotal: overviewData.hotelBooking,
-          Totalcash: (overviewData.cashSales + overviewData.hotelBookingCash),
-          totalTransfers: (overviewData.totalTransfers + overviewData.hotelBookingTransfer),
-          totalSales: (overviewData.hotelBooking + overviewData.totalSales),
-        }}
-        restaurant={{
-          foodSales: overviewData.foodSales,
-        }}
-        bar={{
-          barSales: overviewData.barSales,
-        }}
-        games={{
-          gameSales: overviewData.gameSales,
-        }}
-        hotel_services={{
-          hotelServiceSales: overviewData.hotelServices,
-        }}
-      />
-      
+          hotel={{
+            hotelBookingTotal: overviewData.hotelBooking,
+            Totalcash: overviewData.cashSales,
+            totalTransfers: overviewData.totalTransfers,
+            totalSales: overviewData.totalSales,
+          }}
+          restaurant={{
+            foodSales: overviewData.foodSales,
+          }}
+          bar={{
+            barSales: overviewData.barSales,
+          }}
+          games={{
+            gameSales: overviewData.gameSales,
+          }}
+          hotel_services={{
+            hotelServiceSales: overviewData.hotelServices,
+          }}
+        />
       )}
     </div>
   );

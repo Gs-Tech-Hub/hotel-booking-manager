@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui-elements/button";
 import { Select } from "@/components/ui-elements/select";
 import { SelectItem } from "@/components/ui-elements/select-item";
 import { ProductsList, Product } from "./products-table";
 import StockTransferModal from "./product-transfer-modal";
+import StockAddModal from "../products-add/product-add-modal";
 
 export default function DrinksInventoryPage({ products }: { products: Product[] }) {
   const [typeFilter, setTypeFilter] = useState("");
@@ -31,11 +31,11 @@ export default function DrinksInventoryPage({ products }: { products: Product[] 
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-4">
-        <Button className="bg-primary text-white hover:bg-primary/90" label="+ Add Product" />
+        <StockAddModal products={products} />
         <StockTransferModal products={products} />
 
         <div className="flex gap-2 flex-wrap">
-        <Select value={typeFilter} onChange={setTypeFilter}>
+        <Select value={typeFilter} onChange={(value) => setTypeFilter(String(value))}>
             <SelectItem value="">All Types</SelectItem>
             {drinkTypes.map(type => (
               <SelectItem key={type} value={type}>
@@ -44,7 +44,7 @@ export default function DrinksInventoryPage({ products }: { products: Product[] 
             ))}
           </Select>
 
-          <Select value={sortKey} onChange={setSortKey}>
+          <Select value={sortKey} onChange={(value) => setSortKey(String(value))}>
             <SelectItem value="">Sort by</SelectItem>
             <SelectItem value="price">Price</SelectItem>
             <SelectItem value="quantity">Quantity</SelectItem>

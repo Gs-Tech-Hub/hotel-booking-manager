@@ -49,13 +49,15 @@ export default function POSLayout(props: PosMenuProps) {
   
 
   const handleCreateOrder = (order: Order) => {
-    const { customerName, tableNumber, waiterId, items } = order;
+    const { customerName, tableNumber, waiterId, items, discountPrice, finalPrice, selectedStaffId } = order;
+
     if (!customerName || !tableNumber || !waiterId || items.length === 0) {
       console.error('Invalid order details');
       return;
     }
 
     const totalAmount = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
     const newOrder: Order = {
       id: (orders.length + 1).toString(),
       customerName,
@@ -64,11 +66,13 @@ export default function POSLayout(props: PosMenuProps) {
       items,
       status: 'active',
       totalAmount,
-      discount: 0, // Adding default discount of 0
-    }; 
+      discountPrice: discountPrice || 0, // Use the passed discountPrice
+      finalPrice: finalPrice || totalAmount, // Use the passed finalPrice
+      selectedStaffId: selectedStaffId || '', // Use the passed selectedStaffId
+    };
 
     setOrders([...orders, newOrder]);
-    setActiveOrder(newOrder); 
+    setActiveOrder(newOrder);
     console.log('Order added to list:', newOrder);
   };
 

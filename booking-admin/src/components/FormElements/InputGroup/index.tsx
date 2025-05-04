@@ -4,7 +4,7 @@ import { type HTMLInputTypeAttribute, useId } from "react";
 type InputGroupProps = {
   className?: string;
   label: string;
-  placeholder: string;
+  placeholder?: string;
   type: HTMLInputTypeAttribute;
   fileStyleVariant?: "style1" | "style2";
   required?: boolean;
@@ -17,6 +17,11 @@ type InputGroupProps = {
   iconPosition?: "left" | "right";
   height?: "sm" | "default";
   defaultValue?: string;
+  min?: string;
+  max?: string;
+  // disabledDates?: {};
+  options?: Array<{ value: string; label: string }>;
+
 };
 
 const InputGroup: React.FC<InputGroupProps> = ({

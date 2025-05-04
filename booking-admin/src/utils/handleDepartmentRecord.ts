@@ -23,6 +23,66 @@ export interface ExtendedProduct extends Product {
   showProfit?: boolean;
 }
 
+// Helper function to process product counts
+function processProductCount(
+  productCount: any,
+  department: string,
+  item: any,
+  salesByProduct: Record<string, { units: number; amount: number }>,
+  paymentMethod: string,
+  totals: { cashSales: number; totalTransfers: number; totalUnits: number; totalAmount: number; departmentSales: number }
+) {
+  const relatedProduct =
+    productCount.drinks ||
+    productCount.food_item ||
+    productCount.hotel_services ||
+    productCount.games;
+
+  const matchedDocumentId = relatedProduct?.documentId;
+
+  if (!matchedDocumentId) {
+    console.warn(`No related product found in product_count ID: ${productCount.id}`);
+    return;
+  }
+
+  const product =
+    (department === "bar_services" && item.drinks?.find((p: any) => p.documentId === matchedDocumentId)) ||
+    (department === "restaurant_services" && item.food_items?.find((p: any) => p.documentId === matchedDocumentId)) ||
+    (department === "hotel_services" && item.hotel_services?.find((p: any) => p.documentId === matchedDocumentId)) ||
+    (department === "Games" && item.games?.find((p: any) => p.documentId === matchedDocumentId));
+
+  if (!product) {
+    console.warn(`No matching product found for documentId: ${matchedDocumentId} in department: ${department}`);
+    return;
+  }
+
+  const unitPrice = product.price || 0;
+  const count = productCount.product_count;
+  const itemAmount = unitPrice * count;
+
+  console.log(`Matched Product: ${product.name} | Count: ${count} | Unit Price: ${unitPrice} | Item Amount: ${itemAmount}`);
+
+  // Update totals
+  totals.totalUnits += count;
+  totals.totalAmount += itemAmount;
+
+  if (paymentMethod === "cash") {
+    totals.cashSales += itemAmount;
+  } else {
+    totals.totalTransfers += itemAmount;
+  }
+
+  totals.departmentSales += itemAmount;
+
+  if (!salesByProduct[product.documentId]) {
+    salesByProduct[product.documentId] = { units: 0, amount: 0 };
+  }
+  salesByProduct[product.documentId].units += count;
+  salesByProduct[product.documentId].amount += itemAmount;
+
+  console.log(`Updated Sales for Product: ${product.name} | Total Units: ${salesByProduct[product.documentId].units} | Total Amount: ${salesByProduct[product.documentId].amount}`);
+}
+
 export async function handleDepartmentRecord(
   startDate: string,
   endDate: string,
@@ -34,13 +94,17 @@ export async function handleDepartmentRecord(
     fetchInventory?: boolean;
   },
   fetchInventory = true
-): Promise<{ overview: OverviewCardData; products: ExtendedProduct[] }> {
+): Promise<{
+  overview: OverviewCardData;
+  products: ExtendedProduct[];
+  paymentDetailsByOrder: Record<string, { paymentMethod: string; amountPaid: number }>;
+  drinksList?: { name: string; count: number }[]; // Added drinksList as an optional property
+}> {
   const { inventoryEndpoint, departmentStockField, otherStockField } = options;
 
   try {
-    // Fetch booking items
     const bookingItems = await strapiService.getBookingItems({
-      "pagination[pageSize]": 70,
+      "pagination[pageSize]": 200,
       "filters[createdAt][$gte]": formatDateRange(startDate),
       "filters[createdAt][$lte]": formatDateRange(endDate, true),
       "populate": "*",
@@ -48,57 +112,101 @@ export async function handleDepartmentRecord(
 
     console.log("Fetched Booking Items:", bookingItems);
 
+    const allDrinks = bookingItems
+      .filter((item: any) => Array.isArray(item.drinks) && item.drinks.length > 0) // Filter items with drinks
+      .flatMap((item: any) => item.drinks.map((drink: any) => ({
+        name: drink.name || "Unnamed Drink",
+        count:  drink.quantity || 0,
+      }))); // Map and flatten drinks into a single array
+
+    console.log("Combined Drinks List:", allDrinks);
+
     let cashSales = 0;
     let totalTransfers = 0;
     let totalUnits = 0;
     let totalAmount = 0;
+    let departmentSales = 0;
 
     let salesByProduct: Record<string, { units: number; amount: number }> = {};
+    let paymentDetailsByOrder: Record<string, { paymentMethod: string; amountPaid: number }> = {};
 
-    bookingItems.forEach((item: any) => {
-      const paymentMethod = item.payment_type?.types?.trim().toLowerCase();
+    const totals = { cashSales, totalTransfers, totalUnits, totalAmount, departmentSales };
+
+    for (const item of bookingItems) {
+      const paymentMethod = item.payment_type?.types?.trim()?.toLowerCase() || "unknown";
       const amountPaid = item.amount_paid || 0;
 
-      let products: any[] = [];
+      paymentDetailsByOrder[item.id] = { paymentMethod, amountPaid };
 
-      if (department === "bar_services" && item.drinks?.length > 0) {
-        products = item.drinks;
-      } else if (department === "restaurant_services" && item.food_items?.length > 0) {
-        products = item.food_items;
-      } else if (department === "hotel_services" && item.hotel_services?.length > 0) {
-        products = item.hotel_services;
-      } else if (department === "Games" && item.games?.length > 0) {
-        products = item.games;
-      }
+      if (department === "Games" && Array.isArray(item.games) && item.games.length > 0) {
+        // Handle games differently by aggregating `amount_paid`
+        for (const game of item.games) {
+          const gameAmount = game.amount_paid || 0;
+          totals.totalAmount += gameAmount;
+          totals.departmentSales += gameAmount;
 
-      if (products.length > 0) {
-        const count = item.count || 1; // default 1 if missing
-        const itemUnits = products.length * count;
-        const itemAmount = amountPaid; // assume full item paid
+          console.log(`Game Amount Paid: ${gameAmount} | Total Amount: ${totals.totalAmount}`);
+        }
+      } else if (Array.isArray(item.product_count) && item.product_count.length > 0) {
+        // Process items with product_count
+        for (const pcEntry of item.product_count) {
+          const relatedData = await strapiService.getProductCounts({
+            "filters[id][$eq]": pcEntry.id,
+            "populate": "*",
+          });
 
-        totalUnits += itemUnits;
-        totalAmount += itemAmount;
+          const productCount = relatedData?.data?.[0];
+          if (!productCount) {
+            console.warn(`No product_count found for ID: ${pcEntry.id}`);
+            continue;
+          }
 
-        // Handle sales breakdown by payment method
-        if (paymentMethod === "cash") {
-          cashSales += itemAmount;
-        } else {
-          totalTransfers += itemAmount;
+          processProductCount(productCount, department, item, salesByProduct, paymentMethod, totals);
+        }
+      } else {
+        // Fallback for items without product_count
+        const count = item.quantity || 0;
+        const product =
+          (department === "bar_services" && item.drinks?.[0]) ||
+          (department === "restaurant_services" && item.food_items?.[0]) ||
+          (department === "hotel_services" && item.hotel_services?.[0]) ||
+          (department === "Games" && item.games?.[0]);
+
+        if (!product) {
+          console.warn(`No associated product found for item in department: ${department}`);
+          continue;
         }
 
-        // Track each product sale
-        products.forEach((prod: any) => {
-          if (!prod?.documentId) return;
-          if (!salesByProduct[prod.documentId]) {
-            salesByProduct[prod.documentId] = { units: 0, amount: 0 };
-          }
-          salesByProduct[prod.documentId].units += count;
-          salesByProduct[prod.documentId].amount += (prod.price || 0) * count;
-        });
+        const unitPrice = product.price || 0;
+        const itemAmount = unitPrice * count;
+
+        console.log(`Fallback Product: ${product.name} | Count: ${count} | Unit Price: ${unitPrice} | Item Amount: ${itemAmount}`);
+
+        totals.totalUnits += count;
+        totals.totalAmount += itemAmount;
+
+        if (paymentMethod === "cash") {
+          totals.cashSales += itemAmount;
+        } else {
+          totals.totalTransfers += itemAmount;
+        }
+
+        totals.departmentSales += itemAmount;
+
+        if (!salesByProduct[product.documentId]) {
+          salesByProduct[product.documentId] = { units: 0, amount: 0 };
+        }
+        salesByProduct[product.documentId].units += count;
+        salesByProduct[product.documentId].amount += itemAmount;
+
+        console.log(`Updated Sales for Fallback Product: ${product.name} | Total Units: ${salesByProduct[product.documentId].units} | Total Amount: ${salesByProduct[product.documentId].amount}`);
       }
-    });
+    }
+
+    ({ cashSales, totalTransfers, totalUnits, totalAmount, departmentSales } = totals);
 
     console.log("Sales by Product:", salesByProduct);
+    console.log("Payment Details by Order:", paymentDetailsByOrder);
 
     let inventory: any[] = [];
     if (fetchInventory) {
@@ -107,8 +215,8 @@ export async function handleDepartmentRecord(
           populate: "*",
           "pagination[pageSize]": 100,
         },
-        {},
-        {}
+        {} as any,
+        {} as any
       );
       console.log("Fetched Inventory:", inventory);
     }
@@ -142,13 +250,18 @@ export async function handleDepartmentRecord(
       totalSales: totalAmount,
       totalUnits,
       totalProfit: products.reduce((acc, p) => acc + p.profit, 0),
-      barSales: department === "bar_services" ? totalAmount : 0,
-      foodSales: department === "restaurant_services" ? totalAmount : 0,
-      hotelSales: department === "hotel_services" ? totalAmount : 0,
-      gameSales: department === "Games" ? totalAmount : 0,
+      barSales: department === "bar_services" ? departmentSales : 0,
+      foodSales: department === "restaurant_services" ? departmentSales : 0,
+      hotelSales: department === "hotel_services" ? departmentSales : 0,
+      gameSales: department === "Games" ? departmentSales : 0,
     };
 
-    return { overview, products };
+    console.log("Overview Data:", overview);
+
+    // Return drinksList only for bar_services
+    return department === "bar_services"
+      ? { overview, products, paymentDetailsByOrder, drinksList: allDrinks }
+      : { overview, products, paymentDetailsByOrder };
   } catch (error) {
     console.error("Error in handleDepartmentRecord:", error);
     throw error;

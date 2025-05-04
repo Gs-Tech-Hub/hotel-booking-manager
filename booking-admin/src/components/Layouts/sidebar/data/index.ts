@@ -21,18 +21,26 @@ export const NAV_DATA: NavSection[] = [
         items: [],
       },
       {
-        title: "Rooms",
-        icon: Icons.RoomsIcon,
-        url: "/rooms",
+        title: "Human Resources",
+        icon: Icons.HomeIcon,
         roles: ["admin", "receptionist", "manager"],
-        items: [],
-      },
-      {
-        title: "Events Booking",
-        icon: Icons.EventIcon,
-        url: "/events-booking",
-        roles: ["admin", "receptionist", "manager"],
-        items: [],
+        items: [
+          {
+            title: "Employee",
+            url: "/employee",
+            roles: ["admin", "receptionist", "manager"],
+          },
+          {
+            title: "Roles",
+            url: "/roles",
+            roles: ["super-admin"],
+          },
+          {
+            title: "Job Applications",
+            url: "employee/job-applications",
+            roles: ["admin"],
+          },
+        ],
       },
       {
         title: "Account",
@@ -43,6 +51,11 @@ export const NAV_DATA: NavSection[] = [
             title: "Account Summary",
             url: "/account-summary",
             roles: ["admin", "receptionist", "manager"],
+          },
+          {
+            title: "Order List",
+            url: "/account-summary/order-items",
+            roles: ["super-admin"],
           },
         ],
       },
@@ -91,6 +104,20 @@ export const NAV_DATA: NavSection[] = [
             roles: ["admin", "bar", "kitchen", "games", "receptionist", "manager"] 
           },
         ],
+      },
+      {
+        title: "Rooms",
+        icon: Icons.RoomsIcon,
+        url: "/rooms",
+        roles: ["super-admin" ],
+        items: [],
+      },
+      {
+        title: "Events",
+        icon: Icons.EventIcon,
+        url: "/events-booking",
+        roles: ["super-admin"],
+        items: [],
       },
     ],
   },

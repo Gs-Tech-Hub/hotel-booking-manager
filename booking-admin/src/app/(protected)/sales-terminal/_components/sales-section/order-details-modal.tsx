@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
 import { processOrder } from "@/utils/processOrder";
 import { useAuth } from "@/components/Auth/context/auth-context"; // Assuming useAuth is imported
+import { handleProductCounts } from "@/utils/handleProductCounts";
 
 interface OrderDetailsModalProps {
   order: Order;
@@ -40,16 +41,19 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
     setIsLoading(true);
   
     try {
-      // Corrected typo: finalOrder, not Order
       const finalOrder = {
         id: currentOrder.id,
         customerName: currentOrder.customerName,
         tableNumber: currentOrder.tableNumber,
         waiterName: currentOrder.waiterId || "",
         items: currentOrder.items,
-        discount: currentOrder.discount ?? 0,
+        discountPrice: currentOrder.discountPrice ?? 0,
         selectedStaffId: currentOrder.selectedStaffId,
-        status: "completed",
+        status: "completed" as const,
+        waiterId: currentOrder.waiterId || "",
+        totalAmount: currentOrder.totalAmount,
+        finalPrice: currentOrder.finalPrice,
+
       };
       
       console.log("Final Order:", finalOrder);
@@ -57,13 +61,23 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
       if (!user?.id) {
         throw new Error("User document ID is missing.");
       }
+
+      //Process product-count
+        console.log('currentOderItems:', currentOrder.items);
+      // const orderItems = currentOrder.items.map(item => ({
+      //   ...item,
+      //   productCountId: item.productCountId ? item.productCountId.map(p => ({ productCountId: p.id })) : []
+      // }));
+      const productCountIds = await handleProductCounts(currentOrder.items);
   
       // Process the order first
       const result = await processOrder({
         order: finalOrder,
         waiterId: user.id,
-        customerId: currentOrder.customerId || null,
         paymentMethod: currentOrder.paymentMethod || "",
+        productCountIds: Object.entries(productCountIds).map(([, productCountId]) => ({
+          productCountId,
+        })),
       });
   
       // Check if processOrder was successful

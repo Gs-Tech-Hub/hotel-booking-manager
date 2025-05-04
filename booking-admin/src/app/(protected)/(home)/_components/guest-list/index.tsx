@@ -63,18 +63,18 @@ export function GuestList({ className }: { className?: string }) {
   }, []);
 
   // Optional: badge color function for status
-  const getStatusBadge = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "checked-In":
-        return "bg-green-100 text-green-600";
-      case "pending":
-        return "bg-yellow-100 text-yellow-700";
-      case "cancelled":
-        return "bg-red-100 text-red-600";
-      default:
-        return "bg-gray-100 text-gray-600";
-    }
-  };
+  // const getStatusBadge = (status: string) => {
+  //   switch (status.toLowerCase()) {
+  //     case "checked-In":
+  //       return "bg-green-100 text-green-600";
+  //     case "pending":
+  //       return "bg-yellow-100 text-yellow-700";
+  //     case "cancelled":
+  //       return "bg-red-100 text-red-600";
+  //     default:
+  //       return "bg-gray-100 text-gray-600";
+  //   }
+  // };
 
   return (
     <div 
@@ -95,7 +95,6 @@ export function GuestList({ className }: { className?: string }) {
             <TableHead>Duration</TableHead>
             <TableHead>Check-in</TableHead>
             <TableHead>Check-out</TableHead>          
-            <TableHead>Status</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -114,15 +113,6 @@ export function GuestList({ className }: { className?: string }) {
               <TableCell>{guest.duration} night(s)</TableCell>
               <TableCell>{format(new Date(guest.checkin), "dd MMM yyyy")}</TableCell>
               <TableCell>{format(new Date(guest.checkout), "dd MMM yyyy")}</TableCell>
-              <TableCell>
-                <span
-                  className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${getStatusBadge(
-                    guest.status
-                  )}`}
-                >
-                  {guest.status}
-                </span>
-              </TableCell>
             </TableRow>
           ))}
         </TableBody>

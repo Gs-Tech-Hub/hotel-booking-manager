@@ -6,7 +6,7 @@ export async function handleBookingRecords(timeFrame: { startDate: string, endDa
     // Fetch booking data
     const bookingData = await strapiService.getBookings({
       populate: "*",
-      "pagination[pageSize]": 70,
+      "pagination[pageSize]": 100,
       "filters[createdAt][$gte]": timeFrame.startDate,
       "filters[createdAt][$lte]": timeFrame.endDate,
     });

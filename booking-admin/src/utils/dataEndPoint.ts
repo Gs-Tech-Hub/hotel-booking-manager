@@ -78,7 +78,7 @@ export const strapiService = {
   // Booking related methods
   async createBooking(bookingData: any) {
     const result = await apiHandlerInstance.createData({ 
-      endpoint: "bookings", 
+      endpoint: "boookings", 
       data: bookingData 
     });
     if (result.error) throw new Error(result.error);
@@ -88,6 +88,17 @@ export const strapiService = {
   async createOrGetBooking(bookingData: any) {
     const booking = await this.createBooking(bookingData);
     return booking.documentId;
+  },
+
+  // update booking
+  async updateBooking(bookingId: string | number, bookingData: any) {
+    const result = await apiHandlerInstance.updateData({ 
+      endpoint: "boookings", 
+      id: bookingId, 
+      updatedData: bookingData 
+    });
+    if (result.error) throw new Error(result.error);
+    return result.data;
   },
   
   //get bookings
@@ -347,7 +358,7 @@ async updateDrinksList(drinkId: string | number, drinkData: any) {
     const queryString = params
       ? '?' + new URLSearchParams(params as Record<string, string>).toString()
       : '';
-    const result = await apiHandlerInstance.fetchData(`users${queryString}`);
+    const result: { data?: any[]; error?: string } = await apiHandlerInstance.fetchData(`users${queryString}`);
     if (result.error) throw new Error(result.error);
     return result;
   },
@@ -408,10 +419,80 @@ async updateDrinksList(drinkId: string | number, drinkData: any) {
     if (result.error) throw new Error(result.error);
     return result.data;
   }, 
+
+  async getEmployeeOrders(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`employee-orders${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  } ,
+
+  async getEmployeeSummary(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`employee-summaries${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
+
+  async createEmployeeSummary(employeeData: any) {
+    const result = await apiHandlerInstance.createData({
+      endpoint: "employee-summaries",
+      data: employeeData,
+    });
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
+
+  async updateEmployeeSummary(employeeId: string | number, employeeData: any) {
+    const result = await apiHandlerInstance.updateData({
+      endpoint: "employee-summaries",
+      id: employeeId,
+      updatedData: employeeData, 
+    });
+    if (result.error) throw new Error(result.error);
+    return result.data;
+    },
+
+  //get rooms
+  async getRooms(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+    ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+    : '';
+    const result = await apiHandlerInstance.fetchData(`rooms${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
+
+  //create product count
+  async createProductCount(productCountData: any) {
+    const result = await apiHandlerInstance.createData({ 
+      endpoint: "product-counts", 
+      data: productCountData 
+    });
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
   
-  
-  
- 
+  getProductCounts(params?: Record<string, string | number | boolean>) {  
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    return apiHandlerInstance.fetchData(`product-counts${queryString}`);
+  },
+
+  //get job-application
+  async getJobApplications(params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`job-applications${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
   
   // Additional utility methods can be added here following the same pattern
 };
