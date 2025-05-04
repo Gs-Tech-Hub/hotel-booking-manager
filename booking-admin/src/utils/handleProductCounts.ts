@@ -7,14 +7,19 @@ export const handleProductCounts = async (items: CartItem[]) => {
 
   for (const item of items) {
     const data: any = {
-      product_count: item.quantity,
-    };
+      product_count: item.department === 'Games' ? item.count : item.quantity,
+        };
 
     if (item.department === 'Bar') {
       data.drink = { connect: item.id };
     } else if (item.department === 'Restaurant') {
       data.food_item = { connect: item.id };
-    } else {
+    } else if (item.department === 'Games') {
+      data.game = item.id; 
+    } else if (item.department === 'Hotel-Services') {
+      data.hotel_service = { connect: item.id };
+    }
+     else {
       console.warn(`Skipping item with unknown department: ${item.name}`);
       continue;
     }

@@ -7,6 +7,14 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/Auth/context/auth-context";
 import { processOrder } from "@/utils/processOrder";
 import { paymentMethods } from "@/app/stores/useOrderStore";
+import { handleProductCounts } from "@/utils/handleProductCounts";
+
+export interface GameItem {
+  count: number;
+  amount_paid: number;
+  amount_owed: number;
+  game_status: string;
+}
 
 interface AddGameModalProps {
   isOpen: boolean;
@@ -96,6 +104,8 @@ export function AddGameModal({
     try {
       setIsLoading(true);
 
+      let productCountIds: number[] = [];
+
       if (gameStatus === "completed") {
         const paymentMethodObj = paymentMethods.find(
           (method) => method.type === selectedPaymentMethod
@@ -106,6 +116,32 @@ export function AddGameModal({
           return;
         }
 
+        // Prepare the item for product count processing
+        const itemsForProductCount = [
+          {
+            id: defaultData?.id ?? 0,
+            documentId: defaultData?.documentId ?? "",
+            name: "Game Session - " + playerName,
+            price: 500,
+            quantity: count,
+            department: "Games",
+            count,
+            amount_paid: amountPaid,
+            amount_owed: amountOwed,
+            game_status: gameStatus,
+          },
+        ];
+
+        // Retrieve productCountIds
+        const productCounts = await handleProductCounts(itemsForProductCount);
+        productCountIds = Object.values(productCounts);
+
+        if (productCountIds.length === 0) {
+          toast.error("Failed to retrieve product count IDs.");
+          return;
+        }
+
+        // Process the order
         const response = await processOrder({
           order: {
             id: (defaultData?.id ?? 0).toString(),
@@ -116,20 +152,24 @@ export function AddGameModal({
             items: [
               {
                 id: defaultData?.id ?? 0,
-                documentId: defaultData?.documentId ?? '',
-                name: 'Game Session - ' + playerName,
+                documentId: defaultData?.documentId ?? "",
+                name: "Game Session - " + playerName,
                 price: 500 * count,
                 quantity: count,
-                department: 'Games',
-                available: 1
-              }
+                department: "Games",
+                available: 1,
+                count: count,
+                amount_paid: amountPaid,
+                amount_owed: amountOwed,
+                game_status: gameStatus,
+              },
             ],
-            status: payload.game_status === 'completed' ? 'completed' : 'active',
+            status: payload.game_status === "completed" ? "completed" : "active",
           },
           waiterId: user?.id || "",
           customerId: null,
           paymentMethod: paymentMethodObj,
-          productCountIds: [],
+          productCountIds: productCountIds.map((id) => ({ productCountId: id })),
         });
 
         if (!response.success) {
@@ -290,3 +330,5 @@ export function AddGameModal({
     />
   );
 }
+
+
