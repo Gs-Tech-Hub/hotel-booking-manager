@@ -7,22 +7,22 @@ type OverviewDataItem = {
 };
 
 type OverviewProps = {
-  views: OverviewDataItem;
-  profit: OverviewDataItem;
-  products: OverviewDataItem;
-  users: OverviewDataItem;
+  availableRooms: OverviewDataItem;
+  occupiedRooms: OverviewDataItem;
+  checkin: OverviewDataItem;
+  checkout: OverviewDataItem;
 
 };
 
-export function OverviewCardsGroup({ views, profit, products, users }: OverviewProps) {
+export function OverviewCardsGroup({ availableRooms, occupiedRooms, checkin, checkout }: OverviewProps) {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 2xl:gap-7.5">
       <OverviewCard
         label="Available Rooms"
         data={{
-          ...views,
-          value: compactFormat(views.value),
+          ...availableRooms,
+          value: compactFormat(availableRooms.value),
           date: 24
 
         }}
@@ -32,8 +32,8 @@ export function OverviewCardsGroup({ views, profit, products, users }: OverviewP
       <OverviewCard
         label="Occupied Rooms"
         data={{
-          ...profit,
-          value:  + compactFormat(profit.value),
+          ...occupiedRooms,
+          value:  + compactFormat(occupiedRooms.value),
           date: 24
 
         }}
@@ -43,8 +43,8 @@ export function OverviewCardsGroup({ views, profit, products, users }: OverviewP
       <OverviewCard
         label="Check In"
         data={{
-          ...products,
-          value: compactFormat(products.value),
+          ...checkin,
+          value: compactFormat(checkin.value),
           date: 24
 
         }}
@@ -54,8 +54,8 @@ export function OverviewCardsGroup({ views, profit, products, users }: OverviewP
       <OverviewCard
         label="Check Out"
         data={{
-          ...users,
-          value: compactFormat(users.value),
+          ...checkout,
+          value: compactFormat(checkout.value),
           date: 24
 
         }}
