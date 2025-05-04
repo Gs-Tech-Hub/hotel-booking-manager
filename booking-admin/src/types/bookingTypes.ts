@@ -19,6 +19,8 @@ export interface Room {
   }
   
   export interface Booking {
+    booking_status?: string;
+    createdAt?: string;
     checkin: string;
     checkout: string;
     guests: number;
