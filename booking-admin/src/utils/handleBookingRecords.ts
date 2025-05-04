@@ -1,3 +1,4 @@
+    /* eslint-disable */
 import { Booking } from "@/types/bookingTypes";
 import { strapiService } from "./dataEndPoint";
 
