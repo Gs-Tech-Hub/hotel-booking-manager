@@ -7,13 +7,15 @@ export const handleProductCounts = async (items: CartItem[]) => {
 
   for (const item of items) {
     const data: any = {
-      product_count: item.quantity,
-    };
+      product_count: item.department === 'Games' ? item.count : item.quantity,
+        };
 
     if (item.department === 'Bar') {
       data.drink = { connect: item.id };
     } else if (item.department === 'Restaurant') {
       data.food_item = { connect: item.id };
+    } else if (item.department === 'Games') {
+      data.games = item.id; // Accessing GameItem property
     } else {
       console.warn(`Skipping item with unknown department: ${item.name}`);
       continue;

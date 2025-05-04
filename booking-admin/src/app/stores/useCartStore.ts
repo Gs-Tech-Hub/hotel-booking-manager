@@ -7,13 +7,20 @@ export interface MenuItem {
   documentId: string;
   name: string;
   price: number;
-  available: number;
+  available?: number;
   quantity?: number; // Optional for initial state
   department?: string; // Optional for initial state
   productCountId?: [{id: number}];
 }
 
-export interface CartItem extends MenuItem {
+export interface GameItem {
+  count: number;
+  amount_paid: number;
+  amount_owed: number;
+  game_status: string;
+}
+
+export interface CartItem extends MenuItem, GameItem {
   quantity: number;
 }
 
@@ -39,7 +46,14 @@ export const useCartStore = create<CartState>()(
         };
       } else {
         return {
-          cartItems: [...state.cartItems, { ...item, quantity: 1 }],
+          cartItems: [...state.cartItems, { 
+            ...item, 
+            quantity: 1,
+            count: 0,
+            amount_paid: 0,
+            amount_owed: 0,
+            game_status: 'pending'
+          }],
         };
       }
     }),
