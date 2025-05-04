@@ -1,25 +1,17 @@
 "use client";
 
-import { PaymentsOverview } from "@/components/Charts/payments-overview";
-import { WeeksBooking } from "@/components/Charts/weeks-profit";
 import { TopChannelsSkeleton } from "@/components/Tables/top-channels/skeleton";
-import { createTimeFrameExtractor } from "@/utils/timeframe-extractor";
 import { Suspense, useEffect } from "react";
 import { OverviewCardsGroup } from "./_components/overview-cards";
 import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
 import { GuestList } from "@/app/(protected)/(home)/_components/guest-list";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/Auth/context/auth-context";
-import { TimeFrame } from "@/types";
 
 export default function Home() {
   const router = useRouter();
   const { user, defaultLandingPage, loading } = useAuth();
-  const searchParams = useSearchParams();
-
-  const selected_time_frame = searchParams.get("selected_time_frame");
-  const extractTimeFrame = createTimeFrameExtractor(selected_time_frame ?? "");
-
+  
   // 👇 Redirect based on role
   useEffect(() => {
     if (loading) return;
@@ -42,19 +34,6 @@ export default function Home() {
         />
       </Suspense>
 
-      <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-9 2xl:gap-7.5">
-        <PaymentsOverview
-          className="col-span-12 xl:col-span-7"
-          key={extractTimeFrame("payments_overview")}
-          timeFrame={extractTimeFrame("payments_overview")?.split(":")[1] as TimeFrame}
-        />
-
-        <WeeksBooking
-          key={extractTimeFrame("weeks_profit")}
-          timeFrame={extractTimeFrame("weeks_profit")?.split(":")[1]}
-          className="col-span-12 xl:col-span-5"
-        />
-      </div>
       
       <div className="mt-12 col-span-12 grid xl:col-span-8">
           <Suspense fallback={<TopChannelsSkeleton />}>

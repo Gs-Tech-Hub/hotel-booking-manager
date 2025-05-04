@@ -438,6 +438,25 @@ async updateDrinksList(drinkId: string | number, drinkData: any) {
     return result.data;
   },
 
+  async createEmployeeSummary(employeeData: any) {
+    const result = await apiHandlerInstance.createData({
+      endpoint: "employee-summaries",
+      data: employeeData,
+    });
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
+
+  async updateEmployeeSummary(employeeId: string | number, employeeData: any) {
+    const result = await apiHandlerInstance.updateData({
+      endpoint: "employee-summaries",
+      id: employeeId,
+      updatedData: employeeData, 
+    });
+    if (result.error) throw new Error(result.error);
+    return result.data;
+    },
+
   //get rooms
   async getRooms(params?: Record<string, string | number | boolean>) {
     const queryString = params

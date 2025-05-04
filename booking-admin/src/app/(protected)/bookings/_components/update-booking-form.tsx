@@ -116,24 +116,18 @@ const UpdateBookingForm: React.FC<UpdateBookingFormProps> = ({ booking, onSubmit
     <form onSubmit={handleSubmit} className="update-booking-form">
       {/* Booking Status */}
       <h3 className="text-lg font-semibold mt-6 mb-4">Booking Status</h3>
-      <Select
-        label="Booking Status"
-        value={formData.booking_status ?? undefined}
-        onChange={(e) =>
-          handleChange({
-            ...e,
-            target: { ...e.target, name: "booking_status" }, //  set the name
-          })
-        }
-        items={[
-          { label: "Cancelled", value: "cancelled" },
-          { label: "Pending", value: "pending" },
-          { label: "Checked In", value: "checkedin" },
-          { label: "Checked Out", value: "checkedout" },
-        ]}
-        className="mb-4"
-        placeholder="Select Booking Status"
-      />
+      <select
+        value={formData.booking_status ?? ""}
+        onChange={handleChange}
+        name="booking_status"
+        className="w-full p-2 border rounded mb-4" 
+      >
+        <option value="">Select Booking Status</option>
+        <option value="cancelled">Cancelled</option>
+        <option value="pending">Pending</option>
+        <option value="checkedin">Checked In</option>
+        <option value="checkedout">Checked Out</option>
+      </select>
 
       {/* Payment Details */}
       <h3 className="text-lg font-semibold mt-6 mb-4">Payment Details</h3>
@@ -173,14 +167,14 @@ const UpdateBookingForm: React.FC<UpdateBookingFormProps> = ({ booking, onSubmit
       />
 
       {/* Total Price */}
-      <InputGroup
+      {/* <InputGroup
         label="Total Price"
         type="number"
         name="totalPrice"
         value={formData.totalPrice.toString()}
         handleChange={handleChange}
         className="mb-4"
-      />
+      /> */}
 
       <Button
         label="Update Booking"

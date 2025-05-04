@@ -1,7 +1,12 @@
+/* eslint-disable */
+import { strapiService } from '@/utils/dataEndPoint';
 import React, { useState } from 'react';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
- interface AddEmployeeSummaryFormProps {
-  documentId?: string;
+interface AddEmployeeSummaryFormProps {
+  id?: number;
+  documentId: string;
   order_discount_total?: number;
   debt_shortage?: number;
   fines_debits?: number;
@@ -10,12 +15,11 @@ import React, { useState } from 'react';
   users_permissions_user?: {
     documentId: string;
   };
-  id?: string;
 }
 
 const AddEmployeeSummaryForm = ({ initialData = {} as AddEmployeeSummaryFormProps, onSubmit }: { initialData?: AddEmployeeSummaryFormProps, onSubmit: (data: AddEmployeeSummaryFormProps) => void }) => {
   const [form, setForm] = useState({
-    documentId: initialData.documentId || '',
+    id: initialData.id,
     order_discount_total: initialData.order_discount_total || 0,
     debt_shortage: initialData.debt_shortage || 0,
     fines_debits: initialData.fines_debits || 0,
@@ -23,15 +27,37 @@ const AddEmployeeSummaryForm = ({ initialData = {} as AddEmployeeSummaryFormProp
     salary_advanced_status: initialData.salary_advanced_status || 'pending',
     user_documentId: initialData.users_permissions_user?.documentId || '',
   });
+  console.log('initialData:', initialData);
 
   const handleChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
 
-  const handleSubmit = (e: { preventDefault: () => void; }) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    onSubmit(form);
+
+    try {
+      // Create a payload object excluding non-form fields
+      const payload = {
+        users_permissions_user: form.id,
+        order_discount_total: form.order_discount_total,
+        debt_shortage: form.debt_shortage,
+        fines_debits: form.fines_debits,
+        salary_advanced: form.salary_advanced,
+        salary_advanced_status: form.salary_advanced_status,
+      };
+
+      if (!form.id) {
+        throw new Error("Employee ID is required for updating");
+      }
+
+      const res = await strapiService.createEmployeeSummary(payload);
+      toast.success("Employee summary updated successfully!");
+      onSubmit(res);
+    } catch (error: any) {
+      toast.error(error.message || "An error occurred while updating the employee summary.");
+    }
   };
 
   return (

@@ -7,6 +7,7 @@ interface EmployeeDetails {
   salary_advanced_status?: 'pending' | 'approved' | 'rejected';
   users_permissions_user?: {
     documentId: string;
+    id?: number
   };
   id?: string;
 }

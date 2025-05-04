@@ -36,7 +36,7 @@ export default function UpdateCustomerBooking ({
                   booking={booking} 
                   onSubmit={handleSubmit} />
 
-                  <Button label="Close" onClick={onClose} />
+                  {/* <Button label="Close" onClick={onClose} /> */}
                 </>
               }
          />

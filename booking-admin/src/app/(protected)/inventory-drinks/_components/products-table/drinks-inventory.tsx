@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui-elements/button";
 import { Select } from "@/components/ui-elements/select";
 import { SelectItem } from "@/components/ui-elements/select-item";
 import { ProductsList, Product } from "./products-table";
