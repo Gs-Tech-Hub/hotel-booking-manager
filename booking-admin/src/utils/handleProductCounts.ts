@@ -16,7 +16,7 @@ export const handleProductCounts = async (items: CartItem[]) => {
       data.food_item = { connect: item.id };
     } else if (item.department === 'Games') {
       data.game = item.id; 
-    } else if (item.department === 'Hotel Services') {
+    } else if (item.department === 'Hotel-Services') {
       data.hotel_service = { connect: item.id };
     }
      else {
