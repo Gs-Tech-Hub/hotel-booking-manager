@@ -15,8 +15,11 @@ export const handleProductCounts = async (items: CartItem[]) => {
     } else if (item.department === 'Restaurant') {
       data.food_item = { connect: item.id };
     } else if (item.department === 'Games') {
-      data.games = item.id; // Accessing GameItem property
-    } else {
+      data.game = item.id; 
+    } else if (item.department === 'Hotel Services') {
+      data.hotel_service = { connect: item.id };
+    }
+     else {
       console.warn(`Skipping item with unknown department: ${item.name}`);
       continue;
     }
