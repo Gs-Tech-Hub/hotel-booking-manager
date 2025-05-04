@@ -98,12 +98,14 @@ export const NAV_DATA: NavSection[] = [
             url: "/hotel-services", 
             roles: ["admin", "bar"] 
           },
-          { 
-            title: "Sales Terminal", 
-            url: "/sales-terminal", 
-            roles: ["admin", "bar", "kitchen", "games", "receptionist", "manager"] 
-          },
         ],
+      },
+      { 
+        title: "POS Terminal", 
+        icon: Icons.POSTerminalIcon,
+        items: [],
+        url: "/sales-terminal", 
+        roles: ["admin", "bar", "kitchen", "games", "receptionist", "manager"] 
       },
       {
         title: "Rooms",
