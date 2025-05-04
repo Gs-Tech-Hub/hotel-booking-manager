@@ -4,7 +4,8 @@
   "info": {
     "singularName": "product-count",
     "pluralName": "product-counts",
-    "displayName": "product count"
+    "displayName": "product count",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -25,6 +26,16 @@
     },
     "total_amount": {
       "type": "integer"
+    },
+    "game": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::game.game"
+    },
+    "hotel_service": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::hotel-service.hotel-service"
     }
   }
 }

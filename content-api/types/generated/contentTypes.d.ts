@@ -1378,6 +1378,7 @@ export interface ApiProductCountProductCount
   extends Struct.CollectionTypeSchema {
   collectionName: 'product_counts';
   info: {
+    description: '';
     displayName: 'product count';
     pluralName: 'product-counts';
     singularName: 'product-count';
@@ -1393,6 +1394,11 @@ export interface ApiProductCountProductCount
     food_item: Schema.Attribute.Relation<
       'oneToOne',
       'api::food-item.food-item'
+    >;
+    game: Schema.Attribute.Relation<'oneToOne', 'api::game.game'>;
+    hotel_service: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::hotel-service.hotel-service'
     >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
