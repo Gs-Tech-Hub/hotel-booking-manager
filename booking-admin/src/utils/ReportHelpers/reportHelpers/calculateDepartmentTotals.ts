@@ -7,6 +7,8 @@ export interface DepartmentItem {
   name: string;
   price: number;
   quantity: number;
+  paymentMethods: string;
+  amountPaid: number;
 }
 
 export interface ProductCountItem {
@@ -21,7 +23,7 @@ export type SalesByProduct = Record<string, { units: number; amount: number }>;
 export const calculateDepartmentTotals = (
   groupedItems: Record<DepartmentKey, DepartmentItem[]>,
   productCountData: ProductCountItem[]
-): { updatedItems: DepartmentItem[]; salesByProduct: Array<{ name: string; units: number; amount: number }> } => {
+): { updatedItems: DepartmentItem[]; salesByProduct: Array<{ name: string; units: number; amount: number }>; paymentMethods: { cash: number; other: number } } => {
   const allItems: DepartmentItem[] = [];
 
   // Flatten all department items into a single list
@@ -46,7 +48,7 @@ export const calculateDepartmentTotals = (
   const groupedByName: Record<string, DepartmentItem[]> = {};
 
   allItems.forEach((item) => {
-    const safeName = item.name.trim().toLowerCase();  // Normalize item name (case insensitive)
+    const safeName = item.name.trim().toLowerCase(); // Normalize item name (case insensitive)
     if (!groupedByName[safeName]) groupedByName[safeName] = [];
     groupedByName[safeName].push(item);
   });
@@ -54,6 +56,7 @@ export const calculateDepartmentTotals = (
   // Reduce grouped items and calculate sales
   const updatedItems: DepartmentItem[] = [];
   const salesByProduct: Array<{ name: string; units: number; amount: number }> = [];
+  const paymentMethods = { cash: 0, other: 0 };
 
   Object.entries(groupedByName).forEach(([name, items]) => {
     const totalQuantity = items.reduce((sum, i) => sum + i.quantity, 0); // Sum up quantities
@@ -62,7 +65,7 @@ export const calculateDepartmentTotals = (
 
     updatedItems.push({
       ...base,
-      quantity: totalQuantity,  // Update quantity with the summed value
+      quantity: totalQuantity, // Update quantity with the summed value
     });
 
     // Push the sales data as an array of objects with name, units, and amount
@@ -71,7 +74,15 @@ export const calculateDepartmentTotals = (
       units: totalQuantity,
       amount,
     });
+
+    // Track payment methods (cash and other)
+    const paymentMethod = base.paymentMethods.toLowerCase();
+    if (paymentMethod === 'cash') {
+      paymentMethods.cash += amount;
+    } else {
+      paymentMethods.other += amount;
+    }
   });
 
-  return { updatedItems, salesByProduct };
+  return { updatedItems, salesByProduct, paymentMethods };
 };

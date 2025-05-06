@@ -8,6 +8,9 @@ interface DepartmentItem {
     name: string;
     price: number;
     quantity: number;
+    paymentMethods: string;
+    amountPaid: number;
+    
 }
 
 export const itemsByDepartment = (bookingItems: BookingItem[]): Record<DepartmentKey, DepartmentItem[]> => {
@@ -20,7 +23,7 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
     };
 
     for (const item of bookingItems) {
-        const { id, documentId, drinks, food_items, hotel_services, games, product_count } = item;
+        const { id, documentId, drinks, food_items, hotel_services, games, product_count, payment_type, amount_paid } = item;
 
         // Function to safely access product count
         const getProductCount = (i: number) => product_count?.[i]?.product_count ?? 1;
@@ -34,6 +37,8 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                     name: drink.name ?? 'Bar Item', // Fallback to 'Bar Item'
                     price: drink.price ?? 0, // Default to 0 if price is missing
                     quantity: getProductCount(i),
+                    paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
+                    amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
                 });
             });
         }
@@ -47,6 +52,9 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                     name: food.name ?? 'Restaurant Item', // Fallback to 'Restaurant Item'
                     price: food.price ?? 0, // Default to 0 if price is missing
                     quantity: getProductCount(i),
+                    paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
+                    amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
+
                 });
             });
         }
@@ -60,6 +68,10 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                     name: svc.name ?? 'Hotel Service', // Fallback to 'Hotel Service'
                     price: svc.price ?? 0, // Default to 0 if price is missing
                     quantity: getProductCount(i),
+                    paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
+                    amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
+
+
                 });
             });
         }
@@ -73,6 +85,10 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                     name: game.name ?? 'Game', // Fallback to 'Game'
                     price: game.amount_paid ?? 0, // Default to 0 if price is missing
                     quantity: getProductCount(i),
+                    paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
+                    amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
+
+
                 });
             });
         }
@@ -91,6 +107,8 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                 name: item.payment_type?.types ?? 'Account', // Fallback to 'Account'
                 price: item.amount_paid,
                 quantity: 1,
+                paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
+                amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
             });
         }
     }

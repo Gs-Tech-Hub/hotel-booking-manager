@@ -1,4 +1,5 @@
 import { handleDepartmentRecord, OverviewCardData } from "@/utils/handleDepartmentRecord";
+import { handleMainRecord } from "@/utils/ReportHelpers/mainHandle";
 
 export async function getAllDepartmentOverviews(startDate: string, endDate: string) {
   try {
@@ -6,32 +7,18 @@ export async function getAllDepartmentOverviews(startDate: string, endDate: stri
 
     // Batch 1: Bar and Restaurant
     const [bar, restaurant] = await Promise.all([
-      handleDepartmentRecord(startDate, endDate, "bar_services", {
-        inventoryEndpoint: "getBookingItems",
-        departmentStockField: "bar_stock",
-        otherStockField: "restaurant_stock",
-      }),
-      handleDepartmentRecord(startDate, endDate, "restaurant_services", {
-        inventoryEndpoint: "getFoodItems",
-        departmentStockField: "restaurant_stock",
-        otherStockField: "bar_stock",
-      }),
+      handleMainRecord(startDate, endDate, "bar"
+    ),
+      handleMainRecord(startDate, endDate, "restaurant"
+      ),
     ]);
     console.log("Batch 1 Loaded: Bar and Restaurant");
 
     // Batch 2: Hotel and Games
     const [hotel, games] = await Promise.all([
-      handleDepartmentRecord(startDate, endDate, "hotel_services", {
-        inventoryEndpoint: "getBookingItems",
-        departmentStockField: "hotel_stock",
-        otherStockField: "bar_stock",
-      }),
-      handleDepartmentRecord(startDate, endDate, "Games", {
-        inventoryEndpoint: "getBookingItems",
-        departmentStockField: "available_sessions",
-        otherStockField: "available_sessions",
-        fetchInventory: false,
-      }),
+      handleMainRecord(startDate, endDate, "hotel" ),
+
+      handleMainRecord(startDate, endDate, "games" ),
     ]);
     console.log("Batch 2 Loaded: Hotel and Games");
 

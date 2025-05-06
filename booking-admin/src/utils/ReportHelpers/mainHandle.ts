@@ -28,6 +28,25 @@ export interface ExtendedProduct extends Product {
   showProfit?: boolean;
 }
 
+async function fetchPaginatedData(fetchFunction: Function, params: any): Promise<any[]> {
+  let page = 1;
+  const pageSize = 50; // Adjust page size as needed
+  let allData: any[] = [];
+  let hasMoreData = true;
+
+  while (hasMoreData) {
+    const response = await fetchFunction({ ...params, "pagination[page]": page, "pagination[pageSize]": pageSize });
+    if (response && response.length > 0) {
+      allData = allData.concat(response);
+      page++;
+    } else {
+      hasMoreData = false;
+    }
+  }
+
+  return allData;
+}
+
 export async function handleMainRecord(
   startDate: string,
   endDate: string,
@@ -65,7 +84,7 @@ export async function handleMainRecord(
     const { updatedItems: mergedGroupedItems } = mergedProductCount(groupedItems, productCountItems);
 
     // Aggregate totals and flatten
-    const { updatedItems: flatItems, salesByProduct } = calculateDepartmentTotals(mergedGroupedItems, productCountItems);
+    const { updatedItems: flatItems, salesByProduct, paymentMethods } = calculateDepartmentTotals(mergedGroupedItems, productCountItems);
 
     console.log("Aggregated Items:", flatItems);
     console.log("Sales by Product:", salesByProduct);
@@ -74,8 +93,8 @@ export async function handleMainRecord(
     const totalAmount = flatItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
     const overviewBase = {
-      cashSales: 0, // Add logic here if needed
-      totalTransfers: 0, // Add logic here if needed
+      cashSales: paymentMethods.cash,
+      totalTransfers: paymentMethods.other,
       totalSales: totalAmount,
       totalUnits,
       totalProfit: 0, // calculated below
@@ -96,10 +115,11 @@ export async function handleMainRecord(
       : [];
 
     const products: ExtendedProduct[] = inventoryData.map((product: any) => {
-      const sales = salesByProduct[product.name] || {
+      const sales = salesByProduct.find((p) => p.name === product.name) || {
         units: 0,
         amount: 0,
       };
+
 
       const profit = sales.amount - (Number(product.price) * sales.units);
 

@@ -5,6 +5,8 @@ export interface DepartmentItem {
   name: string;
   price: number;
   quantity: number;
+  paymentMethods: string;
+  amountPaid: number;
 }
 
 interface ProductCountItem {

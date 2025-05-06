@@ -16,6 +16,7 @@ export const generateFilters = (
 
   const baseFilters = {
     "populate": "*",
+    "pagination[pageSize]": "100",
     "filters[createdAt][$gte]": formatDateRange(startDate),
     "filters[createdAt][$lte]": formatDateRange(endDate, true),
   };
