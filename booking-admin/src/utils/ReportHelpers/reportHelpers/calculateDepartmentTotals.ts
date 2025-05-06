@@ -58,7 +58,7 @@ export const calculateDepartmentTotals = (
   const salesByProduct: Array<{ name: string; units: number; amount: number }> = [];
   const paymentMethods = { cash: 0, other: 0 };
 
-  Object.entries(groupedByName).forEach(([name, items]) => {
+  Object.entries(groupedByName).forEach(([, items]) => {
     const totalQuantity = items.reduce((sum, i) => sum + i.quantity, 0); // Sum up quantities
     const base = items[0]; // Preserve other fields from one item
     const amount = totalQuantity * base.price; // Calculate total amount

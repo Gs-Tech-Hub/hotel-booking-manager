@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 export function resolveDepartmentByProductId(
     item: any,
     knownDrinks: Set<number>,

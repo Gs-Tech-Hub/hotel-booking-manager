@@ -1,4 +1,4 @@
-import { handleDepartmentRecord, OverviewCardData } from "@/utils/handleDepartmentRecord";
+import { OverviewCardData } from "@/utils/handleDepartmentRecord";
 import { handleMainRecord } from "@/utils/ReportHelpers/mainHandle";
 
 export async function getAllDepartmentOverviews(startDate: string, endDate: string) {

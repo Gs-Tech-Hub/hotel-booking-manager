@@ -55,7 +55,7 @@ export const NAV_DATA: NavSection[] = [
           {
             title: "Order List",
             url: "/account-summary/order-items",
-            roles: ["admin"],
+            roles: ["super-admin"],
           },
         ],
       },

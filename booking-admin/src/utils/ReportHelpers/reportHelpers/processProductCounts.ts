@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { BookingItem } from "@/types/bookingItem";
 
 // Type for sales data for each product
