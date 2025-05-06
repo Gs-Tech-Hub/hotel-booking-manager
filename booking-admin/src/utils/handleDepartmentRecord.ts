@@ -23,15 +23,42 @@ export interface ExtendedProduct extends Product {
   showProfit?: boolean;
 }
 
-// Helper function to process product counts
+function formatDateRange(date: string, endOfDay = false): string {
+  const d = new Date(date);
+  if (endOfDay) d.setHours(23, 59, 59, 999);
+  else d.setHours(0, 0, 0, 0);
+  return d.toISOString();
+}
+
+function getPopulateFieldsByDepartment(department: string) {
+  const base = {
+    "populate[product_count][populate]": "*",
+    "[payment_type][populate]": "*"
+  };
+
+  switch (department) {
+    case "bar_services":
+      return { ...base, "[drinks][populate]": "*" };
+    case "restaurant_services":
+      return { ...base, "[food_items][populate]": "*" };
+    case "hotel_services":
+      return { ...base, "[hotel_services][populate]": "*" };
+    case "Games":
+      return { ...base, "[games][populate]": "*" };
+    default:
+      return base;
+  }
+}
+
 function processProductCount(
   productCount: any,
   department: string,
   item: any,
-  salesByProduct: Record<string, { units: number; amount: number }>,
+  salesByProduct: Record<string, { units: number; amount: number }> = {},
   paymentMethod: string,
   totals: { cashSales: number; totalTransfers: number; totalUnits: number; totalAmount: number; departmentSales: number }
 ) {
+  console.log("Processing product count:", productCount);
   const relatedProduct =
     productCount.drinks ||
     productCount.food_item ||
@@ -39,11 +66,9 @@ function processProductCount(
     productCount.games;
 
   const matchedDocumentId = relatedProduct?.documentId;
+  console.log("Matched Document ID:", matchedDocumentId);
 
-  if (!matchedDocumentId) {
-    console.warn(`No related product found in product_count ID: ${productCount.id}`);
-    return;
-  }
+  if (!matchedDocumentId) return;
 
   const product =
     (department === "bar_services" && item.drinks?.find((p: any) => p.documentId === matchedDocumentId)) ||
@@ -51,18 +76,14 @@ function processProductCount(
     (department === "hotel_services" && item.hotel_services?.find((p: any) => p.documentId === matchedDocumentId)) ||
     (department === "Games" && item.games?.find((p: any) => p.documentId === matchedDocumentId));
 
-  if (!product) {
-    console.warn(`No matching product found for documentId: ${matchedDocumentId} in department: ${department}`);
-    return;
-  }
+  console.log("Found product:", product);
+
+  if (!product) return;
 
   const unitPrice = product.price || 0;
   const count = productCount.product_count;
   const itemAmount = unitPrice * count;
 
-  console.log(`Matched Product: ${product.name} | Count: ${count} | Unit Price: ${unitPrice} | Item Amount: ${itemAmount}`);
-
-  // Update totals
   totals.totalUnits += count;
   totals.totalAmount += itemAmount;
 
@@ -77,10 +98,9 @@ function processProductCount(
   if (!salesByProduct[product.documentId]) {
     salesByProduct[product.documentId] = { units: 0, amount: 0 };
   }
+
   salesByProduct[product.documentId].units += count;
   salesByProduct[product.documentId].amount += itemAmount;
-
-  console.log(`Updated Sales for Product: ${product.name} | Total Units: ${salesByProduct[product.documentId].units} | Total Amount: ${salesByProduct[product.documentId].amount}`);
 }
 
 export async function handleDepartmentRecord(
@@ -98,28 +118,44 @@ export async function handleDepartmentRecord(
   overview: OverviewCardData;
   products: ExtendedProduct[];
   paymentDetailsByOrder: Record<string, { paymentMethod: string; amountPaid: number }>;
-  drinksList?: { name: string; count: number }[]; // Added drinksList as an optional property
+  drinksList?: { name: string; count: number }[];
 }> {
   const { inventoryEndpoint, departmentStockField, otherStockField } = options;
 
   try {
-    const bookingItems = await strapiService.getBookingItems({
-      "pagination[pageSize]": 200,
+    const filters: {
+      "pagination[pageSize]": number;
+      "filters[createdAt][$gte]": string;
+      "filters[createdAt][$lte]": string;
+      "populate[product_count][populate]": string;
+      "[drinks][populate]": string;
+      "[food_items][populate]": string;
+      "[hotel_services][populate]": string;
+      "[games][populate]": string;
+      "filters[drinks][$ne]"?: string;
+      "filters[food_items][$ne]"?: string;
+      "filters[hotel_services][$ne]"?: string;
+      "filters[games][$ne]"?: string;
+      "filters[product_count][department][$eq]": string;
+      "filters[product_count][product_count][$notNull]": string;
+    } = {
+      "pagination[pageSize]": 100,
       "filters[createdAt][$gte]": formatDateRange(startDate),
       "filters[createdAt][$lte]": formatDateRange(endDate, true),
-      "populate": "*",
-    });
+      "populate[product_count][populate]": "*",
+      "[drinks][populate]": "*",
+      "[food_items][populate]": "*",
+      "[hotel_services][populate]": "*",
+      "[games][populate]": "*",
+      "filters[product_count][department][$eq]": `${department}`,
+      "filters[product_count][product_count][$notNull]": "true",
+    };
 
-    console.log("Fetched Booking Items:", bookingItems);
+    console.log("Fetching booking items with filters:", filters);
 
-    const allDrinks = bookingItems
-      .filter((item: any) => Array.isArray(item.drinks) && item.drinks.length > 0) // Filter items with drinks
-      .flatMap((item: any) => item.drinks.map((drink: any) => ({
-        name: drink.name || "Unnamed Drink",
-        count:  drink.quantity || 0,
-      }))); // Map and flatten drinks into a single array
+    const bookingItems = await strapiService.getBookingItems(filters);
 
-    console.log("Combined Drinks List:", allDrinks);
+    console.log("Fetched booking items:", bookingItems);
 
     let cashSales = 0;
     let totalTransfers = 0;
@@ -133,27 +169,27 @@ export async function handleDepartmentRecord(
     const totals = { cashSales, totalTransfers, totalUnits, totalAmount, departmentSales };
 
     for (const item of bookingItems) {
+      console.log("Processing booking item:", item);
       const paymentMethod = item.payment_type?.types?.trim()?.toLowerCase() || "unknown";
       const amountPaid = item.amount_paid || 0;
 
       paymentDetailsByOrder[item.id] = { paymentMethod, amountPaid };
 
       if (department === "Games" && Array.isArray(item.games) && item.games.length > 0) {
-        // Handle games differently by aggregating `amount_paid`
         for (const game of item.games) {
+          console.log("Processing game:", game);
           const gameAmount = game.amount_paid || 0;
           totals.totalAmount += gameAmount;
           totals.departmentSales += gameAmount;
-
-          console.log(`Game Amount Paid: ${gameAmount} | Total Amount: ${totals.totalAmount}`);
         }
       } else if (Array.isArray(item.product_count) && item.product_count.length > 0) {
-        // Process items with product_count
+        console.log("Processing product_count:", item.product_count);
         for (const pcEntry of item.product_count) {
-          const relatedData = await strapiService.getProductCounts({
-            "filters[id][$eq]": pcEntry.id,
-            "populate": "*",
+          const relatedData = await strapiService.getBookingItems({
+            "populate[product_count]": "*",
           });
+
+          console.log("Fetched related data for product_count:", relatedData);
 
           const productCount = relatedData?.data?.[0];
           if (!productCount) {
@@ -161,10 +197,13 @@ export async function handleDepartmentRecord(
             continue;
           }
 
+          const childCounts = productCount.relatedChildData?.reduce((sum: any, child: { count: any; }) => sum + (child.count || 0), 0) || 0;
+          productCount.product_count = childCounts;
+
           processProductCount(productCount, department, item, salesByProduct, paymentMethod, totals);
         }
       } else {
-        // Fallback for items without product_count
+        console.log("Processing individual product:", item);
         const count = item.quantity || 0;
         const product =
           (department === "bar_services" && item.drinks?.[0]) ||
@@ -172,15 +211,10 @@ export async function handleDepartmentRecord(
           (department === "hotel_services" && item.hotel_services?.[0]) ||
           (department === "Games" && item.games?.[0]);
 
-        if (!product) {
-          console.warn(`No associated product found for item in department: ${department}`);
-          continue;
-        }
+        if (!product) continue;
 
         const unitPrice = product.price || 0;
         const itemAmount = unitPrice * count;
-
-        console.log(`Fallback Product: ${product.name} | Count: ${count} | Unit Price: ${unitPrice} | Item Amount: ${itemAmount}`);
 
         totals.totalUnits += count;
         totals.totalAmount += itemAmount;
@@ -196,17 +230,15 @@ export async function handleDepartmentRecord(
         if (!salesByProduct[product.documentId]) {
           salesByProduct[product.documentId] = { units: 0, amount: 0 };
         }
+
         salesByProduct[product.documentId].units += count;
         salesByProduct[product.documentId].amount += itemAmount;
-
-        console.log(`Updated Sales for Fallback Product: ${product.name} | Total Units: ${salesByProduct[product.documentId].units} | Total Amount: ${salesByProduct[product.documentId].amount}`);
       }
     }
 
     ({ cashSales, totalTransfers, totalUnits, totalAmount, departmentSales } = totals);
 
-    console.log("Sales by Product:", salesByProduct);
-    console.log("Payment Details by Order:", paymentDetailsByOrder);
+    console.log("Total sales data:", totals);
 
     let inventory: any[] = [];
     if (fetchInventory) {
@@ -218,8 +250,9 @@ export async function handleDepartmentRecord(
         {} as any,
         {} as any
       );
-      console.log("Fetched Inventory:", inventory);
     }
+
+    console.log("Fetched inventory data:", inventory);
 
     const products: ExtendedProduct[] = inventory.map((product: any) => {
       const sales = salesByProduct[product.documentId] || { units: 0, amount: 0 };
@@ -256,24 +289,13 @@ export async function handleDepartmentRecord(
       gameSales: department === "Games" ? departmentSales : 0,
     };
 
-    console.log("Overview Data:", overview);
+    console.log("Final overview data:", overview);
 
-    // Return drinksList only for bar_services
     return department === "bar_services"
-      ? { overview, products, paymentDetailsByOrder, drinksList: allDrinks }
+      ? { overview, products, paymentDetailsByOrder}
       : { overview, products, paymentDetailsByOrder };
   } catch (error) {
     console.error("Error in handleDepartmentRecord:", error);
     throw error;
   }
-}
-
-function formatDateRange(date: string, endOfDay = false): string {
-  const d = new Date(date);
-  if (endOfDay) {
-    d.setHours(23, 59, 59, 999);
-  } else {
-    d.setHours(0, 0, 0, 0);
-  }
-  return d.toISOString();
 }

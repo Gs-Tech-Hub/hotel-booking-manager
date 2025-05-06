@@ -6,6 +6,7 @@ import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
 import { ProductsListSkeleton } from "./_components/products-table/skeleton";
 import DrinksInventoryPage from "./_components/products-table/drinks-inventory";
 import { handleDepartmentRecord } from "@/utils/handleDepartmentRecord";
+import { handleMainRecord } from "@/utils/ReportHelpers/mainHandle";
 
 interface ProductData {
   name: string;
@@ -71,14 +72,15 @@ export default function Products() {
       try {
         console.log("Fetching data for date:", selectedDateRange.startDate);
 
-        const { overview, products } = await handleDepartmentRecord(
+        const { overview, products } = await handleMainRecord(
           selectedDateRange.startDate,
           selectedDateRange.endDate,
-          "restaurant_services",
+          "restaurant",
           {
             inventoryEndpoint: "getFoodItems",
             departmentStockField: "bar_stock",
             otherStockField: "restaurant_stock",
+            fetchInventory: true,
           }
         );
 

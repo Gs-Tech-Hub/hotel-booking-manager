@@ -11,11 +11,13 @@ export interface OrderItem {
   paymentMethod?: string;
   department?: string;
   menu_category?: string;
-  productCountId: {productCountId: number }[];
+  productCountId?: { productCountId: number }[];
 }
 
 interface ConnectedItem {
   id: string;
+  documentId?: string;
+  bar_stock?: number;
 }
 
 export const processOrder = async ({
@@ -23,13 +25,12 @@ export const processOrder = async ({
   waiterId,
   customerId = null,
   paymentMethod,
-  productCountIds,
 }: {
   order: Order;
   waiterId: string;
   customerId?: string | null;
   paymentMethod: PaymentMethod;
-  productCountIds: { productCountId: number }[];
+  productCountIds: {productCountId: number }[];
 }) => {
   try {
     console.log('Starting order processing...', order);
@@ -40,11 +41,10 @@ export const processOrder = async ({
     const itemsByDepartment = order.items.reduce((acc, item) => {
       const dept = item.department || 'General';
       if (!acc[dept]) acc[dept] = [];
-      const formattedItem = {
+      acc[dept].push({
         ...item,
-        productCountId: item.productCountId ? item.productCountId.map(pc => ({ productCountId: pc.id })) : []
-      };
-      acc[dept].push(formattedItem);
+        productCountId: item.productCountId?.map(pc => ({ productCountId: pc.id })) || [],
+      });
       return acc;
     }, {} as { [key: string]: OrderItem[] });
 
@@ -54,92 +54,82 @@ export const processOrder = async ({
       type: string
     ): Promise<ConnectedItem[]> => {
       const ids: ConnectedItem[] = [];
-      console.log(`Fetching data for type: ${type}`, items);
 
       for (const item of items) {
         const res = await fetchFn({ 'filters[documentId][$eq]': item.documentId });
-        console.log(`Response for ${type} with documentId ${item.documentId}:`, res);
-        
         const found = res?.[0];
-        if (!found) {
-          console.error(`${type} not found: ${item.documentId}`);
-          throw new Error(`${type} not found: ${item.documentId}`);
-        }
+        if (!found) throw new Error(`${type} not found: ${item.documentId}`);
 
-        if (order.discountPrice && order.selectedStaffId) {
-          const discountPayload: any = {
+        const correctId = found.id;
+
+        // Only one employee order per department if discount applies
+        if (order.discountPrice && order.selectedStaffId && !employeeOrders.some(e => e[type])) {
+          employeeOrders.push({
             discount_amount: order.discountPrice,
             total: order.totalAmount,
             amount_paid: order.finalPrice,
             users_permissions_user: { connect: { id: order.selectedStaffId } },
-          };
-          discountPayload[type] = { connect: { id: found.id } };
-
-          console.log(`Adding employee order for ${type}:`, discountPayload);
-          employeeOrders.push(discountPayload);
-        } else {
-          console.log(`Skipping employee order for ${type}: missing discount or staff ID`);
+            [type]: { connect: { id: correctId } },
+          });
         }
 
-        ids.push({ id: found.id });
-        console.log(`Collected ID for ${type}:`, found.id);
+        ids.push({ id: correctId, documentId: found.documentId, bar_stock: found.bar_stock });
       }
-      
 
-      console.log(`Final collected IDs for ${type}:`, ids);
       return ids;
     };
 
     let totalOrderAmount = 0;
 
     for (const [department, items] of Object.entries(itemsByDepartment)) {
-      console.log(`Processing department: ${department}`);
-
       const deptTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
       totalOrderAmount += deptTotal;
 
       let drinks: ConnectedItem[] | null = null;
       let food_items: ConnectedItem[] | null = null;
       let hotel_services: ConnectedItem[] | null = null;
-      let ProductCounts: { productCountId: number }[] = productCountIds.map(item => ({ productCountId: item.productCountId })); 
+
+      // Filter and sanitize productCountIds for this department
+      const departmentProductCounts = items
+        .flatMap(item => item.productCountId || [])
+        .filter(pc => typeof pc.productCountId === 'number');
+
+      if (!departmentProductCounts.length) {
+        throw new Error(`No valid product_count IDs provided for ${department} booking item.`);
+      }
 
       if (department === 'Bar') {
         drinks = await fetchAndCollect(items, strapiService.getDrinksList, 'drinks');
-      }
 
-      if (department === 'Restaurant') {
+        // Deduct bar stock
+        for (const item of items) {
+          const drink = drinks.find(d => d.documentId === item.documentId);
+          if (drink) {
+            const newStock = (drink.bar_stock ?? 0) - item.quantity;
+            if (newStock < 0) throw new Error(`Not enough stock for drink: ${item.name}`);
+            await strapiService.updateDrinksList(drink.id, { bar_stock: newStock });
+          }
+        }
+      } else if (department === 'Restaurant') {
         food_items = await fetchAndCollect(items, strapiService.getFoodItems, 'food_items');
-      }
-
-      if (department === 'Hotel-Services') {
+      } else if (department === 'Hotel-Services') {
         hotel_services = await fetchAndCollect(items, strapiService.getHotelServices, 'hotel_services');
-      }
-
-      // Extract product_count IDs from props
-      productCountIds = items
-        .flatMap((item) => item.productCountId || [])
-        .map((pc) => ({ productCountId: pc.productCountId })); // Extract the correct productCountId
-
-      console.log('Extracted product_count IDs:', ProductCounts);
-
-      if (!ProductCounts || ProductCounts.length === 0) {
-        throw new Error('No valid product_count IDs provided for booking item.');
       }
 
       const bookingItemPayload = {
         quantity: items.reduce((sum, item) => sum + item.quantity, 0),
         drinks,
         food_items,
-        product_count: { connect: ProductCounts.map(pc => ({ id: pc.productCountId })) }, // Connect correct product_count IDs
+        product_count: { connect: departmentProductCounts.map(pc => ({ id: pc.productCountId })) },
         hotel_services,
         amount_paid: deptTotal,
         payment_type: paymentMethod.id,
-        status: "completed",
+        status: 'completed',
         menu_category: null,
+        single_orders: items.map(item => ({ connect: { id: item.id } })), // Ensure item.id is Strapi ID
       };
 
       const bookingItemRes = await strapiService.createBookingItem(bookingItemPayload);
-      console.log(`Created booking item for ${department}:`, bookingItemRes);
       bookingItems.push({ id: bookingItemRes.id });
     }
 
@@ -154,18 +144,12 @@ export const processOrder = async ({
     const orderRes = await strapiService.post('orders', orderPayload);
     console.log('Order created:', orderRes);
 
-    if (employeeOrders.length > 0) {
-      for (const empOrder of employeeOrders) {
-        if (empOrder) {
-          await strapiService.createEmployeeOrder(empOrder);
-          console.log('Employee order created:', empOrder);
-        }
-      }
+    for (const empOrder of employeeOrders) {
+      await strapiService.createEmployeeOrder(empOrder);
     }
 
-    // Ensure all employee orders were processed
     if (order.discountPrice && employeeOrders.length === 0) {
-      throw new Error('Order processing failed: Discount price exists but no employee orders were created.');
+      throw new Error('Order processing failed: Discount exists but no employee orders created.');
     }
 
     return { success: true, orderId: orderRes.documentId };
