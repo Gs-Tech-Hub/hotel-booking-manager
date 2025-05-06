@@ -20,18 +20,24 @@ export interface Drink {
 export interface FoodItem {
     id: number;
     name: string;
+    price: number;
+
     // Add more fields as needed
 }
 
 export interface HotelService {
     id: number;
     name: string;
+    price: number;
+
     // Add more fields as needed
 }
 
 export interface Game {
     id: number;
     name: string;
+    amount_paid: number;
+
     // Add more fields as needed
 }
 

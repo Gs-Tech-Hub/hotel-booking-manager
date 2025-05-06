@@ -31,7 +31,7 @@ export interface ExtendedProduct extends Product {
 export async function handleMainRecord(
   startDate: string,
   endDate: string,
-  department: "bar" | "restaurant" | "hotel" | "game",
+  department: "bar" | "restaurant" | "hotel" | "games",
   options: {
     inventoryEndpoint: keyof typeof strapiService;
     departmentStockField: string;
@@ -88,7 +88,7 @@ export async function handleMainRecord(
     if (department === "bar") overviewBase.barSales = totalAmount;
     if (department === "restaurant") overviewBase.foodSales = totalAmount;
     if (department === "hotel") overviewBase.hotelSales = totalAmount;
-    if (department === "game") overviewBase.gameSales = totalAmount;
+    if (department === "games") overviewBase.gameSales = totalAmount;
 
     // Optional inventory fetch
     const inventoryData = fetchInventory
@@ -96,7 +96,7 @@ export async function handleMainRecord(
       : [];
 
     const products: ExtendedProduct[] = inventoryData.map((product: any) => {
-      const sales = salesByProduct[`${product.documentId}-${String(product.name).trim().toLowerCase()}`] || {
+      const sales = salesByProduct[product.name] || {
         units: 0,
         amount: 0,
       };
@@ -114,7 +114,7 @@ export async function handleMainRecord(
         isBar: department === "bar",
         isRestaurant: department === "restaurant",
         isHotel: department === "hotel",
-        isGame: department === "game",
+        isGame: department === "games",
         showStock: true,
         showProfit: true,
         type: product.type || "",

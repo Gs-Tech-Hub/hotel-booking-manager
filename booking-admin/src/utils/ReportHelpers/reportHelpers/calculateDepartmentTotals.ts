@@ -21,7 +21,7 @@ export type SalesByProduct = Record<string, { units: number; amount: number }>;
 export const calculateDepartmentTotals = (
   groupedItems: Record<DepartmentKey, DepartmentItem[]>,
   productCountData: ProductCountItem[]
-): { updatedItems: DepartmentItem[]; salesByProduct: SalesByProduct } => {
+): { updatedItems: DepartmentItem[]; salesByProduct: Array<{ name: string; units: number; amount: number }> } => {
   const allItems: DepartmentItem[] = [];
 
   // Flatten all department items into a single list
@@ -42,33 +42,35 @@ export const calculateDepartmentTotals = (
     }
   });
 
-  // Group and sum up quantities for identical items
-  const groupedByKey: Record<string, DepartmentItem[]> = {};
+  // Group and sum up quantities for identical items (group by name, not documentId)
+  const groupedByName: Record<string, DepartmentItem[]> = {};
 
   allItems.forEach((item) => {
-    const key = `${item.documentId}-${item.name.trim().toLowerCase()}`;
-    if (!groupedByKey[key]) groupedByKey[key] = [];
-    groupedByKey[key].push(item);
+    const safeName = item.name.trim().toLowerCase();  // Normalize item name (case insensitive)
+    if (!groupedByName[safeName]) groupedByName[safeName] = [];
+    groupedByName[safeName].push(item);
   });
 
   // Reduce grouped items and calculate sales
   const updatedItems: DepartmentItem[] = [];
-  const salesByProduct: SalesByProduct = {};
+  const salesByProduct: Array<{ name: string; units: number; amount: number }> = [];
 
-  Object.entries(groupedByKey).forEach(([key, items]) => {
-    const totalQuantity = items.reduce((sum, i) => sum + i.quantity, 0);
-    const base = items[0]; // preserve other fields from one item
-    const amount = totalQuantity * base.price;
+  Object.entries(groupedByName).forEach(([name, items]) => {
+    const totalQuantity = items.reduce((sum, i) => sum + i.quantity, 0); // Sum up quantities
+    const base = items[0]; // Preserve other fields from one item
+    const amount = totalQuantity * base.price; // Calculate total amount
 
     updatedItems.push({
       ...base,
-      quantity: totalQuantity,
+      quantity: totalQuantity,  // Update quantity with the summed value
     });
 
-    salesByProduct[key] = {
+    // Push the sales data as an array of objects with name, units, and amount
+    salesByProduct.push({
+      name: base.name,
       units: totalQuantity,
       amount,
-    };
+    });
   });
 
   return { updatedItems, salesByProduct };

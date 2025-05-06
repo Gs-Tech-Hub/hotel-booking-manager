@@ -1,6 +1,6 @@
-import { BookingItem,  } from "@/types/bookingItem";
-type DepartmentKey = 'bar' | 'restaurant' | 'hotel' | 'games' | 'account';
+import { BookingItem } from "@/types/bookingItem";
 
+type DepartmentKey = 'bar' | 'restaurant' | 'hotel' | 'games' | 'account';
 
 interface DepartmentItem {
     id: number;
@@ -22,55 +22,62 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
     for (const item of bookingItems) {
         const { id, documentId, drinks, food_items, hotel_services, games, product_count } = item;
 
+        // Function to safely access product count
+        const getProductCount = (i: number) => product_count?.[i]?.product_count ?? 1;
+
+        // Process drinks
         if (drinks.length > 0) {
             drinks.forEach((drink, i) => {
                 itemsByDept.bar.push({
                     id,
                     documentId: item.bookings?.[0]?.id ?? documentId ?? null,
-                    name: drink.name,
-                    price: drink.price ?? 0,
-                    quantity: product_count?.[i]?.product_count ?? 1,
+                    name: drink.name ?? 'Bar Item', // Fallback to 'Bar Item'
+                    price: drink.price ?? 0, // Default to 0 if price is missing
+                    quantity: getProductCount(i),
                 });
             });
         }
 
+        // Process food items
         if (food_items.length > 0) {
             food_items.forEach((food, i) => {
                 itemsByDept.restaurant.push({
                     id,
                     documentId: item.bookings?.[0]?.id ?? documentId ?? null,
-                    name: food.name,
-                    price: 0, // Fill in if `food.price` is available
-                    quantity: product_count?.[i]?.product_count ?? 1,
+                    name: food.name ?? 'Restaurant Item', // Fallback to 'Restaurant Item'
+                    price: food.price ?? 0, // Default to 0 if price is missing
+                    quantity: getProductCount(i),
                 });
             });
         }
 
+        // Process hotel services
         if (hotel_services.length > 0) {
             hotel_services.forEach((svc, i) => {
                 itemsByDept.hotel.push({
                     id,
                     documentId: item.bookings?.[0]?.id ?? documentId ?? null,
-                    name: svc.name,
-                    price: 0, // Fill in if price available
-                    quantity: product_count?.[i]?.product_count ?? 1,
+                    name: svc.name ?? 'Hotel Service', // Fallback to 'Hotel Service'
+                    price: svc.price ?? 0, // Default to 0 if price is missing
+                    quantity: getProductCount(i),
                 });
             });
         }
 
+        // Process games
         if (games.length > 0) {
             games.forEach((game, i) => {
                 itemsByDept.games.push({
                     id,
                     documentId: item.bookings?.[0]?.id ?? documentId ?? null,
-                    name: game.name,
-                    price: 0, // Fill in if price available
-                    quantity: product_count?.[i]?.product_count ?? 1,
+                    name: game.name ?? 'Game', // Fallback to 'Game'
+                    price: game.amount_paid ?? 0, // Default to 0 if price is missing
+                    quantity: getProductCount(i),
                 });
             });
         }
 
-        // If item has amount_paid or no department matches, categorize under account
+        // Process account items (for payment)
         if (
             drinks.length === 0 &&
             food_items.length === 0 &&
@@ -81,7 +88,7 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
             itemsByDept.account.push({
                 id,
                 documentId: item.bookings?.[0]?.id ?? documentId ?? null,
-                name: item.payment_type?.types ?? 'Account',
+                name: item.payment_type?.types ?? 'Account', // Fallback to 'Account'
                 price: item.amount_paid,
                 quantity: 1,
             });

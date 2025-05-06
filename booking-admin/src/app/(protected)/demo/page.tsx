@@ -26,8 +26,8 @@ export default function DemoPage() {
 
   const [loadingStock, setLoadingStock] = useState(false);
   const [selectedDateRange, setSelectedDateRange] = useState({
-    startDate: pastWeekDateRanges[1].value,
-    endDate: pastWeekDateRanges[1].value,
+    startDate: pastWeekDateRanges[4].value,
+    endDate: pastWeekDateRanges[4].value,
   });
   const [records, setRecords] = useState<{ overview: OverviewCardData; products: ExtendedProduct[]; } | null>(null);
 
@@ -40,7 +40,7 @@ export default function DemoPage() {
         const result = await handleMainRecord(
           selectedDateRange.startDate,
           selectedDateRange.endDate,
-          "bar",
+          "games",
    
     );
 

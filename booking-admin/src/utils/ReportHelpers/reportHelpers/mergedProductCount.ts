@@ -35,10 +35,12 @@ export const mergedProductCount = (
 
     const safeName = typeof product.name === 'string' ? product.name.trim().toLowerCase() : '';
 
+    const itemName = safeName || department; // Fallback to department name if name is empty
+    
     const matchedItem = updatedItems[department].find(
       (item) =>
         item.documentId === product.documentId &&
-        item.name.trim().toLowerCase() === safeName
+      item.name?.trim().toLowerCase() === itemName.toLowerCase()
     );
 
     if (matchedItem) {
