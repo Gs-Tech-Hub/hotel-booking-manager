@@ -36,7 +36,7 @@ export const processOrder = async ({
       let hotel_services = null;
       let validatedItems: ValidatedItem[] = [];
 
-      if (department === 'Bar') {
+      if (department === 'bar') {
         // Step 1: Fetch drinks
         drinks = await fetchAndConnectItems(items, strapiService.getDrinksList, 'drinks', order, employeeOrders);
         validatedItems = (drinks || []).filter(
@@ -68,7 +68,7 @@ export const processOrder = async ({
         });
 
         bookingItems.push({ id: bookingItemRes.id });
-      } else if (department === 'Restaurant') {
+      } else if (department === 'restaurant') {
         food_items = await fetchAndConnectItems(items, strapiService.getFoodItems, 'food_items', order, employeeOrders);
         validatedItems = (food_items || []) as ValidatedItem[];
 
@@ -86,7 +86,7 @@ export const processOrder = async ({
         });
 
         bookingItems.push({ id: bookingItemRes.id });
-      } else if (department === 'Hotel-Services') {
+      } else if (department === 'hotel') {
         hotel_services = await fetchAndConnectItems(items, strapiService.getHotelServices, 'hotel_services', order, employeeOrders);
         validatedItems = (hotel_services || []) as ValidatedItem[];
 

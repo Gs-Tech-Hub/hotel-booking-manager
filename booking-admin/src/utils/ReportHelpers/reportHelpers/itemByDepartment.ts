@@ -99,7 +99,7 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
             itemsByDept.account.push({
                 id,
                 documentId: item.bookings?.[0]?.id ?? documentId ?? null,
-                name: item.payment_type?.types ?? 'Account', // Fallback to 'Account'
+                name: 'Account Payment', // Use a generic name for account items
                 price: item.amount_paid,
                 quantity: 1,
                 paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'

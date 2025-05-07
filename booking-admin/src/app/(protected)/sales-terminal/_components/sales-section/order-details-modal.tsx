@@ -6,8 +6,7 @@ import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
 import { processOrder } from "@/utils/processOrders/finalizeOrder";
 import { useAuth } from "@/components/Auth/context/auth-context"; // Assuming useAuth is imported
-import { handleProductCounts } from "@/utils/handleProductCounts";
-import { Order, PaymentMethod } from "@/types/order";
+import { Order,  } from "@/types/order";
 
 interface OrderDetailsModalProps {
   order: Order;
@@ -57,7 +56,7 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
 
       };
       
-      console.log("Final Order:", finalOrder);
+      // console.log("Final Order:", finalOrder);
   
       if (!user?.id) {
         throw new Error("User document ID is missing.");

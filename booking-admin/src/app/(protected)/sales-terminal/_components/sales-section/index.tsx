@@ -52,7 +52,7 @@ export default function POSLayout(props: PosMenuProps) {
     const { customerName, tableNumber, waiterId, items, discountPrice, finalPrice, selectedStaffId } = order;
 
     if (!customerName || !tableNumber || !waiterId || items.length === 0) {
-      console.error('Invalid order details');
+      // console.error('Invalid order details');
       return;
     }
 
@@ -73,7 +73,7 @@ export default function POSLayout(props: PosMenuProps) {
 
     setOrders([...orders, newOrder]);
     setActiveOrder(newOrder);
-    console.log('Order added to list:', newOrder);
+    // console.log('Order added to list:', newOrder);
   };
 
   return (
