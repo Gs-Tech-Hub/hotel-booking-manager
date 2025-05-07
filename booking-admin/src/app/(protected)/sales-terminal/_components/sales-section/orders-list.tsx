@@ -17,7 +17,7 @@ export default function OrdersList({
   const { displayedOrders } = useSortedOrders(orders, viewAll);
 
   const handleRemoveOrder = useCallback((id: string) => {
-    console.log("Removing order:", id);
+    // console.log("Removing order:", id);
     removeOrder(id);
   }, [removeOrder]);
 
@@ -30,7 +30,7 @@ export default function OrdersList({
   }, [onViewOrderDetails]);
 
   useEffect(() => {
-    console.log("📦 Current Orders in State:", orders);
+    // console.log("📦 Current Orders in State:", orders);
     orders.forEach((order, index) => {
       console.log(`Order #${index + 1}:`, order);
     });

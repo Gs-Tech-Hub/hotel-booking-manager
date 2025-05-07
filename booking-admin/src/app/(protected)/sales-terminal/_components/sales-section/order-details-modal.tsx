@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useOrderStore, Order, paymentMethods } from "@/app/stores/useOrderStore";
+import { useOrderStore, paymentMethods } from "@/app/stores/useOrderStore";
 import { Button } from "@/components/ui-elements/button";
 import { Modal } from "@/components/ui-elements/modal";
 import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
-import { processOrder } from "@/utils/processOrder";
+import { processOrder } from "@/utils/processOrders/finalizeOrder";
 import { useAuth } from "@/components/Auth/context/auth-context"; // Assuming useAuth is imported
-import { handleProductCounts } from "@/utils/handleProductCounts";
+import { Order,  } from "@/types/order";
 
 interface OrderDetailsModalProps {
   order: Order;
@@ -56,28 +56,24 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
 
       };
       
-      console.log("Final Order:", finalOrder);
+      // console.log("Final Order:", finalOrder);
   
       if (!user?.id) {
         throw new Error("User document ID is missing.");
       }
-
-      //Process product-count
-        console.log('currentOderItems:', currentOrder.items);
-      // const orderItems = currentOrder.items.map(item => ({
-      //   ...item,
-      //   productCountId: item.productCountId ? item.productCountId.map(p => ({ productCountId: p.id })) : []
-      // }));
-      const productCountIds = await handleProductCounts(currentOrder.items);
   
       // Process the order first
       const result = await processOrder({
-        order: finalOrder,
+        order: {
+          id: currentOrder.id,
+          customerName: currentOrder.customerName,
+          waiterId: currentOrder.waiterId || "",
+          items: currentOrder.items, // Use original items instead of normalized ones
+          status: currentOrder.status,
+          totalAmount: currentOrder.totalAmount
+        },
         waiterId: user.id,
         paymentMethod: currentOrder.paymentMethod || "",
-        productCountIds: Object.entries(productCountIds).map(([, productCountId]) => ({
-          productCountId,
-        })),
       });
   
       // Check if processOrder was successful

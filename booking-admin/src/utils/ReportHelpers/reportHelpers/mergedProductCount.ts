@@ -7,6 +7,7 @@ export interface DepartmentItem {
   quantity: number;
   paymentMethods: string;
   amountPaid: number;
+  department: string;
 }
 
 interface ProductCountItem {
@@ -37,12 +38,13 @@ export const mergedProductCount = (
 
     const safeName = typeof product.name === 'string' ? product.name.trim().toLowerCase() : '';
 
-    const itemName = safeName || department; // Fallback to department name if name is empty
-    
+    // Ensure only valid product names are used for matching
+    if (!safeName) continue;
+
     const matchedItem = updatedItems[department].find(
       (item) =>
         item.documentId === product.documentId &&
-      item.name?.trim().toLowerCase() === itemName.toLowerCase()
+        item.name?.trim().toLowerCase() === safeName
     );
 
     if (matchedItem) {

@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 
 type PosMenuProps = {
   menuItems: MenuItem[];
-  onDepartmentChange: (department: 'Bar' | 'Restaurant' | 'Hotel-Services') => void;
+  onDepartmentChange: (department: 'bar' | 'restaurant' | 'hotel') => void;
   loading: boolean;
 };
 
@@ -22,7 +22,7 @@ export default function POSLayout(props: PosMenuProps) {
   const [isOrderDetailsOpen, setOrderDetailsOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [activeOrder, setActiveOrder] = useState<Order | null>(null);
-  const [department, setDepartment] = useState<'Bar' | 'Restaurant' | 'Hotel-Services'>('Bar');
+  const [department, setDepartment] = useState<'bar' | 'restaurant' | 'hotel'>('bar');
   const cartItems = useCartStore((state) => state.cartItems); // get cart items
 
 
@@ -38,7 +38,7 @@ export default function POSLayout(props: PosMenuProps) {
     setActiveOrder(order);
   };
 
-  const handleDepartmentChange = (value: 'Bar' | 'Restaurant' | 'Hotel-Services') => {
+  const handleDepartmentChange = (value: 'bar' | 'restaurant' | 'hotel') => {
     if (activeOrder) {
       toast.error('Cannot change department while an active order exists.');
       return;
@@ -52,7 +52,7 @@ export default function POSLayout(props: PosMenuProps) {
     const { customerName, tableNumber, waiterId, items, discountPrice, finalPrice, selectedStaffId } = order;
 
     if (!customerName || !tableNumber || !waiterId || items.length === 0) {
-      console.error('Invalid order details');
+      // console.error('Invalid order details');
       return;
     }
 
@@ -73,7 +73,7 @@ export default function POSLayout(props: PosMenuProps) {
 
     setOrders([...orders, newOrder]);
     setActiveOrder(newOrder);
-    console.log('Order added to list:', newOrder);
+    // console.log('Order added to list:', newOrder);
   };
 
   return (
@@ -81,12 +81,12 @@ export default function POSLayout(props: PosMenuProps) {
          <select
           className="form-select w-auto"
           value={department}
-          onChange={(e) => handleDepartmentChange(e.target.value as 'Bar' | 'Restaurant' | 'Hotel-Services')}
+          onChange={(e) => handleDepartmentChange(e.target.value as 'bar' | 'restaurant' | 'hotel')}
           disabled={!!activeOrder || cartItems.length > 0 || props.loading} // disable if activeOrder exists OR cart is not empty
           > 
-          <option value="Bar">BAR</option>
-          <option value="Restaurant">RESTAURANT</option>
-          <option value="Hotel-Services">HOTEL SERVICES</option>
+          <option value="bar">BAR</option>
+          <option value="restaurant">RESTAURANT</option>
+          <option value="hotel">HOTEL SERVICES</option>
 
         </select>
 

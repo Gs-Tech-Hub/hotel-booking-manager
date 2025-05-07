@@ -1,4 +1,5 @@
 /* eslint-disable */
+
 import { strapiService } from '@/utils/dataEndPoint';
 import { PaymentMethod, Order } from '@/app/stores/useOrderStore';
 
@@ -11,7 +12,7 @@ export interface OrderItem {
   paymentMethod?: string;
   department?: string;
   menu_category?: string;
-  productCountId?: { productCountId: number }[];
+  productCountId?: ({ productCountId: number } | { id: number })[]; // expected structure
 }
 
 interface ConnectedItem {
@@ -25,12 +26,13 @@ export const processOrder = async ({
   waiterId,
   customerId = null,
   paymentMethod,
+  
 }: {
   order: Order;
   waiterId: string;
   customerId?: string | null;
   paymentMethod: PaymentMethod;
-  productCountIds: {productCountId: number }[];
+  productCountIds?: number[];
 }) => {
   try {
     console.log('Starting order processing...', order);
@@ -43,7 +45,6 @@ export const processOrder = async ({
       if (!acc[dept]) acc[dept] = [];
       acc[dept].push({
         ...item,
-        productCountId: item.productCountId?.map(pc => ({ productCountId: pc.id })) || [],
       });
       return acc;
     }, {} as { [key: string]: OrderItem[] });
@@ -62,7 +63,6 @@ export const processOrder = async ({
 
         const correctId = found.id;
 
-        // Only one employee order per department if discount applies
         if (order.discountPrice && order.selectedStaffId && !employeeOrders.some(e => e[type])) {
           employeeOrders.push({
             discount_amount: order.discountPrice,
@@ -89,10 +89,13 @@ export const processOrder = async ({
       let food_items: ConnectedItem[] | null = null;
       let hotel_services: ConnectedItem[] | null = null;
 
-      // Filter and sanitize productCountIds for this department
+      // Extract normalized productCountIds
       const departmentProductCounts = items
-        .flatMap(item => item.productCountId || [])
-        .filter(pc => typeof pc.productCountId === 'number');
+        .flatMap(item =>
+          (item.productCountId || []).map(pc =>
+            'productCountId' in pc ? pc.productCountId : pc.id
+          )
+        );
 
       if (!departmentProductCounts.length) {
         throw new Error(`No valid product_count IDs provided for ${department} booking item.`);
@@ -100,14 +103,13 @@ export const processOrder = async ({
 
       if (department === 'Bar') {
         drinks = await fetchAndCollect(items, strapiService.getDrinksList, 'drinks');
-
-        // Deduct bar stock
         for (const item of items) {
           const drink = drinks.find(d => d.documentId === item.documentId);
           if (drink) {
             const newStock = (drink.bar_stock ?? 0) - item.quantity;
-            if (newStock < 0) throw new Error(`Not enough stock for drink: ${item.name}`);
+            if (newStock < 0) throw new Error(`Insufficient stock for drink: ${item.name}`);
             await strapiService.updateDrinksList(drink.id, { bar_stock: newStock });
+            drink.bar_stock = newStock;
           }
         }
       } else if (department === 'Restaurant') {
@@ -116,17 +118,23 @@ export const processOrder = async ({
         hotel_services = await fetchAndCollect(items, strapiService.getHotelServices, 'hotel_services');
       }
 
+      console.log(`Resolved product_count IDs for ${department}:`, departmentProductCounts);
+
       const bookingItemPayload = {
         quantity: items.reduce((sum, item) => sum + item.quantity, 0),
         drinks,
         food_items,
-        product_count: { connect: departmentProductCounts.map(pc => ({ id: pc.productCountId })) },
         hotel_services,
+        product_count: {
+          connect: departmentProductCounts.map(id => ({ id })),
+        },
         amount_paid: deptTotal,
         payment_type: paymentMethod.id,
         status: 'completed',
         menu_category: null,
-        single_orders: items.map(item => ({ connect: { id: item.id } })), // Ensure item.id is Strapi ID
+        single_orders: items.length === 1
+          ? { connect: { id: items[0].id } }
+          : items.map(item => ({ connect: { id: item.id } })),
       };
 
       const bookingItemRes = await strapiService.createBookingItem(bookingItemPayload);
@@ -142,7 +150,6 @@ export const processOrder = async ({
     };
 
     const orderRes = await strapiService.post('orders', orderPayload);
-    console.log('Order created:', orderRes);
 
     for (const empOrder of employeeOrders) {
       await strapiService.createEmployeeOrder(empOrder);

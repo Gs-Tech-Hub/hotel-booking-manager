@@ -26,7 +26,7 @@ export interface ExtendedProduct extends Product {
 export async function handleDepartmentRecord(
   startDate: string,
   endDate: string,
-  department: "bar_services" | "restaurant_services" | "hotel_services" | "Games",
+  department: "bar" | "restaurant" | "hotel" | "games",
   options: {
     inventoryEndpoint: keyof typeof strapiService;
     departmentStockField: string;
@@ -95,10 +95,10 @@ export async function handleDepartmentRecord(
           }
       
           const product =
-            (department === "bar_services" && item.drinks?.find((p: any) => p.documentId === matchedDocumentId)) ||
-            (department === "restaurant_services" && item.food_items?.find((p: any) => p.documentId === matchedDocumentId)) ||
-            (department === "hotel_services" && item.hotel_services?.find((p: any) => p.documentId === matchedDocumentId)) ||
-            (department === "Games" && item.games?.find((p: any) => p.documentId === matchedDocumentId));
+            (department === "bar" && item.drinks?.find((p: any) => p.documentId === matchedDocumentId)) ||
+            (department === "restaurant" && item.food_items?.find((p: any) => p.documentId === matchedDocumentId)) ||
+            (department === "hotel" && item.hotel_services?.find((p: any) => p.documentId === matchedDocumentId)) ||
+            (department === "games" && item.games?.find((p: any) => p.documentId === matchedDocumentId));
       
           if (!product) {
             console.warn(`No matching product found for documentId: ${matchedDocumentId} in department: ${department}`);
@@ -120,13 +120,13 @@ export async function handleDepartmentRecord(
             totalTransfers += itemAmount;
           }
 
-          if (department === "bar_services") {
+          if (department === "bar") {
             barSales += itemAmount;
-          } else if (department === "restaurant_services") {
+          } else if (department === "restaurant") {
             foodSales += itemAmount;
-          } else if (department === "hotel_services") {
+          } else if (department === "hotel") {
             hotelSales += itemAmount;
-          } else if (department === "Games") {
+          } else if (department === "games") {
             gameSales += itemAmount;
           }
 
@@ -143,9 +143,9 @@ export async function handleDepartmentRecord(
         console.log(`Falling back to quantity: ${count}`);
 
         const product =
-          (department === "bar_services" && item.drinks?.[0]) ||
-          (department === "restaurant_services" && item.food_items?.[0]) ||
-          (department === "hotel_services" && item.hotel_services?.[0]);
+          (department === "bar" && item.drinks?.[0]) ||
+          (department === "restaurant" && item.food_items?.[0]) ||
+          (department === "hotel" && item.hotel_services?.[0]);
 
         if (!product) {
           console.warn(`No associated product found for item in department: ${department}`);
@@ -166,9 +166,9 @@ export async function handleDepartmentRecord(
           totalTransfers += itemAmount;
         }
 
-        if (department === "bar_services") barSales += itemAmount;
-        else if (department === "restaurant_services") foodSales += itemAmount;
-        else if (department === "hotel_services") hotelSales += itemAmount;
+        if (department === "bar") barSales += itemAmount;
+        else if (department === "restaurant") foodSales += itemAmount;
+        else if (department === "hotel") hotelSales += itemAmount;
 
         if (!salesByProduct[product.documentId]) {
           salesByProduct[product.documentId] = { units: 0, amount: 0 };
@@ -207,10 +207,10 @@ export async function handleDepartmentRecord(
         sold: sales.units,
         amount: sales.amount,
         profit: sales.amount - (product.price * sales.units),
-        isBar: department === "bar_services",
-        isRestaurant: department === "restaurant_services",
-        isHotel: department === "hotel_services",
-        isGame: department === "Games",
+        isBar: department === "bar",
+        isRestaurant: department === "restaurant",
+        isHotel: department === "hotel",
+        isGame: department === "games",
         bar_stock: product.bar_stock || 0,
         drink_type: product.drink_type || null,
         showStock: true,

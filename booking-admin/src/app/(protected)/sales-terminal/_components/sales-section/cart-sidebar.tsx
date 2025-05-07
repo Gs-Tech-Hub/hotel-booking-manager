@@ -48,7 +48,7 @@ export default function CartSidebar({
 
   useEffect(() => {
     if (prefillOrder?.id) {
-      console.log("Prefill Order:", prefillOrder);
+      // console.log("Prefill Order:", prefillOrder);
 
       setCustomerName(prefillOrder.customerName || "");
       setTableNumber(prefillOrder.tableNumber || "");
@@ -61,7 +61,7 @@ export default function CartSidebar({
 
       toast.info("Order loaded into cart.");
     } else {
-      console.log("No prefill order provided.");
+      // console.log("No prefill order provided.");
     }
   }, [prefillOrder, setCartItems, setDiscountPrice, user]);
 
@@ -73,7 +73,7 @@ export default function CartSidebar({
           setStaffList(response);
         }
       } catch (error) {
-        console.error("Failed to fetch staff list", error);
+        // console.error("Failed to fetch staff list", error);
       }
     }
     fetchStaff();
@@ -92,17 +92,17 @@ export default function CartSidebar({
     return cartTotal - (parseFloat(inputDiscount) || 0); // Fallback for new orders
   });
 
-  useEffect(() => {
-    console.log("CartSidebar State:", {
-      customerName,
-      tableNumber,
-      waiterName,
-      cartItems,
-      inputDiscount,
-      selectedStaffId,
-      finalTotal,
-    });
-  }, [customerName, tableNumber, waiterName, cartItems, inputDiscount, selectedStaffId, finalTotal]);
+  // useEffect(() => {
+  //   // console.log("CartSidebar State:", {
+  //   //   customerName,
+  //   //   tableNumber,
+  //   //   waiterName,
+  //   //   cartItems,
+  //   //   inputDiscount,
+  //   //   selectedStaffId,
+  //   //   finalTotal,
+  //   // });
+  // }, [customerName, tableNumber, waiterName, cartItems, inputDiscount, selectedStaffId, finalTotal]);
 
   const handleCreateOrder = async () => {
     if (!customerName || !tableNumber || cartItems.length === 0) {
@@ -123,7 +123,7 @@ export default function CartSidebar({
       selectedStaffId: selectedStaffId || '',
     };
 
-    console.log("Final Order to be created:", finalOrder);
+    // console.log("Final Order to be created:", finalOrder);
 
     try {
       if (prefillOrder?.id) {
@@ -151,7 +151,7 @@ export default function CartSidebar({
 
       if (onClearPrefill) onClearPrefill();
     } catch (error) {
-      console.error("Error creating order:", error);
+      // console.error("Error creating order:", error);
       toast.error(
         `Failed to process order: ${
           error instanceof Error ? error.message : "Unknown error"

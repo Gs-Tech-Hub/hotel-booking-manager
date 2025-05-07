@@ -10,7 +10,7 @@ interface DepartmentItem {
     quantity: number;
     paymentMethods: string;
     amountPaid: number;
-    
+    department: string;
 }
 
 export const itemsByDepartment = (bookingItems: BookingItem[]): Record<DepartmentKey, DepartmentItem[]> => {
@@ -31,16 +31,17 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
         // Process drinks
         if (drinks.length > 0) {
             drinks.forEach((drink, i) => {
-                itemsByDept.bar.push({
-                    id,
-                    documentId: item.bookings?.[0]?.id ?? documentId ?? null,
-                    name: drink.name ?? 'Bar Item', // Fallback to 'Bar Item'
-                    price: drink.price ?? 0, // Default to 0 if price is missing
-                    quantity: getProductCount(i),
-                    paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
-                    amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
-                });
-            });
+                            itemsByDept.bar.push({
+                                id,
+                                documentId: item.bookings?.[0]?.id ?? documentId ?? null,
+                                name: drink.name ?? 'Bar Item', // Fallback to 'Bar Item'
+                                price: drink.price ?? 0, // Default to 0 if price is missing
+                                quantity: getProductCount(i),
+                                paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
+                                amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
+                                department: 'bar'
+                            });
+                        });
         }
 
         // Process food items
@@ -54,7 +55,7 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                     quantity: getProductCount(i),
                     paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
                     amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
-
+                    department: 'restaurant'
                 });
             });
         }
@@ -70,8 +71,7 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                     quantity: getProductCount(i),
                     paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
                     amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
-
-
+                    department: 'hotel'
                 });
             });
         }
@@ -87,8 +87,7 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                     quantity: getProductCount(i),
                     paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
                     amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
-
-
+                    department: 'games'
                 });
             });
         }
@@ -104,11 +103,12 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
             itemsByDept.account.push({
                 id,
                 documentId: item.bookings?.[0]?.id ?? documentId ?? null,
-                name: item.payment_type?.types ?? 'Account', // Fallback to 'Account'
+                name: 'Account Payment', // Use a generic name for account items
                 price: item.amount_paid,
                 quantity: 1,
                 paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
                 amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
+                department: 'account'
             });
         }
     }

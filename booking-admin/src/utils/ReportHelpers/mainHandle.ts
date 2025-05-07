@@ -84,18 +84,20 @@ export async function handleMainRecord(
     const { updatedItems: mergedGroupedItems } = mergedProductCount(groupedItems, productCountItems);
 
     // Aggregate totals and flatten
-    const { updatedItems: flatItems, salesByProduct, paymentMethods } = calculateDepartmentTotals(mergedGroupedItems, productCountItems);
+    const { updatedItems: flatItems, salesByProduct, paymentMethods, departmentTotals } = calculateDepartmentTotals(mergedGroupedItems, productCountItems, department);
 
     console.log("Aggregated Items:", flatItems);
     console.log("Sales by Product:", salesByProduct);
+    console.log("Department Totals:", departmentTotals);
+
     // Totals
     const totalUnits = flatItems.reduce((sum, item) => sum + item.quantity, 0);
     const totalAmount = flatItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
     const overviewBase = {
-      cashSales: paymentMethods.cash,
-      totalTransfers: paymentMethods.other,
-      totalSales: totalAmount,
+      cashSales: departmentTotals.cashSales,
+      totalTransfers: departmentTotals.totalTransfers,
+      totalSales: departmentTotals.totalSales,
       totalUnits,
       totalProfit: 0, // calculated below
       barSales: 0,
@@ -104,10 +106,10 @@ export async function handleMainRecord(
       gameSales: 0,
     };
 
-    if (department === "bar") overviewBase.barSales = totalAmount;
-    if (department === "restaurant") overviewBase.foodSales = totalAmount;
-    if (department === "hotel") overviewBase.hotelSales = totalAmount;
-    if (department === "games") overviewBase.gameSales = totalAmount;
+    if (department === "bar") overviewBase.barSales = departmentTotals.totalSales;
+    if (department === "restaurant") overviewBase.foodSales = departmentTotals.totalSales;
+    if (department === "hotel") overviewBase.hotelSales = departmentTotals.totalSales;
+    if (department === "games") overviewBase.gameSales = departmentTotals.totalSales;
 
     // Optional inventory fetch
     const inventoryData = fetchInventory
@@ -119,7 +121,6 @@ export async function handleMainRecord(
         units: 0,
         amount: 0,
       };
-
 
       const profit = sales.amount - (Number(product.price) * sales.units);
 

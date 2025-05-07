@@ -32,7 +32,6 @@ export const generateFilters = (
   if (departmentKey) {
     return {
       ...baseFilters,
-      [`filters[${departmentKey}][id][$notNull]`]: "true",
     };
   }
 
@@ -57,3 +56,5 @@ export const generateFilters = (
 
   // "filters[product_count][product_count][$notNull]": "true",
   //     "populate[product_count][populate]": "*"
+
+  // [`filters[${departmentKey}][id][$notNull]`]: "true",
