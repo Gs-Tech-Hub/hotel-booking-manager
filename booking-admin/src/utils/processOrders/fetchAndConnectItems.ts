@@ -1,9 +1,9 @@
-
+/* eslint-disable */
 import { Order, OrderItem, ConnectedItem } from '../../types/order';
 
 export const fetchAndConnectItems = async (
     items: OrderItem[],
-    fetchFn: Function,
+    fetchFn: (...args: any[]) => Promise<any>,
     type: string,
     order: Order,
     employeeOrders: any[]

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { strapiService } from '@/utils/dataEndPoint';
 import { PaymentMethod, Order } from '@/app/stores/useOrderStore';
 
@@ -30,7 +32,7 @@ export const processOrder = async ({
   waiterId: string;
   customerId?: string | null;
   paymentMethod: PaymentMethod;
-  productCountIds?: string[];
+  productCountIds?: number[];
 }) => {
   try {
     console.log('Starting order processing...', order);

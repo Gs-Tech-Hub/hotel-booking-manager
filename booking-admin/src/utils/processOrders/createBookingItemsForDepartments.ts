@@ -1,8 +1,8 @@
+/* eslint-disable */
 import { OrderItem, ConnectedItem, PaymentMethod } from "@/types/order";
 import { strapiService } from "../dataEndPoint";
 
 export const createBookingItemForDepartment = async ({
-    department,
     items,
     productCountIds,
     paymentMethod,

@@ -32,7 +32,7 @@ export default function OrdersList({
   useEffect(() => {
     // console.log("📦 Current Orders in State:", orders);
     orders.forEach((order, index) => {
-      // console.log(`Order #${index + 1}:`, order);
+      console.log(`Order #${index + 1}:`, order);
     });
   }, [orders]);
 

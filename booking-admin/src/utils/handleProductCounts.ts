@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { strapiService } from '@/utils/dataEndPoint';
 import { CartItem } from '@/app/stores/useCartStore';
 

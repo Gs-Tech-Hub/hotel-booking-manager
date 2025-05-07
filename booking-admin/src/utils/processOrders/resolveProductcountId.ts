@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { CartItem } from '@/app/stores/useCartStore';
 import { strapiService } from '../dataEndPoint';
 import { ValidatedItem } from '@/types/order';

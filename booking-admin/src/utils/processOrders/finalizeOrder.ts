@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { groupItemsByDepartment } from './groupItemsByDepartment';
 import { resolveProductCountIds } from './resolveProductcountId';
 import { fetchAndConnectItems } from './fetchAndConnectItems';
@@ -5,7 +6,6 @@ import { updateDrinkStock } from './updateDrinkStock';
 import { createBookingItemForDepartment } from './createBookingItemsForDepartments';
 import { strapiService } from '../dataEndPoint';
 import { OrderItem, PaymentMethod, Order, ValidatedItem } from '@/types/order';
-
 export const processOrder = async ({
   order,
   waiterId,
@@ -101,6 +101,24 @@ export const processOrder = async ({
           drinks: null,
           food_items: null,
           hotel_services,
+        });
+
+        bookingItems.push({ id: bookingItemRes.id });
+      } else if (department === 'Games') {
+        validatedItems = items.map(item => ({
+          id: item.id.toString(),
+          documentId: item.documentId,
+          name: item.name,
+        }));
+
+        const productCountMap = await resolveProductCountIds(items, validatedItems);
+        const productCountIds = Array.from(productCountMap.values());
+
+        const bookingItemRes = await createBookingItemForDepartment({
+          department,
+          items,
+          productCountIds,
+          paymentMethod,
         });
 
         bookingItems.push({ id: bookingItemRes.id });

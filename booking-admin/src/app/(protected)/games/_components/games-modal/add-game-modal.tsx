@@ -5,7 +5,7 @@ import { strapiService } from "@/utils/dataEndPoint";
 import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/Auth/context/auth-context";
-import { processOrder } from "@/utils/processOrder";
+import { processOrder } from "@/utils/processOrders/finalizeOrder";
 import { paymentMethods } from "@/app/stores/useOrderStore";
 import { handleProductCounts } from "@/utils/handleProductCounts";
 
@@ -134,10 +134,10 @@ export function AddGameModal({
 
         // Retrieve productCountIds
         const productCounts = await handleProductCounts(itemsForProductCount);
-        productCountIds = Object.values(productCounts);
+        productCountIds = Object.values(productCounts).map(item => item.productCountId);
 
         if (productCountIds.length === 0) {
-          toast.error("Failed to retrieve product count IDs.");
+          toast.error("Failed to connect game.");
           return;
         }
 
@@ -157,7 +157,6 @@ export function AddGameModal({
                 price: 500 * count,
                 quantity: count,
                 department: "Games",
-                available: 1,
                 count: count,
                 amount_paid: amountPaid,
                 amount_owed: amountOwed,
@@ -169,7 +168,7 @@ export function AddGameModal({
           waiterId: user?.id || "",
           customerId: null,
           paymentMethod: paymentMethodObj,
-          productCountIds: productCountIds.map((id) => ({ productCountId: id })),
+          // productCountIds: productCountIds.map((id) => ({ productCountId: id })),
         });
 
         if (!response.success) {
