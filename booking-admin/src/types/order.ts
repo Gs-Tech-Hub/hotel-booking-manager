@@ -57,7 +57,7 @@ export interface CartItem {
 
         export interface Order {
           id: string;
-          customerName: string;
+          customerName?: string;
           tableNumber?: string;
           waiterId: string;
           items: CartItem[];
@@ -67,5 +67,4 @@ export interface CartItem {
           finalPrice?: number;
           selectedStaffId?: string;
           paymentMethod?: PaymentMethod;
-
         }

@@ -25,16 +25,16 @@ export const resolveProductCountIds = async (
     }
 
     const data: any = {
-      product_count: item.department === 'Games' ? item.count : item.quantity,
+      product_count: item.department === 'games' ? item.count : item.quantity,
     };
 
-    if (item.department === 'Bar') {
+    if (item.department === 'bar') {
       data.drink = { connect: Number(validItemId) };
-    } else if (item.department === 'Restaurant') {
+    } else if (item.department === 'restaurant') {
       data.food_item = { connect: Number(validItemId) };
-    } else if (item.department === 'Games') {
+    } else if (item.department === 'games') {
       data.game = Number(validItemId);
-    } else if (item.department === 'Hotel-Services') {
+    } else if (item.department === 'hotel') {
       data.hotel_service = { connect: Number(validItemId) };
     } else {
       console.warn(`Unknown department for item: ${item.name}`);
