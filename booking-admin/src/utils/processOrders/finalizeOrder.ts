@@ -18,7 +18,7 @@ export const processOrder = async ({
   paymentMethod: PaymentMethod;
 }) => {
   try {
-    console.log('Starting order processing...', order);
+    // console.log('Starting order processing...', order);
 
     const bookingItems: { id: string }[] = [];
     const employeeOrders: any[] = [];
@@ -47,16 +47,17 @@ export const processOrder = async ({
         const productCountMap = await resolveProductCountIds(items, validatedItems);
         const productCountIds = Array.from(productCountMap.values());
 
-        // Step 3: Update stock
-        await updateDrinkStock(items, validatedItems);
-
         // Step 4: Re-fetch drinks to ensure correct IDs
-        const updatedDrinksList = await strapiService.getDrinksList();
-        drinks = updatedDrinksList.filter((d: { name: string; id: number; }) =>
-          items.some(i => i.name === d.name || i.id === d.id)
-        );
+        const documentIds = Array.from(new Set(items.map(item => item.documentId).filter(Boolean)));
+          let updatedDrinksList: ValidatedItem[] = [];
+          for (const docId of documentIds) {
+            const res = await strapiService.getDrinksList({
+              "filters[documentId][$eq]": docId,
+            });
+            updatedDrinksList = [...updatedDrinksList, ...res];
+        }
+          console.log("Drinks:", drinks);
 
-        // Step 5: Create booking item with correct data
         const bookingItemRes = await createBookingItemForDepartment({
           department,
           items,
@@ -84,7 +85,6 @@ export const processOrder = async ({
           food_items,
           hotel_services: null,
         });
-
         bookingItems.push({ id: bookingItemRes.id });
       } else if (department === 'hotel') {
         hotel_services = await fetchAndConnectItems(items, strapiService.getHotelServices, 'hotel_services', order, employeeOrders);
@@ -104,7 +104,7 @@ export const processOrder = async ({
         });
 
         bookingItems.push({ id: bookingItemRes.id });
-      } else if (department === 'Games') {
+      } else if (department === 'games') {
         validatedItems = items.map(item => ({
           id: item.id.toString(),
           documentId: item.documentId,
@@ -125,6 +125,7 @@ export const processOrder = async ({
       }
 
       totalOrderAmount += items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      await updateDrinkStock(items, validatedItems);
     }
 
     // Final order payload
@@ -149,7 +150,6 @@ export const processOrder = async ({
 
     return { success: true, orderId: orderRes.documentId };
   } catch (error) {
-    console.error('Order processing failed:', error);
     return { success: false, error };
   }
 };

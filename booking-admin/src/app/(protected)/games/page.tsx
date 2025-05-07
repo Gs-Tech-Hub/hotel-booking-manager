@@ -33,7 +33,7 @@ export default function Games() {
 
         const gamesData = await strapiService.getGamesList({
           populate: '*',
-          'pagination[pageSize]': 50,
+          'pagination[pageSize]': 100,
           'filters[createdAt][$gte]': startOfDay.toISOString(),
           'filters[createdAt][$lte]': endOfDay.toISOString(),
         });

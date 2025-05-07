@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/Auth/context/auth-context";
 import { processOrder } from "@/utils/processOrders/finalizeOrder";
 import { paymentMethods } from "@/app/stores/useOrderStore";
-import { handleProductCounts } from "@/utils/handleProductCounts";
 
 export interface GameItem {
   count: number;
@@ -104,7 +103,6 @@ export function AddGameModal({
     try {
       setIsLoading(true);
 
-      let productCountIds: number[] = [];
 
       if (gameStatus === "completed") {
         const paymentMethodObj = paymentMethods.find(
@@ -116,36 +114,11 @@ export function AddGameModal({
           return;
         }
 
-        // Prepare the item for product count processing
-        const itemsForProductCount = [
-          {
-            id: defaultData?.id ?? 0,
-            documentId: defaultData?.documentId ?? "",
-            name: "Game Session - " + playerName,
-            price: 500,
-            quantity: count,
-            department: "Games",
-            count,
-            amount_paid: amountPaid,
-            amount_owed: amountOwed,
-            game_status: gameStatus,
-          },
-        ];
-
-        // Retrieve productCountIds
-        const productCounts = await handleProductCounts(itemsForProductCount);
-        productCountIds = Object.values(productCounts).map(item => item.productCountId);
-
-        if (productCountIds.length === 0) {
-          toast.error("Failed to connect game.");
-          return;
-        }
 
         // Process the order
         const response = await processOrder({
           order: {
             id: (defaultData?.id ?? 0).toString(),
-            customerName: playerName,
             totalAmount: 500 * count,
             waiterId: user?.id || "",
             ...payload,
@@ -168,7 +141,6 @@ export function AddGameModal({
           waiterId: user?.id || "",
           customerId: null,
           paymentMethod: paymentMethodObj,
-          // productCountIds: productCountIds.map((id) => ({ productCountId: id })),
         });
 
         if (!response.success) {

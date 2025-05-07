@@ -1,26 +1,58 @@
+import { strapiService } from "@/utils/dataEndPoint";
 import { OverviewCardData } from "@/utils/handleDepartmentRecord";
 import { handleMainRecord } from "@/utils/ReportHelpers/mainHandle";
 
 export async function getAllDepartmentOverviews(startDate: string, endDate: string) {
   try {
-    console.log("Fetching department overviews...");
+    // console.log("Fetching department overviews...");
 
     // Batch 1: Bar and Restaurant
     const [bar, restaurant] = await Promise.all([
-      handleMainRecord(startDate, endDate, "bar"
-    ),
-      handleMainRecord(startDate, endDate, "restaurant"
-      ),
+      handleMainRecord(startDate, endDate, "bar"),
+      handleMainRecord(startDate, endDate, "restaurant"),
     ]);
-    console.log("Batch 1 Loaded: Bar and Restaurant");
+    // console.log("Batch 1 Loaded: Bar and Restaurant");
 
     // Batch 2: Hotel and Games
-    const [hotel, games] = await Promise.all([
-      handleMainRecord(startDate, endDate, "hotel" ),
-
-      handleMainRecord(startDate, endDate, "games" ),
+    const [hotel] = await Promise.all([
+      handleMainRecord(startDate, endDate, "hotel"),
     ]);
-    console.log("Batch 2 Loaded: Hotel and Games");
+    // console.log("Batch 2 Loaded: Hotel and Games");
+
+    const gamesData = await strapiService.getGamesList({
+      populate: '*',
+      'pagination[pageSize]': 100,
+      'filters[createdAt][$gte]': startDate,
+      'filters[createdAt][$lte]': endDate,
+    });
+
+    let payed = 0;
+    let notPayed = 0;
+    let totalGames = 0;
+
+    for (const game of gamesData || []) {
+      const amountPaid = Number(game.amount_paid) || 0;
+      const gameCount = Number(game.count) || 0;
+
+      totalGames += gameCount;
+
+      if (game.game_status === 'completed') {
+        payed += amountPaid;
+      } else if (game.game_status === 'ongoing') {
+        notPayed += amountPaid;
+      }
+    }
+
+    const games = {
+      overview: {
+        cashSales: payed,
+        totalTransfers: 0, // Assuming no transfers for games
+        totalSales: payed + notPayed,
+        totalUnits: totalGames,
+        totalProfit: payed, // Assuming profit equals payed amount
+        gameSales: payed,
+      },
+    };
 
     // Combine results
     const combinedOverview: OverviewCardData = {
