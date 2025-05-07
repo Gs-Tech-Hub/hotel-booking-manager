@@ -7,7 +7,7 @@ import { MenuItem } from "@/app/stores/useCartStore";
 import { strapiService } from "@/utils/dataEndPoint";
 
 export default function POS() {
-  const [department, setDepartment] = useState<'Bar' | 'Restaurant' | 'Hotel-Services'>('Bar');
+  const [department, setDepartment] = useState<'bar' | 'restaurant' | 'hotel'>('bar');
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState<boolean>(false);  // Loading state for menu items
 
@@ -16,10 +16,10 @@ export default function POS() {
     setLoading(true);  // Set loading to true when fetching data
     let items: MenuItem[] = [];
 
-    if (dept === 'Bar') {
+    if (dept === 'bar') {
       const response = await strapiService.getBarAndClubs({
         populate: '*',
-        'pagination[pageSize]': 50,
+        'pagination[pageSize]': 100,
       });
         // console.log('Bar Response:', response);
       items = response?.flatMap((bar: any) =>
@@ -30,14 +30,14 @@ export default function POS() {
           price: drink.price,
           available: drink.bar_stock,
           quantity: drink.quantity || 1,
-          department: 'Bar',
+          department: 'bar',
         })) || []
       ) || [];
 
-    } else if (dept === 'Restaurant') {
+    } else if (dept === 'restaurant') {
       const response = await strapiService.getRestaurants({
         populate: '*',
-        'pagination[pageSize]': 50,
+        'pagination[pageSize]': 100,
       });
         // console.log('Hotel Response:', response);
       items = response?.flatMap((restaurant: any) =>
@@ -48,14 +48,14 @@ export default function POS() {
           price: item.price,
           quantity: 1,
           available: 100,
-          department: 'Restaurant',
+          department: 'restaurant',
         })) || []
       ) || [];
 
-    } else if (dept === 'Hotel-Services') {
+    } else if (dept === 'hotel') {
       const response = await strapiService.getHotelServices({
         populate: '*',
-        'pagination[pageSize]': 50,
+        'pagination[pageSize]': 100,
       });
         // console.log('Hotel Services Response:', response);
       items = response?.map((item: any) => ({
@@ -64,7 +64,7 @@ export default function POS() {
         name: item.name,
         price: item.price,
         quantity: 1,
-        department: 'Hotel-Services',
+        department: 'hotel',
         available:  100, // Assuming a default value for available items
       })) || [];
     }
@@ -78,7 +78,7 @@ export default function POS() {
     fetchMenuItems(department);
   }, []);
 
-  const handleDepartmentChange = (dept: 'Bar' | 'Restaurant' | 'Hotel-Services') => {
+  const handleDepartmentChange = (dept: 'bar' | 'restaurant' | 'hotel') => {
     setDepartment(dept);
     fetchMenuItems(dept);
   };

@@ -54,7 +54,6 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                     quantity: getProductCount(i),
                     paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
                     amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
-
                 });
             });
         }
@@ -70,8 +69,6 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                     quantity: getProductCount(i),
                     paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
                     amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
-
-
                 });
             });
         }
@@ -87,8 +84,6 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                     quantity: getProductCount(i),
                     paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
                     amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
-
-
                 });
             });
         }

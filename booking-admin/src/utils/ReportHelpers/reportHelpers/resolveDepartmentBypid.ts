@@ -11,8 +11,8 @@ export function resolveDepartmentByProductId(
       product?.id ?? item.product_count?.drink?.id ?? item.product_count?.food_item?.id;
   
     if (productId) {
-      if (knownDrinks.has(productId)) return "bar_services";
-      if (knownFoods.has(productId)) return "restaurant_services";
+      if (knownDrinks.has(productId)) return "bar";
+      if (knownFoods.has(productId)) return "restaurant";
     }
   
     return null;

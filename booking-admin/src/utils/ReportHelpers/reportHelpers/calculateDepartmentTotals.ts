@@ -23,7 +23,11 @@ export type SalesByProduct = Record<string, { units: number; amount: number }>;
 export const calculateDepartmentTotals = (
   groupedItems: Record<DepartmentKey, DepartmentItem[]>,
   productCountData: ProductCountItem[]
-): { updatedItems: DepartmentItem[]; salesByProduct: Array<{ name: string; units: number; amount: number }>; paymentMethods: { cash: number; other: number } } => {
+): {
+  updatedItems: DepartmentItem[];
+  salesByProduct: Array<{ name: string; units: number; amount: number }>;
+  paymentMethods: { cash: number; other: number };
+} => {
   const allItems: DepartmentItem[] = [];
 
   // Flatten all department items into a single list
@@ -58,29 +62,31 @@ export const calculateDepartmentTotals = (
   const salesByProduct: Array<{ name: string; units: number; amount: number }> = [];
   const paymentMethods = { cash: 0, other: 0 };
 
-  Object.entries(groupedByName).forEach(([, items]) => {
+  Object.entries(groupedByName).forEach(([name, items]) => {
     const totalQuantity = items.reduce((sum, i) => sum + i.quantity, 0); // Sum up quantities
     const base = items[0]; // Preserve other fields from one item
     const amount = totalQuantity * base.price; // Calculate total amount
 
-    updatedItems.push({
-      ...base,
-      quantity: totalQuantity, // Update quantity with the summed value
-    });
-
-    // Push the sales data as an array of objects with name, units, and amount
-    salesByProduct.push({
-      name: base.name,
-      units: totalQuantity,
-      amount,
-    });
-
-    // Track payment methods (cash and other)
+    // Track payment methods
     const paymentMethod = base.paymentMethods.toLowerCase();
     if (paymentMethod === 'cash') {
       paymentMethods.cash += amount;
     } else {
       paymentMethods.other += amount;
+    }
+
+    // Exclude cash/other from product sales
+    if (name !== 'cash' && name !== 'other') {
+      updatedItems.push({
+        ...base,
+        quantity: totalQuantity,
+      });
+
+      salesByProduct.push({
+        name: base.name,
+        units: totalQuantity,
+        amount,
+      });
     }
   });
 
