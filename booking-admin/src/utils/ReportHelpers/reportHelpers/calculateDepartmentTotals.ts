@@ -9,6 +9,7 @@ export interface DepartmentItem {
   quantity: number;
   paymentMethods: string;
   amountPaid: number;
+  department: string;
 }
 
 export interface ProductCountItem {
@@ -22,11 +23,13 @@ export type SalesByProduct = Record<string, { units: number; amount: number }>;
 
 export const calculateDepartmentTotals = (
   groupedItems: Record<DepartmentKey, DepartmentItem[]>,
-  productCountData: ProductCountItem[]
+  productCountData: ProductCountItem[],
+  department: DepartmentKey
 ): {
   updatedItems: DepartmentItem[];
   salesByProduct: Array<{ name: string; units: number; amount: number }>;
   paymentMethods: { cash: number; other: number };
+  departmentTotals: { cashSales: number; totalTransfers: number; totalSales: number };
 } => {
   const allItems: DepartmentItem[] = [];
 
@@ -61,6 +64,7 @@ export const calculateDepartmentTotals = (
   const updatedItems: DepartmentItem[] = [];
   const salesByProduct: Array<{ name: string; units: number; amount: number }> = [];
   const paymentMethods = { cash: 0, other: 0 };
+  const departmentTotals = { cashSales: 0, totalTransfers: 0, totalSales: 0 };
 
   Object.entries(groupedByName).forEach(([name, items]) => {
     const totalQuantity = items.reduce((sum, i) => sum + i.quantity, 0); // Sum up quantities
@@ -71,8 +75,18 @@ export const calculateDepartmentTotals = (
     const paymentMethod = base.paymentMethods.toLowerCase();
     if (paymentMethod === 'cash') {
       paymentMethods.cash += amount;
+      if (base.department === department) {
+        departmentTotals.cashSales += amount;
+      }
     } else {
       paymentMethods.other += amount;
+      if (base.department === department) {
+        departmentTotals.totalTransfers += amount;
+      }
+    }
+
+    if (base.department === department) {
+      departmentTotals.totalSales += amount;
     }
 
     // Exclude cash/other from product sales
@@ -90,5 +104,5 @@ export const calculateDepartmentTotals = (
     }
   });
 
-  return { updatedItems, salesByProduct, paymentMethods };
+  return { updatedItems, salesByProduct, paymentMethods, departmentTotals };
 };

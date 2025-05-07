@@ -7,6 +7,7 @@ export interface DepartmentItem {
   quantity: number;
   paymentMethods: string;
   amountPaid: number;
+  department: string;
 }
 
 interface ProductCountItem {
