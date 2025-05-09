@@ -15,6 +15,8 @@ export function EmployeeSummaryTable({
   employeeDetails: {
     id: number;
     documentId: string;
+    employmentDate: Date;
+    salary: string;
     order_discount_total: number;
     debt_shortage: number;
     fines_debits: number;
@@ -40,6 +42,8 @@ export function EmployeeSummaryTable({
         <TableHeader>
           <TableRow className="border-t text-base [&>th]:h-auto [&>th]:py-3 sm:[&>th]:py-4.5">
             <TableHead>Name</TableHead>
+            <TableHead>Employment Date</TableHead>
+            <TableHead>Salary</TableHead>
             <TableHead>Orders Outstanding</TableHead>
             <TableHead>Debt Shortage</TableHead>
             <TableHead>Fines & Debits</TableHead>
@@ -65,7 +69,13 @@ export function EmployeeSummaryTable({
                 <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">
                   {emp.users_permissions_user?.username}
                 </TableCell>
+                <TableCell>
+                <TableCell>
+                  {emp.employmentDate ? new Date(emp.employmentDate).toLocaleDateString() : null}
+                </TableCell>
+                  </TableCell>
 
+                <TableCell>{formatPrice(Number(emp.salary), "NGN")}</TableCell>
                 <TableCell>{formatPrice(individualTotals.order_discount_total, "NGN")}</TableCell>
                 <TableCell>{formatPrice(individualTotals.debt_shortage, "NGN")}</TableCell>
                 <TableCell>{formatPrice(individualTotals.fines_debits, "NGN")}</TableCell>
@@ -95,6 +105,8 @@ export function EmployeeSummaryTable({
                   <CreateEmployeeSummaryModal
                     {...emp}
                     id={emp.id.toString()}
+                    employmentDate={new Date()}
+                    salary={0}
                   />
                 </TableCell>
               </TableRow>

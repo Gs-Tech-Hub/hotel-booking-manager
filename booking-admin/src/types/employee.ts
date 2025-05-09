@@ -1,5 +1,7 @@
 interface EmployeeDetails {
   documentId?: string;
+  employmentDate: Date;
+  salary: number;
   order_discount_total?: number;
   debt_shortage?: number;
   fines_debits?: number;

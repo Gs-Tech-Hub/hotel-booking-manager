@@ -21,7 +21,13 @@ export default function CreateEmployeeSummaryModal(employeeDetails: EmployeeDeta
         onClose={() => setIsOpen(false)}
         title="Add/Update Employee Data"
         content={<AddEmployeeSummaryForm 
-          initialData={{ ...employeeDetails, documentId: employeeDetails.documentId || '', id: employeeDetails.id ? Number(employeeDetails.id) : undefined }}
+          initialData={{ 
+            ...employeeDetails, 
+            documentId: employeeDetails.documentId || '', 
+            id: employeeDetails.id ? Number(employeeDetails.id) : undefined,
+            employmentDate: employeeDetails.employmentDate || '',
+            salary: employeeDetails.salary || 0
+          }}
           onSubmit={() => {
             setIsOpen(false);
           }}
