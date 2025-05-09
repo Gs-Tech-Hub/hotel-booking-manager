@@ -4,7 +4,8 @@
   "info": {
     "singularName": "employee-summary",
     "pluralName": "employee-summaries",
-    "displayName": "Employee Summary"
+    "displayName": "Employee Summary",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -13,8 +14,7 @@
     "users_permissions_user": {
       "type": "relation",
       "relation": "oneToOne",
-      "target": "plugin::users-permissions.user",
-      "private": false
+      "target": "plugin::users-permissions.user"
     },
     "order_discount_total": {
       "type": "decimal",
@@ -34,8 +34,19 @@
     },
     "salary_advanced_status": {
       "type": "enumeration",
-      "enum": ["pending", "approved", "rejected", "settled"],
+      "enum": [
+        "pending",
+        "approved",
+        "rejected",
+        "settled"
+      ],
       "required": true
+    },
+    "employmentDate": {
+      "type": "date"
+    },
+    "salary": {
+      "type": "integer"
     }
   }
 }

@@ -931,6 +931,7 @@ export interface ApiEmployeeSummaryEmployeeSummary
   extends Struct.CollectionTypeSchema {
   collectionName: 'employee_summaries';
   info: {
+    description: '';
     displayName: 'Employee Summary';
     pluralName: 'employee-summaries';
     singularName: 'employee-summary';
@@ -943,6 +944,7 @@ export interface ApiEmployeeSummaryEmployeeSummary
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     debt_shortage: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    employmentDate: Schema.Attribute.Date;
     fines_debits: Schema.Attribute.Decimal & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -952,6 +954,7 @@ export interface ApiEmployeeSummaryEmployeeSummary
       Schema.Attribute.Private;
     order_discount_total: Schema.Attribute.Decimal & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
+    salary: Schema.Attribute.Integer;
     salary_advanced: Schema.Attribute.Decimal & Schema.Attribute.Required;
     salary_advanced_status: Schema.Attribute.Enumeration<
       ['pending', 'approved', 'rejected', 'settled']
