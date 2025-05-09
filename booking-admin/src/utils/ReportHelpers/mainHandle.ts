@@ -73,9 +73,9 @@ export async function handleMainRecord(
   try {
     const filters = generateFilters(startDate, endDate, department);
     const bookingItems = await strapiService.getBookingItems(filters);
-    // console.log('booking-items:', bookingItems);
+    console.log('booking-items:', bookingItems);
     const groupedItems = itemsByDepartment(bookingItems);
-    // console.log("grouped items:", groupedItems);
+    console.log("grouped items:", groupedItems);
 
     const productCountFilters = generateFilters(startDate, endDate, "product_count");
     const productCountItems = await strapiService.getBookingItems(productCountFilters);
@@ -86,9 +86,9 @@ export async function handleMainRecord(
     // Aggregate totals and flatten
     const { updatedItems: flatItems, salesByProduct, paymentMethods, departmentTotals } = calculateDepartmentTotals(mergedGroupedItems, productCountItems, department);
 
-    // console.log("Aggregated Items:", flatItems);
-    // console.log("Sales by Product:", salesByProduct);
-    // console.log("Department Totals:", departmentTotals);
+    console.log("Aggregated Items:", flatItems);
+    console.log("Sales by Product:", salesByProduct);
+    console.log("Department Totals:", departmentTotals);
 
     // Totals
     const totalUnits = flatItems.reduce((sum, item) => sum + item.quantity, 0);

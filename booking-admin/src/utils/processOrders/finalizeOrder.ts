@@ -69,6 +69,7 @@ export const processOrder = async ({
         });
 
         bookingItems.push({ id: bookingItemRes.id });
+        await updateDrinkStock(items, validatedItems);
       } else if (department === 'restaurant') {
         food_items = await fetchAndConnectItems(items, strapiService.getFoodItems, 'food_items', order, employeeOrders);
         validatedItems = (food_items || []) as ValidatedItem[];
@@ -125,7 +126,6 @@ export const processOrder = async ({
       }
 
       totalOrderAmount += items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-      await updateDrinkStock(items, validatedItems);
     }
 
     // Final order payload
