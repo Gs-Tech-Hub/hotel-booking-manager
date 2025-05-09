@@ -17,7 +17,7 @@ export const NAV_DATA: NavSection[] = [
         title: "Booking",
         icon: Icons.BookingsIcon,
         url: "/bookings",
-        roles: [ "admin", "receptionist", "manager"],
+        roles: [ "admin", "bar", "receptionist", "manager"],
         items: [],
       },
       {
