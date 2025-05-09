@@ -62,7 +62,7 @@ export function ProductsList({
       return 0;
     });
   }
-
+    const restaurant_stock = 100
   return (
     <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
       <div className="px-6 py-4 sm:px-7 sm:py-5 xl:px-8.5">
@@ -83,7 +83,7 @@ export function ProductsList({
 
         <TableBody>
           {filteredData.map((item) => {
-            const status = getAvailabilityStatus(item.bar_stock, 10);
+            const status = getAvailabilityStatus(restaurant_stock, 10);
 
             return (
               <TableRow
