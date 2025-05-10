@@ -5,7 +5,6 @@ import { OverviewCardsGroup } from "./_components/overview-cards";
 import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
 import { ProductsListSkeleton } from "./_components/products-table/skeleton";
 import DrinksInventoryPage from "./_components/products-table/drinks-inventory";
-import { handleDepartmentRecord } from "@/utils/handleDepartmentRecord";
 import { handleMainRecord } from "@/utils/ReportHelpers/mainHandle";
 
 interface ProductData {
