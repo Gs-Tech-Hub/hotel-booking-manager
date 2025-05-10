@@ -3,11 +3,23 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { strapiService } from '@/utils/dataEndPoint';
 import { SwimmingPoolList } from './product-table/pool-table';
+import { OverviewCardsGroup } from './overview-cards';
+import { OverviewCardsSkeleton } from './overview-cards/skeleton';
+import { handleMainRecord } from '@/utils/ReportHelpers/mainHandle';
 
 export default function SwimmingPoolPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [poolData, setPoolData] = useState([]);
     const [selectedDate, setSelectedDate] = useState('today');
+    const [overviewData, setOverviewData] = useState({
+
+    total_cash: { value: 0 },
+    total_transfers: { value: 0 },
+    total_sold: { value: 0 },
+    low_stock: { value: 0 },
+    out_of_stock: { value: 0 },
+
+    })
 
     const formatDate = (date: Date) => date.toISOString();
 
@@ -43,6 +55,19 @@ export default function SwimmingPoolPage() {
                 'filters[createdAt][$lte]': formatDate(endDate),
             });
 
+
+        const newResponse = await handleMainRecord(formatDate(startDate), formatDate(endDate), 'hotel');
+        console.log('Overview response:', newResponse);
+
+      if (newResponse?.overview) {
+        setOverviewData({
+          total_sold: { value: newResponse.overview.hotelSales },
+          total_transfers: { value: newResponse.overview.totalTransfers },
+          total_cash: { value: 0 },
+          low_stock: { value: 0 },
+          out_of_stock: { value: 0 }
+        });
+      }
             // Flatten response so each hotel_service becomes its own row
           
                       // Map the response data to fit the structure required by SwimmingPoolList
@@ -89,9 +114,25 @@ export default function SwimmingPoolPage() {
             {isLoading ? (
                 <div>Loading...</div>
             ) : (
-                <Suspense fallback={<div>Loading service list...</div>}>
+                <div>
+                     <Suspense fallback={<OverviewCardsSkeleton />}>
+                            <OverviewCardsGroup
+                              total_cash={overviewData.total_cash}
+                              total_transfers={overviewData.total_transfers}
+                              total_sold={overviewData.total_sold}
+                              low_stock={overviewData.low_stock}
+                              out_of_stock={overviewData.out_of_stock}
+                            />
+                          </Suspense>
+
+                     <Suspense fallback={<div>Loading service list...</div>}>
                     <SwimmingPoolList hotelServices={poolData} />
-                </Suspense>
+                    </Suspense>
+
+
+
+                </div>
+               
             )}
         </div>
     );
