@@ -1,0 +1,50 @@
+{
+  "kind": "collectionType",
+  "collectionName": "gym_memberships",
+  "info": {
+    "singularName": "gym-membership",
+    "pluralName": "gym-memberships",
+    "displayName": "Gym Membership",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "customer": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::customer.customer"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "emergency_contact": {
+      "type": "string"
+    },
+    "joined_date": {
+      "type": "date"
+    },
+    "expiry_date": {
+      "type": "date"
+    },
+    "check_ins": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::check-in.check-in",
+      "mappedBy": "gym_membership"
+    },
+    "payment": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::payment.payment"
+    },
+    "membership_plan": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::membership-plan.membership-plan",
+      "inversedBy": "gym_membership"
+    }
+  }
+}

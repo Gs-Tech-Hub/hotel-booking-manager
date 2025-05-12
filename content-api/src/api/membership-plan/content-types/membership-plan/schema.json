@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "membership_plans",
+  "info": {
+    "singularName": "membership-plan",
+    "pluralName": "membership-plans",
+    "displayName": "Membership Plan"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "duration_months": {
+      "type": "integer"
+    },
+    "price": {
+      "type": "integer"
+    },
+    "access_to_classes": {
+      "type": "boolean"
+    },
+    "discount_amount": {
+      "type": "integer"
+    },
+    "isActive": {
+      "type": "boolean"
+    },
+    "max_checkins_per_month": {
+      "type": "integer"
+    },
+    "gym_membership": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::gym-membership.gym-membership",
+      "mappedBy": "membership_plan"
+    }
+  }
+}

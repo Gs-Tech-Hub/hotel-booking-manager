@@ -770,6 +770,39 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiCheckInCheckIn extends Struct.CollectionTypeSchema {
+  collectionName: 'check_ins';
+  info: {
+    displayName: 'Check-in';
+    pluralName: 'check-ins';
+    singularName: 'check-in';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    check_in_time: Schema.Attribute.DateTime;
+    check_out_time: Schema.Attribute.DateTime;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    gym_membership: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::gym-membership.gym-membership'
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::check-in.check-in'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
   collectionName: 'customers';
   info: {
@@ -927,6 +960,44 @@ export interface ApiEmployeeOrderEmployeeOrder
   };
 }
 
+export interface ApiEmployeeRecordEmployeeRecord
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'employee_records';
+  info: {
+    description: '';
+    displayName: 'Employee Record';
+    pluralName: 'employee-records';
+    singularName: 'employee-record';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    debts: Schema.Attribute.Integer;
+    description: Schema.Attribute.Blocks;
+    fines: Schema.Attribute.Integer;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::employee-record.employee-record'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    salary_advance: Schema.Attribute.Integer;
+    shortage: Schema.Attribute.Integer;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    users_permissions_user: Schema.Attribute.Relation<
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiEmployeeSummaryEmployeeSummary
   extends Struct.CollectionTypeSchema {
   collectionName: 'employee_summaries';
@@ -967,6 +1038,51 @@ export interface ApiEmployeeSummaryEmployeeSummary
       'oneToOne',
       'plugin::users-permissions.user'
     >;
+  };
+}
+
+export interface ApiExpenseExpense extends Struct.CollectionTypeSchema {
+  collectionName: 'expenses';
+  info: {
+    description: '';
+    displayName: 'Expense';
+    pluralName: 'expenses';
+    singularName: 'expense';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    amount: Schema.Attribute.Integer;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    date: Schema.Attribute.Date;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::expense.expense'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String;
+    payment_type: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::payment-type.payment-type'
+    >;
+    projects: Schema.Attribute.Relation<'oneToMany', 'api::project.project'>;
+    publishedAt: Schema.Attribute.DateTime;
+    receipts: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    users_permissions_user: Schema.Attribute.Relation<
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+    vendors: Schema.Attribute.Relation<'manyToMany', 'api::vendor.vendor'>;
   };
 }
 
@@ -1139,6 +1255,46 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiGymMembershipGymMembership
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'gym_memberships';
+  info: {
+    description: '';
+    displayName: 'Gym Membership';
+    pluralName: 'gym-memberships';
+    singularName: 'gym-membership';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    check_ins: Schema.Attribute.Relation<'oneToMany', 'api::check-in.check-in'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    customer: Schema.Attribute.Relation<'oneToOne', 'api::customer.customer'>;
+    emergency_contact: Schema.Attribute.String;
+    expiry_date: Schema.Attribute.Date;
+    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    joined_date: Schema.Attribute.Date;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::gym-membership.gym-membership'
+    > &
+      Schema.Attribute.Private;
+    membership_plan: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::membership-plan.membership-plan'
+    >;
+    payment: Schema.Attribute.Relation<'oneToOne', 'api::payment.payment'>;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiHotelServiceHotelService
   extends Struct.CollectionTypeSchema {
   collectionName: 'hotel_services';
@@ -1206,6 +1362,46 @@ export interface ApiJobApplicationJobApplication
     publishedAt: Schema.Attribute.DateTime;
     resume: Schema.Attribute.Media<'files'> & Schema.Attribute.Required;
     skills: Schema.Attribute.Text;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiMembershipPlanMembershipPlan
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'membership_plans';
+  info: {
+    displayName: 'Membership Plan';
+    pluralName: 'membership-plans';
+    singularName: 'membership-plan';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    access_to_classes: Schema.Attribute.Boolean;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Blocks;
+    discount_amount: Schema.Attribute.Integer;
+    duration_months: Schema.Attribute.Integer;
+    gym_membership: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::gym-membership.gym-membership'
+    >;
+    isActive: Schema.Attribute.Boolean;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::membership-plan.membership-plan'
+    > &
+      Schema.Attribute.Private;
+    max_checkins_per_month: Schema.Attribute.Integer;
+    name: Schema.Attribute.String;
+    price: Schema.Attribute.Integer;
+    publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1412,6 +1608,38 @@ export interface ApiProductCountProductCount
     product_count: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
     total_amount: Schema.Attribute.Integer;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiProjectProject extends Struct.CollectionTypeSchema {
+  collectionName: 'projects';
+  info: {
+    displayName: 'Project';
+    pluralName: 'projects';
+    singularName: 'project';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    budget: Schema.Attribute.Integer;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Blocks;
+    end_date: Schema.Attribute.Date;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::project.project'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    start_date: Schema.Attribute.Date;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1633,6 +1861,39 @@ export interface ApiSpecialInfoSpecialInfo extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     promoEnd: Schema.Attribute.Date;
     promoStart: Schema.Attribute.Date;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiVendorVendor extends Struct.CollectionTypeSchema {
+  collectionName: 'vendors';
+  info: {
+    displayName: 'Vendor';
+    pluralName: 'vendors';
+    singularName: 'vendor';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    address: Schema.Attribute.String;
+    contact_person: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.String;
+    expenses: Schema.Attribute.Relation<'manyToMany', 'api::expense.expense'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::vendor.vendor'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String;
+    phone: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -2159,30 +2420,37 @@ declare module '@strapi/strapi' {
       'api::boooking.boooking': ApiBoookingBoooking;
       'api::carrousel.carrousel': ApiCarrouselCarrousel;
       'api::category.category': ApiCategoryCategory;
+      'api::check-in.check-in': ApiCheckInCheckIn;
       'api::customer.customer': ApiCustomerCustomer;
       'api::drink-type.drink-type': ApiDrinkTypeDrinkType;
       'api::drink.drink': ApiDrinkDrink;
       'api::employee-order.employee-order': ApiEmployeeOrderEmployeeOrder;
+      'api::employee-record.employee-record': ApiEmployeeRecordEmployeeRecord;
       'api::employee-summary.employee-summary': ApiEmployeeSummaryEmployeeSummary;
+      'api::expense.expense': ApiExpenseExpense;
       'api::floor-plan.floor-plan': ApiFloorPlanFloorPlan;
       'api::food-item.food-item': ApiFoodItemFoodItem;
       'api::food-type.food-type': ApiFoodTypeFoodType;
       'api::game.game': ApiGameGame;
       'api::global.global': ApiGlobalGlobal;
+      'api::gym-membership.gym-membership': ApiGymMembershipGymMembership;
       'api::hotel-service.hotel-service': ApiHotelServiceHotelService;
       'api::job-application.job-application': ApiJobApplicationJobApplication;
+      'api::membership-plan.membership-plan': ApiMembershipPlanMembershipPlan;
       'api::menu-category.menu-category': ApiMenuCategoryMenuCategory;
       'api::order.order': ApiOrderOrder;
       'api::payment-detail.payment-detail': ApiPaymentDetailPaymentDetail;
       'api::payment-type.payment-type': ApiPaymentTypePaymentType;
       'api::payment.payment': ApiPaymentPayment;
       'api::product-count.product-count': ApiProductCountProductCount;
+      'api::project.project': ApiProjectProject;
       'api::promo-coupon.promo-coupon': ApiPromoCouponPromoCoupon;
       'api::restaurant.restaurant': ApiRestaurantRestaurant;
       'api::room.room': ApiRoomRoom;
       'api::service.service': ApiServiceService;
       'api::slider.slider': ApiSliderSlider;
       'api::special-info.special-info': ApiSpecialInfoSpecialInfo;
+      'api::vendor.vendor': ApiVendorVendor;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

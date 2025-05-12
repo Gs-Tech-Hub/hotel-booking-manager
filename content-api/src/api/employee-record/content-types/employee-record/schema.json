@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "employee_records",
+  "info": {
+    "singularName": "employee-record",
+    "pluralName": "employee-records",
+    "displayName": "Employee Record",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "users_permissions_user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "fines": {
+      "type": "integer"
+    },
+    "debts": {
+      "type": "integer"
+    },
+    "shortage": {
+      "type": "integer"
+    },
+    "salary_advance": {
+      "type": "integer"
+    },
+    "description": {
+      "type": "blocks"
+    }
+  }
+}

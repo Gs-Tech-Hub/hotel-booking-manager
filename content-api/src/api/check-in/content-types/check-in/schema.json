@@ -1,0 +1,26 @@
+{
+  "kind": "collectionType",
+  "collectionName": "check_ins",
+  "info": {
+    "singularName": "check-in",
+    "pluralName": "check-ins",
+    "displayName": "Check-in"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "gym_membership": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::gym-membership.gym-membership",
+      "inversedBy": "check_ins"
+    },
+    "check_in_time": {
+      "type": "datetime"
+    },
+    "check_out_time": {
+      "type": "datetime"
+    }
+  }
+}

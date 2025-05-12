@@ -1,0 +1,56 @@
+{
+  "kind": "collectionType",
+  "collectionName": "expenses",
+  "info": {
+    "singularName": "expense",
+    "pluralName": "expenses",
+    "displayName": "Expense",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "integer"
+    },
+    "date": {
+      "type": "date"
+    },
+    "payment_type": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::payment-type.payment-type"
+    },
+    "receipts": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "users_permissions_user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "vendors": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::vendor.vendor",
+      "inversedBy": "expenses"
+    },
+    "projects": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::project.project"
+    }
+  }
+}
