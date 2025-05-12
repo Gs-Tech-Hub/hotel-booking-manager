@@ -70,7 +70,10 @@ export default function OrderDetailsModal({ order, onClose }: OrderDetailsModalP
           waiterId: currentOrder.waiterId || "",
           items: currentOrder.items, // Use original items instead of normalized ones
           status: currentOrder.status,
-          totalAmount: currentOrder.totalAmount
+          totalAmount: currentOrder.totalAmount,
+          discountPrice: currentOrder.discountPrice,
+          finalPrice: currentOrder.finalPrice,
+          selectedStaffId: currentOrder.selectedStaffId,
         },
         waiterId: user.id,
         paymentMethod: currentOrder.paymentMethod || "",
