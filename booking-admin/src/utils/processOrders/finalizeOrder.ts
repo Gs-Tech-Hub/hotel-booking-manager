@@ -66,6 +66,8 @@ export const processOrder = async ({
           drinks,
           food_items: null,
           hotel_services: null,
+          discountPrice: order.discountPrice,
+          finalPrice: order.finalPrice,
         });
 
         bookingItems.push({ id: bookingItemRes.id });
@@ -85,6 +87,8 @@ export const processOrder = async ({
           drinks: null,
           food_items,
           hotel_services: null,
+          discountPrice: order.discountPrice,
+          finalPrice: order.finalPrice,
         });
         bookingItems.push({ id: bookingItemRes.id });
       } else if (department === 'hotel') {
@@ -102,6 +106,8 @@ export const processOrder = async ({
           drinks: null,
           food_items: null,
           hotel_services,
+          discountPrice: order.discountPrice,
+          finalPrice: order.finalPrice,
         });
 
         bookingItems.push({ id: bookingItemRes.id });
