@@ -22,6 +22,7 @@ export type Product = {
   bar_stock: number; // existing field
   sold: number;
   amount: number;
+  amountPaid: number;
   profit: number;
   isFood?: boolean; // Make optional
   isBar?: boolean; // Make optional
@@ -87,7 +88,7 @@ export function ProductsList({
             <TableHead>Stock Level</TableHead>
             <TableHead>Units Sold</TableHead>
             <TableHead>Amount</TableHead>
-
+            <TableHead>Paid</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -107,7 +108,7 @@ export function ProductsList({
                 <TableCell className={status.color}>{status.label}</TableCell>
                 <TableCell>{item.sold}</TableCell>
                 <TableCell>{formatPrice((item.amount),'NGN')}</TableCell>
-
+                <TableCell>{formatPrice((item.amountPaid), "NGN")} </TableCell>
               </TableRow>
             );
           })}

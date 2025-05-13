@@ -43,9 +43,14 @@ export const processOrder = async ({
           item => typeof item.documentId === 'string'
         ) as ValidatedItem[];
 
-        // Step 2: Resolve productCountIds
-        const productCountMap = await resolveProductCountIds(items, validatedItems);
-        const productCountIds = Array.from(productCountMap.values());
+          // Create employee orders
+          for (const empOrder of employeeOrders) {
+            await strapiService.createEmployeeOrder(empOrder);
+          }
+          
+    // Step 2: Create productCount records
+    const productCountMap = await resolveProductCountIds(items, validatedItems);
+    const productCountIds = Array.from(productCountMap.values());
 
         // Step 4: Re-fetch drinks to ensure correct IDs
         const documentIds = Array.from(new Set(items.map(item => item.documentId).filter(Boolean)));
@@ -58,23 +63,30 @@ export const processOrder = async ({
         }
           console.log("Drinks:", drinks);
 
-        const bookingItemRes = await createBookingItemForDepartment({
-          department,
-          items,
-          productCountIds,
-          paymentMethod,
-          drinks,
-          food_items: null,
-          hotel_services: null,
-          discountPrice: order.discountPrice,
-          finalPrice: order.finalPrice,
-        });
+    // Step 4: Create booking item
+    const bookingItemRes = await createBookingItemForDepartment({
+      department,
+      items,
+      productCountIds,
+      paymentMethod,
+      drinks: updatedDrinksList,
+      food_items: null,
+      hotel_services: null,
+      discountPrice: order.discountPrice,
+      finalPrice: order.finalPrice,    });
 
-        bookingItems.push({ id: bookingItemRes.id });
-        await updateDrinkStock(items, validatedItems);
+    bookingItems.push({ id: bookingItemRes.id });
+ // Step 5: Update stock if needed
+    await updateDrinkStock(items, validatedItems);
+    
       } else if (department === 'restaurant') {
         food_items = await fetchAndConnectItems(items, strapiService.getFoodItems, 'food_items', order, employeeOrders);
         validatedItems = (food_items || []) as ValidatedItem[];
+
+          // Create employee orders
+        for (const empOrder of employeeOrders) {
+          await strapiService.createEmployeeOrder(empOrder);
+        }
 
         const productCountMap = await resolveProductCountIds(items, validatedItems);
         const productCountIds = Array.from(productCountMap.values());
@@ -95,6 +107,11 @@ export const processOrder = async ({
         hotel_services = await fetchAndConnectItems(items, strapiService.getHotelServices, 'hotel_services', order, employeeOrders);
         validatedItems = (hotel_services || []) as ValidatedItem[];
 
+          // Create employee orders
+        for (const empOrder of employeeOrders) {
+          await strapiService.createEmployeeOrder(empOrder);
+        }
+
         const productCountMap = await resolveProductCountIds(items, validatedItems);
         const productCountIds = Array.from(productCountMap.values());
 
@@ -112,7 +129,7 @@ export const processOrder = async ({
 
         bookingItems.push({ id: bookingItemRes.id });
       } else if (department === 'games') {
-        validatedItems = items.map(item => ({
+        validatedItems = items.map((item: { id: { toString: () => any; }; documentId: any; name: any; }) => ({
           id: item.id.toString(),
           documentId: item.documentId,
           name: item.name,
@@ -130,8 +147,8 @@ export const processOrder = async ({
 
         bookingItems.push({ id: bookingItemRes.id });
       }
-
-      totalOrderAmount += items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+       
+      totalOrderAmount += items.reduce((sum: number, item: { price: number; quantity: number; }) => sum + item.price * item.quantity, 0);
     }
 
     // Final order payload
@@ -144,15 +161,6 @@ export const processOrder = async ({
     };
 
     const orderRes = await strapiService.post('orders', orderPayload);
-
-    // Create employee orders
-    for (const empOrder of employeeOrders) {
-      await strapiService.createEmployeeOrder(empOrder);
-    }
-
-    if (order.discountPrice && employeeOrders.length === 0) {
-      throw new Error('Order processing failed: Discount exists but no employee orders created.');
-    }
 
     return { success: true, orderId: orderRes.documentId };
   } catch (error) {
