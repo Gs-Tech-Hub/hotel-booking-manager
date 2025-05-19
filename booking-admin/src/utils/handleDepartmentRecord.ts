@@ -71,10 +71,10 @@ function processProductCount(
   if (!matchedDocumentId) return;
 
   const product =
-    (department === "bar_services" && item.drinks?.find((p: any) => p.documentId === matchedDocumentId)) ||
-    (department === "restaurant_services" && item.food_items?.find((p: any) => p.documentId === matchedDocumentId)) ||
-    (department === "hotel_services" && item.hotel_services?.find((p: any) => p.documentId === matchedDocumentId)) ||
-    (department === "Games" && item.games?.find((p: any) => p.documentId === matchedDocumentId));
+    (department === "bar" && item.drinks?.find((p: any) => p.documentId === matchedDocumentId)) ||
+    (department === "restaurant" && item.food_items?.find((p: any) => p.documentId === matchedDocumentId)) ||
+    (department === "hotel" && item.hotel_services?.find((p: any) => p.documentId === matchedDocumentId)) ||
+    (department === "games" && item.games?.find((p: any) => p.documentId === matchedDocumentId));
 
   console.log("Found product:", product);
 
@@ -106,7 +106,7 @@ function processProductCount(
 export async function handleDepartmentRecord(
   startDate: string,
   endDate: string,
-  department: "bar_services" | "restaurant_services" | "hotel_services" | "Games",
+  department: "bar" | "restaurant" | "hotel" | "games",
   options: {
     inventoryEndpoint: keyof typeof strapiService;
     departmentStockField: string;
@@ -175,7 +175,7 @@ export async function handleDepartmentRecord(
 
       paymentDetailsByOrder[item.id] = { paymentMethod, amountPaid };
 
-      if (department === "Games" && Array.isArray(item.games) && item.games.length > 0) {
+      if (department === "games" && Array.isArray(item.games) && item.games.length > 0) {
         for (const game of item.games) {
           console.log("Processing game:", game);
           const gameAmount = game.amount_paid || 0;
@@ -206,10 +206,10 @@ export async function handleDepartmentRecord(
         console.log("Processing individual product:", item);
         const count = item.quantity || 0;
         const product =
-          (department === "bar_services" && item.drinks?.[0]) ||
-          (department === "restaurant_services" && item.food_items?.[0]) ||
-          (department === "hotel_services" && item.hotel_services?.[0]) ||
-          (department === "Games" && item.games?.[0]);
+          (department === "bar" && item.drinks?.[0]) ||
+          (department === "restaurant" && item.food_items?.[0]) ||
+          (department === "hotel" && item.hotel_services?.[0]) ||
+          (department === "games" && item.games?.[0]);
 
         if (!product) continue;
 
@@ -266,14 +266,15 @@ export async function handleDepartmentRecord(
         sold: sales.units,
         amount: sales.amount,
         profit: sales.amount - (product.price * sales.units),
-        isBar: department === "bar_services",
-        isRestaurant: department === "restaurant_services",
-        isHotel: department === "hotel_services",
-        isGame: department === "Games",
+        isBar: department === "bar",
+        isRestaurant: department === "restaurant",
+        isHotel: department === "hotel",
+        isGame: department === "games",
         bar_stock: product.bar_stock || 0,
         drink_type: product.drink_type || null,
         showStock: true,
         showProfit: true,
+        amountPaid: product.amount_paid || 0,
       };
     });
 
@@ -283,15 +284,15 @@ export async function handleDepartmentRecord(
       totalSales: totalAmount,
       totalUnits,
       totalProfit: products.reduce((acc, p) => acc + p.profit, 0),
-      barSales: department === "bar_services" ? departmentSales : 0,
-      foodSales: department === "restaurant_services" ? departmentSales : 0,
-      hotelSales: department === "hotel_services" ? departmentSales : 0,
-      gameSales: department === "Games" ? departmentSales : 0,
+      barSales: department === "bar" ? departmentSales : 0,
+      foodSales: department === "restaurant" ? departmentSales : 0,
+      hotelSales: department === "hotel" ? departmentSales : 0,
+      gameSales: department === "games" ? departmentSales : 0,
     };
 
     console.log("Final overview data:", overview);
 
-    return department === "bar_services"
+    return department === "bar"
       ? { overview, products, paymentDetailsByOrder}
       : { overview, products, paymentDetailsByOrder };
   } catch (error) {

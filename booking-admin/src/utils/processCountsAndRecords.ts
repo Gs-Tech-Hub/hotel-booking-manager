@@ -215,6 +215,7 @@ export async function handleDepartmentRecord(
         drink_type: product.drink_type || null,
         showStock: true,
         showProfit: true,
+        amountPaid: sales.amount, // Added missing property
       };
     });
 

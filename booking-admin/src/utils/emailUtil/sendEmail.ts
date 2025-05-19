@@ -1,5 +1,4 @@
-// utils/sendResendEmail.js
-const axios = require('axios');
+import axios from 'axios';
 
 interface EmailParams {
   to: string;
