@@ -45,6 +45,12 @@
       "relation": "oneToOne",
       "target": "api::membership-plan.membership-plan",
       "inversedBy": "gym_membership"
+    },
+    "gym_and_sports": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::gym-and-sport.gym-and-sport",
+      "mappedBy": "gym_memberships"
     }
   }
 }

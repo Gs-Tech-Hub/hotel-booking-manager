@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "gym_and_sport_sessions",
+  "info": {
+    "singularName": "gym-and-sport-session",
+    "pluralName": "gym-and-sport-sessions",
+    "displayName": "GymAndSport-session",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "session_name": {
+      "type": "string"
+    },
+    "session_time": {
+      "type": "datetime"
+    },
+    "users_permissions_users": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user"
+    },
+    "session_fee": {
+      "type": "integer"
+    }
+  }
+}

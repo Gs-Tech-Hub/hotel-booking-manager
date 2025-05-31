@@ -1255,6 +1255,89 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiGymAndSportSessionGymAndSportSession
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'gym_and_sport_sessions';
+  info: {
+    description: '';
+    displayName: 'GymAndSport-session';
+    pluralName: 'gym-and-sport-sessions';
+    singularName: 'gym-and-sport-session';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::gym-and-sport-session.gym-and-sport-session'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    session_fee: Schema.Attribute.Integer;
+    session_name: Schema.Attribute.String;
+    session_time: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    users_permissions_users: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
+export interface ApiGymAndSportGymAndSport extends Struct.CollectionTypeSchema {
+  collectionName: 'gym_and_sports';
+  info: {
+    description: '';
+    displayName: 'Gym-and-Sport';
+    pluralName: 'gym-and-sports';
+    singularName: 'gym-and-sport';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    check_in: Schema.Attribute.Relation<'oneToOne', 'api::check-in.check-in'>;
+    CloseTime: Schema.Attribute.Time;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    gym_and_sport_sessions: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::gym-and-sport-session.gym-and-sport-session'
+    >;
+    gym_memberships: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::gym-membership.gym-membership'
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::gym-and-sport.gym-and-sport'
+    > &
+      Schema.Attribute.Private;
+    membership_plans: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::membership-plan.membership-plan'
+    >;
+    OpenTime: Schema.Attribute.Time;
+    payment_type: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::payment-type.payment-type'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiGymMembershipGymMembership
   extends Struct.CollectionTypeSchema {
   collectionName: 'gym_memberships';
@@ -1275,6 +1358,10 @@ export interface ApiGymMembershipGymMembership
     customer: Schema.Attribute.Relation<'oneToOne', 'api::customer.customer'>;
     emergency_contact: Schema.Attribute.String;
     expiry_date: Schema.Attribute.Date;
+    gym_and_sports: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::gym-and-sport.gym-and-sport'
+    >;
     isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     joined_date: Schema.Attribute.Date;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -2433,6 +2520,8 @@ declare module '@strapi/strapi' {
       'api::food-type.food-type': ApiFoodTypeFoodType;
       'api::game.game': ApiGameGame;
       'api::global.global': ApiGlobalGlobal;
+      'api::gym-and-sport-session.gym-and-sport-session': ApiGymAndSportSessionGymAndSportSession;
+      'api::gym-and-sport.gym-and-sport': ApiGymAndSportGymAndSport;
       'api::gym-membership.gym-membership': ApiGymMembershipGymMembership;
       'api::hotel-service.hotel-service': ApiHotelServiceHotelService;
       'api::job-application.job-application': ApiJobApplicationJobApplication;
