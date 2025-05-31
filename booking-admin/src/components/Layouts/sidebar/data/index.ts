@@ -60,6 +60,23 @@ export const NAV_DATA: NavSection[] = [
         ],
       },
       {
+        title: "Sports & Fitness",
+        icon: Icons.FitnessIcon,
+        roles: ["admin", "receptionist", "manager"],
+        items: [
+          {
+            title: "addNewSport",
+            url: "/sports-and-fitness/add-new",
+            roles: ["admin", "receptionist", "manager"],
+          },
+          {
+            title: "dynamicSport",
+            url: "/sports-and-fitness",
+            roles: ["admin", "manager"],
+          },
+        ],
+      },
+      {
         title: "Inventory",
         icon: Icons.InventoryIcon,
         roles: ["admin", "manager"],

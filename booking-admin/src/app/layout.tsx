@@ -16,8 +16,8 @@ import { ToastContainer } from "react-toastify";
 
 export const metadata: Metadata = {
   title: {
-    template: "F-MMM1 HOTEL Admin",
-    default: "F-MMM1 HOTEL - Dashboard",
+    template: "Canada World HOTEL Admin",
+    default: "Canada World HOTEL - Dashboard",
   },
   description:"Admin Dashboard",
 };
