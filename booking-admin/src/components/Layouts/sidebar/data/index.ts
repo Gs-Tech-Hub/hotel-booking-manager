@@ -67,10 +67,15 @@ export const NAV_DATA: NavSection[] = [
           {
             title: "addNewSport",
             url: "/sports-and-fitness/add-new",
-            roles: ["admin", "receptionist", "manager"],
+            roles: ["super-admin"],
           },
           {
-            title: "dynamicSport",
+            title: "Gym Fitness",
+            url: "/sports-and-fitness",
+            roles: ["admin", "manager"],
+          },
+           {
+            title: "Sports & Club",
             url: "/sports-and-fitness",
             roles: ["admin", "manager"],
           },

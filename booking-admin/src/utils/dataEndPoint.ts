@@ -493,7 +493,19 @@ async updateDrinksList(drinkId: string | number, drinkData: any) {
     if (result.error) throw new Error(result.error);
     return result.data;
   },
+  //create sport and fitness
+  async createSportAndFitness(sportData: any) { 
+    const result = await apiHandlerInstance.createData({ 
+      endpoint: "sport-and-fitness", 
+      data: sportData 
+    });
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
   
   // Additional utility methods can be added here following the same pattern
 };
+
+// All endpoints have been modularized by department. Please use the new files in src/utils/ for each department's endpoints.
+// This file is now deprecated and can be removed after migration is complete.
 

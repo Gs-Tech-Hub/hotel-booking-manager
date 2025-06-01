@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Spinner } from "@/components/Spinner";
-import { getGymMembers } from "@/components/Tables/gym-members";
+import { strapiService } from "@/utils/dataEndpoint/index";
 import AddMembershipModal from "./AddMembershipModal";
 import RenewMembershipModal from "./RenewMembershipModal";
 import AttendanceModal from "./AttendanceModal";
@@ -24,12 +24,14 @@ export default function GymMembershipTable() {
   const [attendanceMember, setAttendanceMember] = useState<any | null>(null);
   const [showAttendanceModal, setShowAttendanceModal] = useState(false);
 
-  const fetchMembers = () => {
+  const fetchMembers = async () => {
     setLoading(true);
-    getGymMembers().then((data) => {
-      setMembers(data);
-      setLoading(false);
+    const gymData = await strapiService.gymMembershipsEndpoints.getGymMemberships({
+      "populate": "*"
     });
+    console.log('members:', gymData);
+    setMembers(gymData);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -86,15 +88,15 @@ export default function GymMembershipTable() {
                 setShowRenewModal(true);
               }}
             >
-              <TableCell>{member.full_name}</TableCell>
-              <TableCell>{member.email}</TableCell>
-              <TableCell>{member.phone}</TableCell>
-              <TableCell>{member.membership_plan}</TableCell>
-              <TableCell>{member.registration_date}</TableCell>
-              <TableCell>{member.start_date}</TableCell>
-              <TableCell>{member.end_date}</TableCell>
+              <TableCell>{member.customer?.firstName} {member.customer?.lastName}</TableCell>
+              <TableCell>{member.customer?.email}</TableCell>
+              <TableCell>{member.customer?.phone}</TableCell>
+              <TableCell>{member.membership_plan?.name}</TableCell>
+              <TableCell>{member.joined_date}</TableCell>
+              <TableCell>{member.joined_date}</TableCell>
+              <TableCell>{member.expiry_date}</TableCell>
               <TableCell>
-                {member.attendance.length} check-ins
+                {member.check_ins?.length || 0} check-ins
                 <button
                   className="ml-2 text-xs text-primary underline"
                   onClick={(e) => {
@@ -130,10 +132,11 @@ export default function GymMembershipTable() {
             setShowAttendanceModal(false);
             setAttendanceMember(null);
           }}
-          memberName={attendanceMember.full_name}
-          attendance={attendanceMember.attendance}
-          imageUrl={attendanceMember.image_url || '/default-avatar.png'}
-          planExpiry={attendanceMember.end_date}
+          memberId={attendanceMember.id}
+          memberName={attendanceMember.customer?.firstName + ' ' + attendanceMember.customer?.lastName}
+          attendance={attendanceMember.check_ins}
+          imageUrl={attendanceMember.profile_photo?.formats.medium.url || '/default-avatar.png'}
+          planExpiry={attendanceMember.expiry_date}
         />
       )}
     </div>
