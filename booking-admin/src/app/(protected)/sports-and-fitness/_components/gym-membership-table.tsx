@@ -29,7 +29,7 @@ export default function GymMembershipTable() {
     const gymData = await strapiService.gymMembershipsEndpoints.getGymMemberships({
       "populate": "*"
     });
-    console.log('members:', gymData);
+    // console.log('members:', gymData);
     setMembers(gymData);
     setLoading(false);
   };
