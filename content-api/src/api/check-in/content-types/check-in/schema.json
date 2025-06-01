@@ -4,7 +4,8 @@
   "info": {
     "singularName": "check-in",
     "pluralName": "check-ins",
-    "displayName": "Check-in"
+    "displayName": "Check-in",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -21,6 +22,12 @@
     },
     "check_out_time": {
       "type": "datetime"
+    },
+    "gym_and_sports": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::gym-and-sport.gym-and-sport",
+      "inversedBy": "check_ins"
     }
   }
 }

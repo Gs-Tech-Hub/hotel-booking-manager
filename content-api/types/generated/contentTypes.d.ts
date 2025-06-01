@@ -773,6 +773,7 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
 export interface ApiCheckInCheckIn extends Struct.CollectionTypeSchema {
   collectionName: 'check_ins';
   info: {
+    description: '';
     displayName: 'Check-in';
     pluralName: 'check-ins';
     singularName: 'check-in';
@@ -786,6 +787,10 @@ export interface ApiCheckInCheckIn extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    gym_and_sports: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::gym-and-sport.gym-and-sport'
+    >;
     gym_membership: Schema.Attribute.Relation<
       'manyToOne',
       'api::gym-membership.gym-membership'
@@ -1278,6 +1283,7 @@ export interface ApiGymAndSportSessionGymAndSportSession
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    schedules: Schema.Attribute.Relation<'oneToMany', 'api::schedule.schedule'>;
     session_fee: Schema.Attribute.Integer;
     session_name: Schema.Attribute.String;
     session_time: Schema.Attribute.DateTime;
@@ -1304,6 +1310,10 @@ export interface ApiGymAndSportGymAndSport extends Struct.CollectionTypeSchema {
   };
   attributes: {
     check_in: Schema.Attribute.Relation<'oneToOne', 'api::check-in.check-in'>;
+    check_ins: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::check-in.check-in'
+    >;
     CloseTime: Schema.Attribute.Time;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1326,6 +1336,7 @@ export interface ApiGymAndSportGymAndSport extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::membership-plan.membership-plan'
     >;
+    name: Schema.Attribute.String;
     OpenTime: Schema.Attribute.Time;
     payment_type: Schema.Attribute.Relation<
       'oneToOne',
@@ -1375,6 +1386,13 @@ export interface ApiGymMembershipGymMembership
       'api::membership-plan.membership-plan'
     >;
     payment: Schema.Attribute.Relation<'oneToOne', 'api::payment.payment'>;
+    product_counts: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::product-count.product-count'
+    >;
+    profile_photo: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1851,6 +1869,37 @@ export interface ApiRoomRoom extends Struct.CollectionTypeSchema {
       true
     >;
     title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiScheduleSchedule extends Struct.CollectionTypeSchema {
+  collectionName: 'schedules';
+  info: {
+    displayName: 'schedule';
+    pluralName: 'schedules';
+    singularName: 'schedule';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    date: Schema.Attribute.DateTime;
+    duration: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::schedule.schedule'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    repeat: Schema.Attribute.Boolean;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -2536,6 +2585,7 @@ declare module '@strapi/strapi' {
       'api::promo-coupon.promo-coupon': ApiPromoCouponPromoCoupon;
       'api::restaurant.restaurant': ApiRestaurantRestaurant;
       'api::room.room': ApiRoomRoom;
+      'api::schedule.schedule': ApiScheduleSchedule;
       'api::service.service': ApiServiceService;
       'api::slider.slider': ApiSliderSlider;
       'api::special-info.special-info': ApiSpecialInfoSpecialInfo;

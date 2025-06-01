@@ -51,6 +51,21 @@
       "relation": "manyToMany",
       "target": "api::gym-and-sport.gym-and-sport",
       "mappedBy": "gym_memberships"
+    },
+    "profile_photo": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    },
+    "product_counts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-count.product-count"
     }
   }
 }

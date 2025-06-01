@@ -24,6 +24,11 @@
     },
     "session_fee": {
       "type": "integer"
+    },
+    "schedules": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::schedule.schedule"
     }
   }
 }

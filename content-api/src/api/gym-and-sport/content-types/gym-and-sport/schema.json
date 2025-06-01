@@ -42,6 +42,15 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::gym-and-sport-session.gym-and-sport-session"
+    },
+    "name": {
+      "type": "string"
+    },
+    "check_ins": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::check-in.check-in",
+      "mappedBy": "gym_and_sports"
     }
   }
 }
