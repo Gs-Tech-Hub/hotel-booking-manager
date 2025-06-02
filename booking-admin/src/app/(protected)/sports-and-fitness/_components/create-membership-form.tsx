@@ -22,16 +22,27 @@ interface MembershipFormProps {
 }
 
 export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = {}, onSubmit, submitLabel = 'Submit' }) => {
-  const [form, setForm] = useState<MembershipFormValues>({
-    firstName: initialValues.firstName || '',
-    lastName: initialValues.lastName || "",
-    email: initialValues.email || '',
-    phone: initialValues.phone || '',
-    membershipType: initialValues.membershipType || '',
-    startDate: initialValues.startDate || '',
-    endDate: initialValues.endDate || '',
-    paymentMethod: initialValues.paymentMethod || '',
-  });
+  // If initialValues is a gym membership object, map to MembershipFormValues
+  const mapInitialValues = (vals: any): MembershipFormValues => {
+    // If already in MembershipFormValues shape, return as is
+    if (typeof vals.startDate !== 'undefined' && typeof vals.endDate !== 'undefined') return vals as MembershipFormValues;
+    // Map from gym membership object
+    const expired = vals.expiry_date && new Date(vals.expiry_date) < new Date();
+    return {
+      firstName: vals.customer?.firstName || vals.firstName || '',
+      lastName: vals.customer?.lastName || vals.lastName || '',
+      email: vals.customer?.email || vals.email || '',
+      phone: vals.customer?.phone || vals.phone || '',
+      membershipType: vals.membership_plan?.id?.toString() || vals.membershipType || '',
+      startDate: expired
+        ? new Date().toISOString().slice(0, 10)
+        : vals.expiry_date || '',
+      endDate: '', // Let user pick new end date
+      paymentMethod: '',
+    };
+  };
+
+  const [form, setForm] = useState<MembershipFormValues>(mapInitialValues(initialValues));
 
   const [membershipTypes, setMembershipTypes] = useState<{ value: string; label: string }[]>([]);
   const [membershipPlans, setMembershipPlans] = useState<any[]>([]);
@@ -72,7 +83,13 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(form);
+    // If initialValues has an id, call update instead of create
+    if (initialValues && (initialValues as any).id) {
+      // Include id in the form values
+      onSubmit({ ...form, id: (initialValues as any).id } as MembershipFormValues);
+    } else {
+      onSubmit(form);
+    }
   };
 
   return (

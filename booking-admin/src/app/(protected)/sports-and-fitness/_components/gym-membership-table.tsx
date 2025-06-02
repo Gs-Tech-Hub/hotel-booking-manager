@@ -125,8 +125,36 @@ export default function GymMembershipTable() {
   };
 
   const handleRenewMember = async (values: any) => {
-    // TODO: Call API to renew member
-    // await renewGymMember(renewMember.id, values);
+    // Update gym membership instead of create
+    if (!renewMember?.id) return;
+    // Find the gym id (use the first gym for now)
+    const gymData = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({ populate: "*" });
+    const gymId = gymData[0]?.id;
+    // Find the correct membership plan by id or name
+    let membershipPlanId = values.membershipType;
+    let planPrice = 0;
+    let foundPlan: any = undefined;
+    if (typeof membershipPlanId !== 'number') {
+      const allPlans = (gymData[0]?.membership_plans || []);
+      foundPlan = allPlans.find((plan: any) => plan.name === values.membershipType || plan.id === values.membershipType);
+      membershipPlanId = foundPlan ? foundPlan.id : values.membershipType;
+      planPrice = foundPlan ? foundPlan.price : (values.membershipType.price || 0);
+    } else {
+      const allPlans = (gymData[0]?.membership_plans || []);
+      foundPlan = allPlans.find((plan: any) => plan.id === membershipPlanId);
+      planPrice = foundPlan ? foundPlan.price : (values.membershipType.price || 0);
+    }
+    // Update membership
+    await strapiService.gymMembershipsEndpoints.updateGymMembership(
+      renewMember.id,
+      {
+        joined_date: values.startDate,
+        expiry_date: values.endDate,
+        membership_plan: membershipPlanId,
+        gym_and_sports: { connect: (gymId).toString() },
+      }
+    );
+    // Optionally process payment/order if needed (similar to handleAddMember)
     fetchMembers();
   };
 
@@ -174,7 +202,18 @@ export default function GymMembershipTable() {
               <TableCell>{member.membership_plan?.name}</TableCell>
               <TableCell>{member.joined_date}</TableCell>
               <TableCell>{member.joined_date}</TableCell>
-              <TableCell>{member.expiry_date}</TableCell>
+              <TableCell>
+                <span
+                  className={
+                    new Date(member.expiry_date) < new Date()
+                      ? 'text-red-600 font-bold'
+                      : ''
+                  }
+                >
+                  {member.expiry_date}
+                  {new Date(member.expiry_date) < new Date() && ' (Expired)'}
+                </span>
+              </TableCell>
               <TableCell>
                 {member.check_ins?.length || 0} check-ins
                 <button
