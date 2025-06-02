@@ -71,6 +71,11 @@
   "type": "relation",
   "relation": "oneToMany",
   "target": "api::product-count.product-count"
+},
+"gym_membership": {
+  "type": "relation",
+  "relation": "oneToMany",
+  "target": "api::gym-membership.gym-membership"
 }
   }
 }

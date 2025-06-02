@@ -35,10 +35,10 @@
       "target": "api::check-in.check-in",
       "mappedBy": "gym_membership"
     },
-    "payment": {
+    "payment_type": {
       "type": "relation",
       "relation": "oneToOne",
-      "target": "api::payment.payment"
+      "target": "api::payment-type.payment-type"
     },
     "membership_plan": {
       "type": "relation",
@@ -53,14 +53,15 @@
       "mappedBy": "gym_memberships"
     },
     "profile_photo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images",
         "files",
         "videos",
         "audios"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     },
     "product_counts": {
       "type": "relation",

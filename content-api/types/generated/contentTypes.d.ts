@@ -607,6 +607,10 @@ export interface ApiBookingItemBookingItem extends Struct.CollectionTypeSchema {
       'api::food-type.food-type'
     >;
     games: Schema.Attribute.Relation<'oneToMany', 'api::game.game'>;
+    gym_membership: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::gym-membership.gym-membership'
+    >;
     hotel_services: Schema.Attribute.Relation<
       'oneToMany',
       'api::hotel-service.hotel-service'
@@ -1385,7 +1389,10 @@ export interface ApiGymMembershipGymMembership
       'oneToOne',
       'api::membership-plan.membership-plan'
     >;
-    payment: Schema.Attribute.Relation<'oneToOne', 'api::payment.payment'>;
+    payment_type: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::payment-type.payment-type'
+    >;
     product_counts: Schema.Attribute.Relation<
       'oneToMany',
       'api::product-count.product-count'
