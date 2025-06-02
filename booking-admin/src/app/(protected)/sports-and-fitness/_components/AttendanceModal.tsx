@@ -42,7 +42,7 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
   const [attendance, setAttendance] = useState(initialAttendance);
   console.log("attendance logs:", attendance);
 
-  const handleCheckIn = () => {
+  const handleCheckIn = async () => {
     const now = new Date();
     const expiry = new Date(planExpiry);
     if (now > expiry) {
@@ -51,7 +51,8 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
     }
     // Prevent multiple check-ins for the same day if there is an active check-in (no check_out_time)
     const today = now.toLocaleDateString();
-    const hasActiveCheckInToday = attendance.some(
+    
+    const hasActiveCheckInToday = attendance?.some(
       (log) =>
         !log.check_out_time &&
         new Date(log.check_in_time).toLocaleDateString() === today
@@ -63,27 +64,31 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
     // Prepare payload for API: only gym_membership and check_in_time
     const data = {
       check_in_time: now.toISOString(),
-      gym_membership: memberId
+    gym_membership: {connect: memberId}
     };
-    strapiService.checkInEndpoints.createCheckIn(data);
-    // Optionally update local state for immediate UI feedback
-    const newLog: AttendanceLog = {
-      id: Date.now(), // temp id
-      check_in_time: data.check_in_time,
-      check_out_time: null,
-      createdAt: data.check_in_time,
-      updatedAt: data.check_in_time,
-      publishedAt: data.check_in_time,
-    };
-    setAttendance([newLog, ...attendance]);
+    try {
+      await strapiService.checkInEndpoints.createCheckIn(data);
+      // Optionally update local state for immediate UI feedback
+      const newLog: AttendanceLog = {
+        id: Date.now(), // temp id
+        check_in_time: data.check_in_time,
+        check_out_time: null,
+        createdAt: data.check_in_time,
+        updatedAt: data.check_in_time,
+        publishedAt: data.check_in_time,
+      };
+      setAttendance([newLog, ...attendance]);
+    } catch (error) {
+      alert("Failed to check in. Please try again.");
+    }
   };
 
-  const getActiveCheckIns = (logs: AttendanceLog[]) => {
-    return logs.filter((log) => !log.check_out_time);
-  };
+  // const getActiveCheckIns = (logs: AttendanceLog[]) => {
+  //   return logs.filter((log) => !log.check_out_time);
+  // };
 
   // Example usage inside the component:
-  const activeCheckIns = getActiveCheckIns(attendance);
+  // const activeCheckIns = getActiveCheckIns(attendance);
   // You can use activeCheckIns as needed, e.g., display a badge or message
 
   return (
@@ -111,25 +116,33 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {attendance.map((log, idx) => (
-                <TableRow key={log.id || idx}>
-                  <TableCell>
-                    {log.check_in_time
-                      ? new Date(log.check_in_time).toLocaleDateString()
-                      : ""}
-                  </TableCell>
-                  <TableCell>
-                    {log.check_in_time
-                      ? new Date(log.check_in_time).toLocaleTimeString()
-                      : ""}
-                  </TableCell>
-                  <TableCell>
-                    {log.check_out_time
-                      ? new Date(log.check_out_time).toLocaleTimeString()
-                      : "-"}
+              {attendance && attendance.length > 0 ? (
+                attendance.map((log, idx) => (
+                  <TableRow key={log.id || idx}>
+                    <TableCell>
+                      {log.check_in_time
+                        ? new Date(log.check_in_time).toLocaleDateString()
+                        : ""}
+                    </TableCell>
+                    <TableCell>
+                      {log.check_in_time
+                        ? new Date(log.check_in_time).toLocaleTimeString()
+                        : ""}
+                    </TableCell>
+                    <TableCell>
+                      {log.check_out_time
+                        ? new Date(log.check_out_time).toLocaleTimeString()
+                        : "-"}
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center text-gray-400">
+                    No attendance records found.
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </div>

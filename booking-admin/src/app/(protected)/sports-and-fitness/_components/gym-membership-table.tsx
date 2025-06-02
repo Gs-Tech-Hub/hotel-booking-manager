@@ -13,8 +13,11 @@ import { strapiService } from "@/utils/dataEndpoint/index";
 import AddMembershipModal from "./AddMembershipModal";
 import RenewMembershipModal from "./RenewMembershipModal";
 import AttendanceModal from "./AttendanceModal";
+import { processOrder } from "@/utils/processOrders/finalizeOrder";
+import { useAuth } from "@/components/Auth/context/auth-context";
 
 export default function GymMembershipTable() {
+  const { user } = useAuth();
   const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedMember, setSelectedMember] = useState<any | null>(null);
@@ -26,11 +29,29 @@ export default function GymMembershipTable() {
 
   const fetchMembers = async () => {
     setLoading(true);
-    const gymData = await strapiService.gymMembershipsEndpoints.getGymMemberships({
-      "populate": "*"
+    const gymData = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList(
+    {
+      "populate[gym_memberships][populate]": "*",
+      "[check_ins][populate]": "*"
+    }
+    );
+    // Flatten all gym memberships into a single array for the table
+    const allMemberships: any[] = [];
+    gymData.forEach((gym: any) => {
+      (gym.gym_memberships || []).forEach((membership: any) => {
+        allMemberships.push({
+          ...membership,
+          gymName: gym.name,
+          gymId: gym.id,
+          membership_plans: gym.membership_plans,
+          check_ins: membership.check_ins,
+          customer: membership.customer, // keep customer if present
+          membership_plan: (gym.membership_plans || []).find((plan: any) => plan.id === membership.membership_plan) || membership.membership_plan,
+        });
+      });
     });
-    // console.log('members:', gymData);
-    setMembers(gymData);
+    setMembers(allMemberships);
+    console.log("members:",allMemberships);
     setLoading(false);
   };
 
@@ -39,8 +60,67 @@ export default function GymMembershipTable() {
   }, []);
 
   const handleAddMember = async (values: any) => {
-    // TODO: Call API to add member
-    // await addGymMember(values);
+    // Find the gym id (use the first gym for now)
+    const gymData = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({ populate: "*" });
+    const gymId = gymData[0]?.id;
+    // Find the correct membership plan by id or name
+    let membershipPlanId = values.membershipType;
+    let planPrice = 0;
+    let foundPlan: any = undefined;
+    if (typeof membershipPlanId !== 'number') {
+      // Try to resolve from plans if it's a name
+      const allPlans = (gymData[0]?.membership_plans || []);
+      foundPlan = allPlans.find((plan: any) => plan.name === values.membershipType || plan.id === values.membershipType);
+      membershipPlanId = foundPlan ? foundPlan.id : values.membershipType;
+      planPrice = foundPlan ? foundPlan.price : (values.membershipType.price || 0);
+    } else {
+      // If it's already an id, try to get the plan for price
+      const allPlans = (gymData[0]?.membership_plans || []);
+      foundPlan = allPlans.find((plan: any) => plan.id === membershipPlanId);
+      planPrice = foundPlan ? foundPlan.price : (values.membershipType.price || 0);
+    }
+    const customer = await strapiService.customerEndpoints.createCustomer({
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      phone: values.phone  
+    });
+    // Ensure customer.id is present
+    if (!customer?.id) throw new Error("Customer creation failed: missing id");
+    const gymMembership = await strapiService.gymMembershipsEndpoints.createGymMembership(
+      {
+        customer: customer.id,
+        joined_date: values.startDate,
+        expiry_date: values.endDate,
+        membership_plan: membershipPlanId,
+        gym_and_sports: {connect: (gymId).toString() }
+      }
+    );
+    // Null check user.id before using as waiterId
+    const waiterId = user && user.id ? user.id : '';
+    await processOrder({
+      order: {
+        id: gymMembership.id.toString(),
+        totalAmount: planPrice,
+        waiterId,
+        items: [{
+          id: gymMembership.id,
+          name: `Gym Membership - ${values.firstName} ${values.lastName}`,
+          price: planPrice,
+          quantity: 1,
+          department: "Sports-and-Fitness",
+          documentId: gymMembership.id.toString(),
+          count: 1,
+          amount_paid: planPrice,
+          amount_owed: 0,
+          game_status: "completed"
+        }],
+        status: "completed"
+      },
+      waiterId,
+      customerId: customer.id,
+      paymentMethod: values.paymentMethod,
+    })
     fetchMembers();
   };
 

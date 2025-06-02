@@ -5,13 +5,14 @@ import { Select } from '@/components/ui-elements/select';
 import { strapiService } from '@/utils/dataEndpoint/index';
 
 export interface MembershipFormValues {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
   membershipType: string;
   startDate: string;
   endDate: string;
-  paymentInfo: string;
+  paymentMethod: string;
 }
 
 interface MembershipFormProps {
@@ -22,13 +23,14 @@ interface MembershipFormProps {
 
 export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = {}, onSubmit, submitLabel = 'Submit' }) => {
   const [form, setForm] = useState<MembershipFormValues>({
-    name: initialValues.name || '',
+    firstName: initialValues.firstName || '',
+    lastName: initialValues.lastName || "",
     email: initialValues.email || '',
     phone: initialValues.phone || '',
     membershipType: initialValues.membershipType || '',
     startDate: initialValues.startDate || '',
     endDate: initialValues.endDate || '',
-    paymentInfo: initialValues.paymentInfo || '',
+    paymentMethod: initialValues.paymentMethod || '',
   });
 
   const [membershipTypes, setMembershipTypes] = useState<{ value: string; label: string }[]>([]);
@@ -38,10 +40,11 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
   useEffect(() => {
     async function fetchMembershipTypes() {
       const plans = await strapiService.membershipPlansEndpoints.getMembershipPlans();
+      console.log('plans:', plans);
       if (Array.isArray(plans)) {
         setMembershipPlans(plans);
         setMembershipTypes(
-          plans.map((plan: any) => ({ value: plan.name, label: plan.name }))
+          plans.map((plan: any) => ({ value: plan.id, label: plan.name }))
         );
       }
     }
@@ -74,22 +77,24 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Input
+      <div className="flex">
+        <Input
         name="firstName"
         placeholder="First Name"
-        value={form.name}
+        value={form.firstName}
         onChange={handleChange}
         required
       />
 
        <Input
         name="lastName"
-        placeholder="Full Name"
-        value={form.name}
+        placeholder="Last Name"
+        value={form.lastName}
         onChange={handleChange}
         required
       />
-
+      </div>
+      
       <Input
         name="email"
         type="email"
@@ -105,6 +110,7 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
         onChange={handleChange}
         required
       />
+      <div className="flex justify-between">
       <Select
         value={form.membershipType}
         onChange={(val) => setForm((prev) => ({ ...prev, membershipType: val as string }))}
@@ -116,7 +122,8 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
           Price: <span className="font-semibold">₦{selectedPlan.price.toLocaleString()}</span>
         </div>
       )}
-      {/* Replace DatePickerOne with your actual date picker and wire up value/onChange */}
+      </div>
+     
       <div>
         <label className="block text-sm font-medium mb-1">Start Date</label>
         <Input
@@ -137,13 +144,20 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
           required
         />
       </div>
-      <Input
-        name="paymentInfo"
-        placeholder="Payment Info"
-        value={form.paymentInfo}
-        onChange={handleChange}
-        required
-      />
+        <label htmlFor="payment-method" className="block text-body-sm font-medium text-dark dark:text-white">
+              Payment Method
+            </label>
+            <select
+              id="payment-method"
+              name="paymentMethod"
+              value={form.paymentMethod}
+              onChange={handleChange}
+              className="w-full appearance-none rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary mb-4"
+            >
+              <option value="cash">Cash</option>
+              <option value="bank_transfer">Bank Transfer</option>
+              <option value="card">Debit Card</option>
+            </select>
       <Button label={submitLabel}
        />
     </form>
