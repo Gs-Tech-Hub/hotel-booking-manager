@@ -4,6 +4,7 @@ import { Button } from '@/components/ui-elements/button';
 import { Select } from '@/components/ui-elements/select';
 import { strapiService } from '@/utils/dataEndpoint/index';
 import type { PaymentMethod } from '@/types/order';
+import { paymentMethods } from '@/app/stores/useOrderStore';
 
 export interface MembershipFormValues {
   firstName: string;
@@ -34,12 +35,14 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
     if (vals.membership_plan && typeof vals.membership_plan.price === 'number') {
       planPrice = vals.membership_plan.price;
     }
-    // Ensure paymentMethod is a PaymentMethod object
-    let paymentMethod: PaymentMethod = { type: 'cash', id: 2, documentId: 'aio64xyuu59t961xxvlkasbf' };
+    // Use the first payment method from paymentMethods as default, or fallback to an empty object if not available
+    let paymentMethod: PaymentMethod = paymentMethods[0];
     if (vals.paymentMethod && typeof vals.paymentMethod === 'object' && vals.paymentMethod.type) {
       paymentMethod = vals.paymentMethod;
     } else if (typeof vals.paymentMethod === 'string' && vals.paymentMethod) {
-      paymentMethod = { type: vals.paymentMethod, id: 0, documentId: '' };
+      // Find the payment method object by type from paymentMethods
+      const found = paymentMethods.find((method) => method.type === vals.paymentMethod);
+      paymentMethod = found || paymentMethods[0] ;
     }
     return {
       firstName: vals.customer?.firstName || vals.firstName || '',
@@ -194,12 +197,14 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
               id="payment-method"
               name="paymentMethod"
               value={form.paymentMethod.type}
-              onChange={(e) => setForm((prev) => 
-                ({ ...prev, 
-                  paymentMethod: { ...prev.paymentMethod, type: e.target.value as PaymentMethod['type'] } }))}
+               onChange={(e) => {
+                                   const value = e.target.value;
+                                     paymentMethods.find(
+                                     (method) => method.type === value
+                                   );
+                                 }}  
               className="w-full appearance-none rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary mb-4"
             >
-              <option value="">Select Payment Method</option>
               <option value="cash">Cash</option>
               <option value="bank_transfer">Bank Transfer</option>
               <option value="card">Debit Card</option>

@@ -11,9 +11,9 @@ export interface PaymentMethod {
 }
 
 export const paymentMethods: PaymentMethod[] = [
-  { id: 2, documentId: "jepc2g6nnux51f8sdjcfddrp", type: "bank_transfer" },
-  { id: 4, documentId: "nk5minqfer8qd5sujdo2xuvu", type: "cash" },
-  { id: 6, documentId: "ccde1iw9163wra5r7l3tolqe", type: "card" },
+  { id: 2, documentId: "aio64xyuu59t961xxvlkasbf", type: "cash", },
+  { id: 4, documentId: "vjpta5fd0ad6v0nmniezas7y", type: "card" },
+  { id: 6, documentId: "zwy74xbkbih7pqf29pz0pgng", type: "bank_transfer" },
 ];
 
 export interface Order {

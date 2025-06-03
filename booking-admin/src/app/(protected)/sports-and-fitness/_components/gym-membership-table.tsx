@@ -145,7 +145,7 @@ export default function GymMembershipTable() {
       membershipPlanId = foundPlan ? foundPlan.id : values.membershipType;
       planPrice = values.planPrice;
 
-      console.log("type:",values.membershipType);
+      console.log("type:",values.paymentMethod);
     } else {
       const allPlans = (gymData[0]?.membership_plans || []);
       foundPlan = allPlans.find((plan: any) => plan.id === membershipPlanId);
