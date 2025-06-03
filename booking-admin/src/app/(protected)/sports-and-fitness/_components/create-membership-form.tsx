@@ -3,6 +3,7 @@ import { Input } from '@/components/ui-elements/input';
 import { Button } from '@/components/ui-elements/button';
 import { Select } from '@/components/ui-elements/select';
 import { strapiService } from '@/utils/dataEndpoint/index';
+import type { PaymentMethod } from '@/types/order';
 
 export interface MembershipFormValues {
   firstName: string;
@@ -13,7 +14,7 @@ export interface MembershipFormValues {
   planPrice?: number;
   startDate: string;
   endDate: string;
-  paymentMethod: string;
+  paymentMethod: PaymentMethod;
 }
 
 interface MembershipFormProps {
@@ -29,10 +30,16 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
     if (typeof vals.startDate !== 'undefined' && typeof vals.endDate !== 'undefined') return vals as MembershipFormValues;
     // Map from gym membership object
     const expired = vals.expiry_date && new Date(vals.expiry_date) < new Date();
-    // Try to get plan price from membership_plan if available
     let planPrice: number | undefined = undefined;
     if (vals.membership_plan && typeof vals.membership_plan.price === 'number') {
       planPrice = vals.membership_plan.price;
+    }
+    // Ensure paymentMethod is a PaymentMethod object
+    let paymentMethod: PaymentMethod = { type: 'cash', id: 2, documentId: 'aio64xyuu59t961xxvlkasbf' };
+    if (vals.paymentMethod && typeof vals.paymentMethod === 'object' && vals.paymentMethod.type) {
+      paymentMethod = vals.paymentMethod;
+    } else if (typeof vals.paymentMethod === 'string' && vals.paymentMethod) {
+      paymentMethod = { type: vals.paymentMethod, id: 0, documentId: '' };
     }
     return {
       firstName: vals.customer?.firstName || vals.firstName || '',
@@ -43,8 +50,8 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
       startDate: expired
         ? new Date().toISOString().slice(0, 10)
         : vals.expiry_date || '',
-      endDate: '', // Let user pick new end date
-      paymentMethod: vals.paymentMethod || '', // Ensure paymentMethod is mapped from initial values if present
+      endDate: '',
+      paymentMethod,
       planPrice
     };
   };
@@ -62,7 +69,7 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
       if (Array.isArray(plans)) {
         setMembershipPlans(plans);
         setMembershipTypes(
-          plans.map((plan: any) => ({ value: plan.id, label: plan.name, price: plan.price }))
+          plans.map((plan: any) => ({ value: plan.id, label: plan.name }))
         );
       }
     }
@@ -82,9 +89,8 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
   }, [form.membershipType, membershipPlans]);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    // Special handling for paymentMethod to ensure correct value is set
     if (name === 'paymentMethod') {
-      setForm((prev) => ({ ...prev, paymentMethod: value }));
+      setForm((prev) => ({ ...prev, paymentMethod: { ...prev.paymentMethod, type: value as PaymentMethod['type'] } }));
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
@@ -187,8 +193,10 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
             <select
               id="payment-method"
               name="paymentMethod"
-              value={form.paymentMethod}
-              onChange={handleChange}
+              value={form.paymentMethod.type}
+              onChange={(e) => setForm((prev) => 
+                ({ ...prev, 
+                  paymentMethod: { ...prev.paymentMethod, type: e.target.value as PaymentMethod['type'] } }))}
               className="w-full appearance-none rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary mb-4"
             >
               <option value="">Select Payment Method</option>

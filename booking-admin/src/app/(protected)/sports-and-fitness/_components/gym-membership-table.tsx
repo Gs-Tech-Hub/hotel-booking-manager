@@ -121,9 +121,9 @@ export default function GymMembershipTable() {
         }],
         status: "completed"
       },
+      paymentMethod: values.paymentMethod,
       waiterId,
       customerId: customer.id,
-      paymentMethod: paymentType,
     })
     fetchMembers();
   };
@@ -144,16 +144,15 @@ export default function GymMembershipTable() {
       foundPlan = allPlans.find((plan: any) => plan.name === values.membershipType || plan.id === values.membershipType);
       membershipPlanId = foundPlan ? foundPlan.id : values.membershipType;
       planPrice = values.planPrice;
-      paymentType = values.paymentMethod;
 
-      // console.log("membership plan:", membershipPlanId);
+      console.log("type:",values.membershipType);
     } else {
       const allPlans = (gymData[0]?.membership_plans || []);
       foundPlan = allPlans.find((plan: any) => plan.id === membershipPlanId);
       planPrice = values.planPrice;
       paymentType = values.paymentMethod;    }
     // Update membership
-    await strapiService.gymMembershipsEndpoints.updateGymMembership(
+  const renewedMembership = await strapiService.gymMembershipsEndpoints.updateGymMembership(
       renewMember.documentId,
       {
         joined_date: values.startDate,
@@ -163,16 +162,15 @@ export default function GymMembershipTable() {
       }
     );
     // Process order for renewal
-    const gymMembership = { id: renewMember.documentId };
     const customer = renewMember.customer || {};
     const waiterId = user && user.id ? user.id : '';
     await processOrder({
       order: {
-        id: gymMembership.id.toString(),
+        id: renewedMembership.id.toString(),
         totalAmount: planPrice,
         waiterId,
         items: [{
-          id: gymMembership.id,
+          id: renewedMembership.id,
           name: `Gym Membership - ${values.firstName} ${values.lastName}`,
           price: planPrice,
           quantity: 1,
@@ -187,7 +185,7 @@ export default function GymMembershipTable() {
       },
       waiterId,
       customerId: customer.id,
-      paymentMethod: paymentType,
+      paymentMethod: values.paymentMethod,
     });
     fetchMembers();
   };
