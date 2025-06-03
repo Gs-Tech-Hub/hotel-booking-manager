@@ -36,6 +36,11 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::hotel-service.hotel-service"
+    },
+    "gym_memberships": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::gym-membership.gym-membership"
     }
   }
 }

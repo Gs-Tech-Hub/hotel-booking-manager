@@ -1385,8 +1385,8 @@ export interface ApiGymMembershipGymMembership
       'api::gym-membership.gym-membership'
     > &
       Schema.Attribute.Private;
-    membership_plan: Schema.Attribute.Relation<
-      'oneToOne',
+    membership_plans: Schema.Attribute.Relation<
+      'oneToMany',
       'api::membership-plan.membership-plan'
     >;
     payment_type: Schema.Attribute.Relation<
@@ -1499,10 +1499,6 @@ export interface ApiMembershipPlanMembershipPlan
     description: Schema.Attribute.Blocks;
     discount_amount: Schema.Attribute.Integer;
     duration_months: Schema.Attribute.Integer;
-    gym_membership: Schema.Attribute.Relation<
-      'oneToOne',
-      'api::gym-membership.gym-membership'
-    >;
     isActive: Schema.Attribute.Boolean;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -1707,6 +1703,10 @@ export interface ApiProductCountProductCount
       'api::food-item.food-item'
     >;
     game: Schema.Attribute.Relation<'oneToOne', 'api::game.game'>;
+    gym_memberships: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::gym-membership.gym-membership'
+    >;
     hotel_service: Schema.Attribute.Relation<
       'oneToOne',
       'api::hotel-service.hotel-service'

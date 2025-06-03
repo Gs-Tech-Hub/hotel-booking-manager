@@ -33,12 +33,6 @@
     },
     "max_checkins_per_month": {
       "type": "integer"
-    },
-    "gym_membership": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::gym-membership.gym-membership",
-      "mappedBy": "membership_plan"
     }
   }
 }

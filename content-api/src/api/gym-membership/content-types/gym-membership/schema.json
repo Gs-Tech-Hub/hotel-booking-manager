@@ -40,11 +40,10 @@
       "relation": "oneToOne",
       "target": "api::payment-type.payment-type"
     },
-    "membership_plan": {
+    "membership_plans": {
       "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::membership-plan.membership-plan",
-      "inversedBy": "gym_membership"
+      "relation": "oneToMany",
+      "target": "api::membership-plan.membership-plan"
     },
     "gym_and_sports": {
       "type": "relation",
