@@ -68,19 +68,22 @@ export default function GymMembershipTable() {
     let membershipPlanId = values.membershipType;
     let planPrice = 0;
     let foundPlan: any = undefined;
+    let paymentType = null
     if (typeof membershipPlanId !== 'number') {
       // Try to resolve from plans if it's a name
       const allPlans = (gymData[0]?.membership_plans || []);
       foundPlan = allPlans.find((plan: any) => plan.name === values.membershipType || plan.id === values.membershipType);
       membershipPlanId = foundPlan ? foundPlan.id : values.membershipType;
       planPrice = values.planPrice;
+      paymentType = values.paymentMethod;
     } else {
       // If it's already an id, try to get the plan for price
       const allPlans = (gymData[0]?.membership_plans || []);
       foundPlan = allPlans.find((plan: any) => plan.id === membershipPlanId);
-      planPrice = foundPlan ? foundPlan.price : (values.membershipType.price || 0);
-    }
-    const customer = await strapiService.customerEndpoints.createCustomer({
+      planPrice = values.planPrice;
+      paymentType = values.paymentMethod;  
+      }
+      const customer = await strapiService.customerEndpoints.createCustomer({
       firstName: values.firstName,
       lastName: values.lastName,
       email: values.email,
@@ -120,7 +123,7 @@ export default function GymMembershipTable() {
       },
       waiterId,
       customerId: customer.id,
-      paymentMethod: values.paymentMethod,
+      paymentMethod: paymentType,
     })
     fetchMembers();
   };
@@ -135,17 +138,20 @@ export default function GymMembershipTable() {
     let membershipPlanId = values.membershipType;
     let planPrice = 0;
     let foundPlan: any = undefined;
+    let paymentType = null
     if (typeof membershipPlanId !== 'number') {
       const allPlans = (gymData[0]?.membership_plans || []);
       foundPlan = allPlans.find((plan: any) => plan.name === values.membershipType || plan.id === values.membershipType);
       membershipPlanId = foundPlan ? foundPlan.id : values.membershipType;
-      planPrice = foundPlan ? foundPlan.price : (values.membershipType.price || 0);
-      console.log("membership plan:", membershipPlanId);
+      planPrice = values.planPrice;
+      paymentType = values.paymentMethod;
+
+      // console.log("membership plan:", membershipPlanId);
     } else {
       const allPlans = (gymData[0]?.membership_plans || []);
       foundPlan = allPlans.find((plan: any) => plan.id === membershipPlanId);
-      planPrice = foundPlan ? foundPlan.price : (values.membershipType.price || 0);
-    }
+      planPrice = values.planPrice;
+      paymentType = values.paymentMethod;    }
     // Update membership
     await strapiService.gymMembershipsEndpoints.updateGymMembership(
       renewMember.documentId,
@@ -170,7 +176,7 @@ export default function GymMembershipTable() {
           name: `Gym Membership - ${values.firstName} ${values.lastName}`,
           price: planPrice,
           quantity: 1,
-          department: "gym-and-sports",
+          department: "gym_memberships",
           documentId: renewMember.documentId,
           count: 1,
           amount_paid: planPrice,
@@ -181,7 +187,7 @@ export default function GymMembershipTable() {
       },
       waiterId,
       customerId: customer.id,
-      paymentMethod: values.paymentMethod,
+      paymentMethod: paymentType,
     });
     fetchMembers();
   };

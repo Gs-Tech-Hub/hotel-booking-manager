@@ -44,7 +44,7 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
         ? new Date().toISOString().slice(0, 10)
         : vals.expiry_date || '',
       endDate: '', // Let user pick new end date
-      paymentMethod: '',
+      paymentMethod: vals.paymentMethod || '', // Ensure paymentMethod is mapped from initial values if present
       planPrice
     };
   };
@@ -89,7 +89,6 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
       setForm((prev) => ({ ...prev, [name]: value }));
     }
   };
-
   // For date pickers, you may want to use a custom handler or a controlled component
   const handleDateChange = (name: 'startDate' | 'endDate', value: string) => {
     setForm((prev) => ({ ...prev, [name]: value }));
