@@ -9,6 +9,7 @@ export const createBookingItemForDepartment = async ({
   drinks = null,
   food_items = null,
   hotel_services = null,
+  gym_memberships = null,
   discountPrice =null,
   finalPrice = null
 }: {
@@ -19,6 +20,7 @@ export const createBookingItemForDepartment = async ({
   drinks?: ConnectedItem[] | null;
   food_items?: ConnectedItem[] | null;
   hotel_services?: ConnectedItem[] | null;
+  gym_memberships?: ConnectedItem[] | null;
   discountPrice?: number | null;
   finalPrice?: number | null;
 }) => {
@@ -54,6 +56,7 @@ export const createBookingItemForDepartment = async ({
       drinks: toIdArray(drinks),
       food_items: toIdArray(food_items),
       hotel_services: toIdArray(hotel_services),
+      gym_membership: toIdArray(gym_memberships),
       product_count: {
         connect: productCountIds.map(id => ({ id }))
       },
@@ -63,7 +66,7 @@ export const createBookingItemForDepartment = async ({
       menu_category: null,
     };
 
-    // console.log("Booking Item Payload:", bookingItemPayload);
+    console.log("Booking Item Payload:", bookingItemPayload);
 
     // Create the booking item
     const res = await strapiService.createBookingItem(bookingItemPayload);

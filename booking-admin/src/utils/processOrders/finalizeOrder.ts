@@ -18,7 +18,7 @@ export const processOrder = async ({
   paymentMethod: PaymentMethod;
 }) => {
   try {
-    // console.log('Starting order processing...', order);
+    console.log('Starting order processing...', order);
 
     const bookingItems: { id: string }[] = [];
     const employeeOrders: any[] = [];
@@ -146,7 +146,7 @@ export const processOrder = async ({
         });
 
         bookingItems.push({ id: bookingItemRes.id });
-      } else if (department === 'gym-and-sports') {
+      } else if (department === 'gym_memberships') {
         validatedItems = items.map((item: { id: { toString: () => any; }; documentId: any; name: any; }) => ({  
           id: item.id.toString(),
           documentId: item.documentId,
@@ -158,6 +158,7 @@ export const processOrder = async ({
           department,
           items,
           productCountIds,
+          gym_memberships: validatedItems,
           paymentMethod,
         });
         bookingItems.push({ id: bookingItemRes.id });

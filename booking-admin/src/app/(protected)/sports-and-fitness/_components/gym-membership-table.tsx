@@ -44,7 +44,7 @@ export default function GymMembershipTable() {
           ...membership,
           gymName: gym.name,
           gymId: gym.id,
-          membership_plans: gym.membership_plans,
+          membership_plans: membership.membership_plans,
           check_ins: membership.check_ins,
           customer: membership.customer, // keep customer if present
           membership_plan: (gym.membership_plans || []).find((plan: any) => plan.id === membership.membership_plan) || membership.membership_plan,
@@ -73,7 +73,7 @@ export default function GymMembershipTable() {
       const allPlans = (gymData[0]?.membership_plans || []);
       foundPlan = allPlans.find((plan: any) => plan.name === values.membershipType || plan.id === values.membershipType);
       membershipPlanId = foundPlan ? foundPlan.id : values.membershipType;
-      planPrice = foundPlan ? foundPlan.price : (values.membershipType.price || 0);
+      planPrice = values.planPrice;
     } else {
       // If it's already an id, try to get the plan for price
       const allPlans = (gymData[0]?.membership_plans || []);
@@ -93,7 +93,7 @@ export default function GymMembershipTable() {
         customer: customer.id,
         joined_date: values.startDate,
         expiry_date: values.endDate,
-        membership_plan: membershipPlanId,
+        membership_plans: membershipPlanId,
         gym_and_sports: {connect: (gymId).toString() }
       }
     );
@@ -109,7 +109,7 @@ export default function GymMembershipTable() {
           name: `Gym Membership - ${values.firstName} ${values.lastName}`,
           price: planPrice,
           quantity: 1,
-          department: "gym-and-sports",
+          department: "gym_memberships",
           documentId: gymMembership.id.toString(),
           count: 1,
           amount_paid: planPrice,
@@ -152,7 +152,7 @@ export default function GymMembershipTable() {
       {
         joined_date: values.startDate,
         expiry_date: values.endDate,
-        membership_plan: {connect: { id: membershipPlanId } },
+        membership_plans: {connect: { id: membershipPlanId } },
         gym_and_sports: { connect: (gymId).toString() },
       }
     );
@@ -227,7 +227,8 @@ export default function GymMembershipTable() {
               <TableCell>{member.customer?.firstName} {member.customer?.lastName}</TableCell>
               <TableCell>{member.customer?.email}</TableCell>
               <TableCell>{member.customer?.phone}</TableCell>
-              <TableCell>{member.membership_plan?.name}</TableCell>
+              {/* Membership Plan Name: fallback to member.membership_plans[0]?.name, or 'N/A' if not present */}
+              <TableCell>{member.membership_plans?.[0]?.name || 'N/A'}</TableCell>
               <TableCell>{member.joined_date}</TableCell>
               <TableCell>{member.joined_date}</TableCell>
               <TableCell>
@@ -282,7 +283,7 @@ export default function GymMembershipTable() {
           memberId={attendanceMember.id}
           memberName={attendanceMember.customer?.firstName + ' ' + attendanceMember.customer?.lastName}
           attendance={attendanceMember.check_ins}
-          imageUrl={attendanceMember.profile_photo?.formats.medium.url || '/default-avatar.png'}
+          imageUrl={attendanceMember.profile_photo?.formats?.medium?.url || '/default-avatar.png'}
           planExpiry={attendanceMember.expiry_date}
         />
       )}

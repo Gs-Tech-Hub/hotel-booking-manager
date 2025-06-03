@@ -1,6 +1,6 @@
 import { BookingItem } from "@/types/bookingItem";
 
-type DepartmentKey = 'bar' | 'restaurant' | 'hotel' | 'games' | 'account' | 'gym-and-sports';
+type DepartmentKey = 'bar' | 'restaurant' | 'hotel' | 'games' | 'account' | 'gym_memberships';
 
 interface DepartmentItem {
     id: number;
@@ -20,11 +20,23 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
         hotel: [],
         games: [],
         account: [],
-        'gym-and-sports': [],
+        gym_memberships: [],
     };
 
     for (const item of bookingItems) {
-        const { id, documentId, drinks, food_items, hotel_services, games, product_count, payment_type, amount_paid } = item;
+        // Default all possibly undefined arrays to []
+        const {
+            id,
+            documentId,
+            drinks = [],
+            food_items = [],
+            hotel_services = [],
+            games = [],
+            product_count,
+            payment_type,
+            amount_paid,
+            gym_memberships = [],
+        } = item;
 
         // Function to safely access product count
         const getProductCount = (i: number) => product_count?.[i]?.product_count ?? 1;
@@ -92,6 +104,21 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                 });
             });
         }
+        // Process gym memberships
+        if (gym_memberships.length > 0) {
+            gym_memberships.forEach((membership, i) => {
+                itemsByDept.gym_memberships.push({
+                    id,
+                    documentId: item.bookings?.[0]?.id ?? documentId ?? null,
+                    name: membership.name ?? 'Gym Membership', // Fallback to 'Gym Membership'
+                    price: membership.price ?? 0, // Default to 0 if price is missing
+                    quantity: getProductCount(i),
+                    paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
+                    amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
+                    department: 'gym_memberships'
+                });
+            });
+        }   
 
         // Process account items (for payment)
         if (

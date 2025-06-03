@@ -10,6 +10,7 @@ export interface MembershipFormValues {
   email: string;
   phone: string;
   membershipType: string;
+  planPrice?: number;
   startDate: string;
   endDate: string;
   paymentMethod: string;
@@ -28,6 +29,11 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
     if (typeof vals.startDate !== 'undefined' && typeof vals.endDate !== 'undefined') return vals as MembershipFormValues;
     // Map from gym membership object
     const expired = vals.expiry_date && new Date(vals.expiry_date) < new Date();
+    // Try to get plan price from membership_plan if available
+    let planPrice: number | undefined = undefined;
+    if (vals.membership_plan && typeof vals.membership_plan.price === 'number') {
+      planPrice = vals.membership_plan.price;
+    }
     return {
       firstName: vals.customer?.firstName || vals.firstName || '',
       lastName: vals.customer?.lastName || vals.lastName || '',
@@ -39,6 +45,7 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
         : vals.expiry_date || '',
       endDate: '', // Let user pick new end date
       paymentMethod: '',
+      planPrice
     };
   };
 
@@ -55,7 +62,7 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
       if (Array.isArray(plans)) {
         setMembershipPlans(plans);
         setMembershipTypes(
-          plans.map((plan: any) => ({ value: plan.id, label: plan.name }))
+          plans.map((plan: any) => ({ value: plan.id, label: plan.name, price: plan.price }))
         );
       }
     }
@@ -64,16 +71,23 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
 
   useEffect(() => {
     if (form.membershipType && membershipPlans.length > 0) {
-      const plan = membershipPlans.find((p) => p.name === form.membershipType);
+      const plan = membershipPlans.find((p) => p.id.toString() === form.membershipType);
       setSelectedPlan(plan || null);
+      // Always update planPrice in form when plan changes
+      setForm((prev) => ({ ...prev, planPrice: plan ? plan.price : undefined }));
     } else {
       setSelectedPlan(null);
+      setForm((prev) => ({ ...prev, planPrice: undefined }));
     }
   }, [form.membershipType, membershipPlans]);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    // Special handling for paymentMethod to ensure correct value is set
+    if (name === 'paymentMethod') {
+      setForm((prev) => ({ ...prev, paymentMethod: value }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   // For date pickers, you may want to use a custom handler or a controlled component
@@ -130,7 +144,14 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
       <div className="flex justify-between">
       <Select
         value={form.membershipType}
-        onChange={(val) => setForm((prev) => ({ ...prev, membershipType: val as string }))}
+        onChange={(val) => {
+          const selected = membershipPlans.find((plan) => plan.id.toString() === val);
+          setForm((prev) => ({
+            ...prev,
+            membershipType: val as string,
+            planPrice: selected ? selected.price : undefined
+          }));
+        }}
         items={membershipTypes}
         placeholder="Select Membership Type"
       />
@@ -171,6 +192,7 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
               onChange={handleChange}
               className="w-full appearance-none rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary mb-4"
             >
+              <option value="">Select Payment Method</option>
               <option value="cash">Cash</option>
               <option value="bank_transfer">Bank Transfer</option>
               <option value="card">Debit Card</option>

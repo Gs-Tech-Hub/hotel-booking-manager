@@ -33,6 +33,14 @@ export interface HotelService {
     // Add more fields as needed
 }
 
+export interface GymMembership {
+    id: number;
+    name: string;
+    price: number;
+
+    // Add more fields as needed
+}
+
 export interface Game {
     id: number;
     name: string;
@@ -75,6 +83,7 @@ export interface BookingItem {
     hotel_services: HotelService[];
     games: Game[];
     product_count: ProductCount[];
+    gym_memberships: GymMembership[]; // Assuming GymMembership is defined elsewhere
     bookings: Booking[];
     payment_type?: PaymentType;
     food_type: string | null;
