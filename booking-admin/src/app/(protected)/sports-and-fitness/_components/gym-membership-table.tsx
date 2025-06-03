@@ -32,6 +32,7 @@ export default function GymMembershipTable() {
     const gymData = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList(
     {
       "populate[gym_memberships][populate]": "*",
+      "[membership_plans][populate]": "*",
       "[check_ins][populate]": "*"
     }
     );
@@ -108,7 +109,7 @@ export default function GymMembershipTable() {
           name: `Gym Membership - ${values.firstName} ${values.lastName}`,
           price: planPrice,
           quantity: 1,
-          department: "Sports-and-Fitness",
+          department: "gym-and-sports",
           documentId: gymMembership.id.toString(),
           count: 1,
           amount_paid: planPrice,
@@ -139,6 +140,7 @@ export default function GymMembershipTable() {
       foundPlan = allPlans.find((plan: any) => plan.name === values.membershipType || plan.id === values.membershipType);
       membershipPlanId = foundPlan ? foundPlan.id : values.membershipType;
       planPrice = foundPlan ? foundPlan.price : (values.membershipType.price || 0);
+      console.log("membership plan:", membershipPlanId);
     } else {
       const allPlans = (gymData[0]?.membership_plans || []);
       foundPlan = allPlans.find((plan: any) => plan.id === membershipPlanId);
@@ -146,15 +148,41 @@ export default function GymMembershipTable() {
     }
     // Update membership
     await strapiService.gymMembershipsEndpoints.updateGymMembership(
-      renewMember.id,
+      renewMember.documentId,
       {
         joined_date: values.startDate,
         expiry_date: values.endDate,
-        membership_plan: membershipPlanId,
+        membership_plan: {connect: { id: membershipPlanId } },
         gym_and_sports: { connect: (gymId).toString() },
       }
     );
-    // Optionally process payment/order if needed (similar to handleAddMember)
+    // Process order for renewal
+    const gymMembership = { id: renewMember.documentId };
+    const customer = renewMember.customer || {};
+    const waiterId = user && user.id ? user.id : '';
+    await processOrder({
+      order: {
+        id: gymMembership.id.toString(),
+        totalAmount: planPrice,
+        waiterId,
+        items: [{
+          id: gymMembership.id,
+          name: `Gym Membership - ${values.firstName} ${values.lastName}`,
+          price: planPrice,
+          quantity: 1,
+          department: "gym-and-sports",
+          documentId: renewMember.documentId,
+          count: 1,
+          amount_paid: planPrice,
+          amount_owed: 0,
+          game_status: "completed"
+        }],
+        status: "completed"
+      },
+      waiterId,
+      customerId: customer.id,
+      paymentMethod: values.paymentMethod,
+    });
     fetchMembers();
   };
 

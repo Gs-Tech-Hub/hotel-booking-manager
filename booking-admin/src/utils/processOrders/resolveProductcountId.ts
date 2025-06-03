@@ -36,6 +36,8 @@ export const resolveProductCountIds = async (
       data.game = Number(validItemId);
     } else if (item.department === 'hotel') {
       data.hotel_service = { connect: Number(validItemId) };
+    } else if (item.department === 'gym-and-sports') {
+      data.gym_and_sports = { connect: Number(validItemId) };
     } else {
       console.warn(`Unknown department for item: ${item.name}`);
       continue;

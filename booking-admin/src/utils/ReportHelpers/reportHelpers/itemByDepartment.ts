@@ -1,6 +1,6 @@
 import { BookingItem } from "@/types/bookingItem";
 
-type DepartmentKey = 'bar' | 'restaurant' | 'hotel' | 'games' | 'account';
+type DepartmentKey = 'bar' | 'restaurant' | 'hotel' | 'games' | 'account' | 'gym-and-sports';
 
 interface DepartmentItem {
     id: number;
@@ -20,6 +20,7 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
         hotel: [],
         games: [],
         account: [],
+        'gym-and-sports': [],
     };
 
     for (const item of bookingItems) {

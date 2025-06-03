@@ -146,8 +146,22 @@ export const processOrder = async ({
         });
 
         bookingItems.push({ id: bookingItemRes.id });
+      } else if (department === 'gym-and-sports') {
+        validatedItems = items.map((item: { id: { toString: () => any; }; documentId: any; name: any; }) => ({  
+          id: item.id.toString(),
+          documentId: item.documentId,
+          name: item.name,
+        }));
+        const productCountMap = await resolveProductCountIds(items, validatedItems);
+        const productCountIds = Array.from(productCountMap.values());
+        const bookingItemRes = await createBookingItemForDepartment({
+          department,
+          items,
+          productCountIds,
+          paymentMethod,
+        });
+        bookingItems.push({ id: bookingItemRes.id });
       }
-       
       totalOrderAmount += items.reduce((sum: number, item: { price: number; quantity: number; }) => sum + item.price * item.quantity, 0);
     }
 

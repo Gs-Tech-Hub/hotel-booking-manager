@@ -17,7 +17,7 @@ interface ProductCountItem {
   name: string;
 }
 
-type DepartmentKey = 'bar' | 'restaurant' | 'hotel' | 'games' | 'account';
+type DepartmentKey = 'bar' | 'restaurant' | 'hotel' | 'games' | 'account' | 'gym-and-sports';
 
 /**
  * Merges product count data into grouped department items by updating matching quantities.

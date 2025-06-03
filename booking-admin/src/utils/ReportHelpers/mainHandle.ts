@@ -17,6 +17,7 @@ export interface OverviewCardData {
   foodSales: number;
   hotelSales: number;
   gameSales: number;
+  gymAndSportsSales?: number;
 }
 
 export interface ExtendedProduct extends Product {
@@ -24,6 +25,7 @@ export interface ExtendedProduct extends Product {
   isGame?: boolean;
   isBar?: boolean;
   isHotel?: boolean;
+  isGymAndSports?: boolean;
   showStock?: boolean;
   showProfit?: boolean;
 }
@@ -50,7 +52,7 @@ async function fetchPaginatedData(fetchFunction: Function, params: any): Promise
 export async function handleMainRecord(
   startDate: string,
   endDate: string,
-  department: "bar" | "restaurant" | "hotel" | "games",
+  department: "bar" | "restaurant" | "hotel" | "games" | "gym-and-sports" ,
   options: {
     inventoryEndpoint: keyof typeof strapiService;
     departmentStockField: string;
