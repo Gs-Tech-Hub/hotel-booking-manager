@@ -1479,6 +1479,7 @@ export interface ApiMembershipPlanMembershipPlan
   extends Struct.CollectionTypeSchema {
   collectionName: 'membership_plans';
   info: {
+    description: '';
     displayName: 'Membership Plan';
     pluralName: 'membership-plans';
     singularName: 'membership-plan';
@@ -1505,10 +1506,6 @@ export interface ApiMembershipPlanMembershipPlan
     name: Schema.Attribute.String;
     price: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
-    sport_memberships: Schema.Attribute.Relation<
-      'manyToMany',
-      'api::sport-membership.sport-membership'
-    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -2041,10 +2038,6 @@ export interface ApiSportMembershipSportMembership
       'api::sport-membership.sport-membership'
     > &
       Schema.Attribute.Private;
-    membership_plans: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::membership-plan.membership-plan'
-    >;
     payment_type: Schema.Attribute.Relation<
       'oneToOne',
       'api::payment-type.payment-type'

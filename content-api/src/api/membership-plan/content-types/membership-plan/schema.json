@@ -4,7 +4,8 @@
   "info": {
     "singularName": "membership-plan",
     "pluralName": "membership-plans",
-    "displayName": "Membership Plan"
+    "displayName": "Membership Plan",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -33,12 +34,6 @@
     },
     "max_checkins_per_month": {
       "type": "integer"
-    },
-    "sport_memberships": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::sport-membership.sport-membership",
-      "mappedBy": "membership_plans"
     }
   }
 }
