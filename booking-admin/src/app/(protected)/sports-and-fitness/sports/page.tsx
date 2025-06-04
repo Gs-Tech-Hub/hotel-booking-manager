@@ -50,6 +50,7 @@ const [selectedDateRange, setSelectedDateRange] = useState({
             selectedDateRange.startDate,
             selectedDateRange.endDate,
             "gym_memberships",
+            
           );
   
           console.log("Data fetched successfully:", { overview, products });
@@ -82,7 +83,7 @@ const [selectedDateRange, setSelectedDateRange] = useState({
             />
           </Suspense>
       <div className="p-4">
-      <GymMembershipTable />
+      <GymMembershipTable dataType="sports" title="Sports Memberships" />
     </div>
     </div>
    

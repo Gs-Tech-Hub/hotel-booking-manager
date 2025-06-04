@@ -16,7 +16,12 @@ import AttendanceModal from "./AttendanceModal";
 import { processOrder } from "@/utils/processOrders/finalizeOrder";
 import { useAuth } from "@/components/Auth/context/auth-context";
 
-export default function GymMembershipTable() {
+interface GymMembershipTableProps {
+  dataType: 'gym' | 'sports';
+  title?: string;
+}
+
+export default function GymMembershipTable({ dataType = 'gym', title = 'Memberships' }: GymMembershipTableProps) {
   const { user } = useAuth();
   const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,36 +34,54 @@ export default function GymMembershipTable() {
 
   const fetchMembers = async () => {
     setLoading(true);
-    const gymData = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList(
-    {
-      "populate[gym_memberships][populate]": "*",
-      "[membership_plans][populate]": "*",
-      "[check_ins][populate]": "*"
-    }
-    );
-    // Flatten all gym memberships into a single array for the table
-    const allMemberships: any[] = [];
-    gymData.forEach((gym: any) => {
-      (gym.gym_memberships || []).forEach((membership: any) => {
-        allMemberships.push({
-          ...membership,
-          gymName: gym.name,
-          gymId: gym.id,
-          membership_plans: membership.membership_plans,
-          check_ins: membership.check_ins,
-          customer: membership.customer, // keep customer if present
-          membership_plan: (gym.membership_plans || []).find((plan: any) => plan.id === membership.membership_plan) || membership.membership_plan,
+    let data: any[] = [];
+    if (dataType === 'gym') {
+      const gymData = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({
+        "populate[gym_memberships][populate]": "*",
+        "[membership_plans][populate]": "*",
+        "[check_ins][populate]": "*"
+      });
+      gymData.forEach((gym: any) => {
+        (gym.gym_memberships || []).forEach((membership: any) => {
+          data.push({
+            ...membership,
+            gymName: gym.name,
+            gymId: gym.id,
+            membership_plans: membership.membership_plans,
+            check_ins: membership.check_ins,
+            customer: membership.customer,
+            membership_plan: (gym.membership_plans || []).find((plan: any) => plan.id === membership.membership_plan) || membership.membership_plan,
+          });
         });
       });
-    });
-    setMembers(allMemberships);
-    // console.log("members:",allMemberships);
+    } else if (dataType === 'sports') {
+      // Example: fetch sports memberships (adjust endpoint as needed)
+      const sportsData = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({
+        "populate[sports_memberships][populate]": "*",
+        "[membership_plans][populate]": "*",
+        "[check_ins][populate]": "*"
+      });
+      sportsData.forEach((sport: any) => {
+        (sport.sports_memberships || []).forEach((membership: any) => {
+          data.push({
+            ...membership,
+            sportName: sport.name,
+            sportId: sport.id,
+            membership_plans: membership.membership_plans,
+            check_ins: membership.check_ins,
+            customer: membership.customer,
+            membership_plan: (sport.membership_plans || []).find((plan: any) => plan.id === membership.membership_plan) || membership.membership_plan,
+          });
+        });
+      });
+    }
+    setMembers(data);
     setLoading(false);
   };
 
   useEffect(() => {
     fetchMembers();
-  }, []);
+  }, [dataType]);
 
   const handleAddMember = async (values: any) => {
     // Find the gym id (use the first gym for now)
@@ -196,7 +219,7 @@ export default function GymMembershipTable() {
     <div className="rounded-[10px] bg-white p-4 shadow-1 dark:bg-gray-dark">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-body-2xlg font-bold text-dark dark:text-white">
-          Gym Memberships
+          {title}
         </h2>
         <button
           className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark"
@@ -228,7 +251,7 @@ export default function GymMembershipTable() {
                 setShowRenewModal(true);
               }}
             >
-              <TableCell>{member.customer?.firstName} {member.customer?.lastName}</TableCell>
+              <TableCell>{member.customer?.firstName || member.customer?.name} {member.customer?.lastName || ''}</TableCell>
               <TableCell>{member.customer?.email}</TableCell>
               <TableCell>{member.customer?.phone}</TableCell>
               {/* Membership Plan Name: fallback to member.membership_plans[0]?.name, or 'N/A' if not present */}
