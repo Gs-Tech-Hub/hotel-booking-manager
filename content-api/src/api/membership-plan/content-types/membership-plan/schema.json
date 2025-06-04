@@ -39,6 +39,12 @@
       "relation": "manyToMany",
       "target": "api::sport-membership.sport-membership",
       "mappedBy": "membership_plans"
+    },
+    "gym_and_sports": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::gym-and-sport.gym-and-sport",
+      "mappedBy": "membership_plans"
     }
   }
 }
