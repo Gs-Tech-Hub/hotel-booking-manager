@@ -39,9 +39,8 @@
     },
     "membership_plans": {
       "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::membership-plan.membership-plan",
-      "inversedBy": "gym_and_sports"
+      "relation": "oneToMany",
+      "target": "api::membership-plan.membership-plan"
     }
   }
 }

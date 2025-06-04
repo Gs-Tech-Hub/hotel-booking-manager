@@ -1332,7 +1332,7 @@ export interface ApiGymAndSportGymAndSport extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     membership_plans: Schema.Attribute.Relation<
-      'manyToMany',
+      'oneToMany',
       'api::membership-plan.membership-plan'
     >;
     name: Schema.Attribute.String;
@@ -1494,10 +1494,6 @@ export interface ApiMembershipPlanMembershipPlan
     description: Schema.Attribute.Blocks;
     discount_amount: Schema.Attribute.Integer;
     duration_months: Schema.Attribute.Integer;
-    gym_and_sports: Schema.Attribute.Relation<
-      'manyToMany',
-      'api::gym-and-sport.gym-and-sport'
-    >;
     isActive: Schema.Attribute.Boolean;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
