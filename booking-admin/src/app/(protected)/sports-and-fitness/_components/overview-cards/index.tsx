@@ -32,8 +32,8 @@ export function OverviewCardsGroup({  registration, renewal, total_earned, trans
       <OverviewCard
         label="Bank Transfer & Card"
         data={{
-          ...renewal,
-          value: formatPrice((renewal.value), 'NGN'),
+          ...transfer_card,
+          value: formatPrice((transfer_card.value), 'NGN'),
           date: 24
         }}
         // Icon={icons.CheckIn}
@@ -52,7 +52,7 @@ export function OverviewCardsGroup({  registration, renewal, total_earned, trans
         label="Registrations"
         data={{
           ...cash,
-          value: (cash.value),
+          value: (registration.value),
           date: 24
         }}
         // Icon={icons.CheckOut}
@@ -61,7 +61,7 @@ export function OverviewCardsGroup({  registration, renewal, total_earned, trans
         label="Renewals"
         data={{
           ...cash,
-          value: (transfer_card.value),
+          value: (renewal.value),
           date: 24
         }}
         // Icon={icons.CheckOut}

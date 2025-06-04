@@ -83,7 +83,7 @@ export interface BookingItem {
     hotel_services: HotelService[];
     games: Game[];
     product_count: ProductCount[];
-    gym_memberships: GymMembership[]; // Assuming GymMembership is defined elsewhere
+    gym_membership: GymMembership[];
     bookings: Booking[];
     payment_type?: PaymentType;
     food_type: string | null;

@@ -1,11 +1,11 @@
 "use client"
 import dynamic from "next/dynamic";
-import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
+import { OverviewCardsSkeleton } from "../_components/overview-cards/skeleton";
 import { Suspense, useEffect, useState } from "react";
-import { OverviewCardsGroup } from "./_components/overview-cards";
+import { OverviewCardsGroup } from "../_components/overview-cards";
 import { handleMainRecord } from "@/utils/ReportHelpers/mainHandle";
 
-const GymMembershipTable = dynamic(() => import("./_components/gym-membership-table"), { ssr: false });
+const GymMembershipTable = dynamic(() => import("../_components/gym-membership-table"), { ssr: false });
 const generatePastWeekDateRanges = () => {
   const now = new Date();
   const ranges = [];
@@ -33,8 +33,6 @@ export default function SportsAndFitnessDashboard() {
     total_cash: { value: 0 },
     total_transfers: { value: 0 },
     total_sold: { value: 0 },
-    low_stock: { value: 0 },
-    out_of_stock: { value: 0 },
   });
 const [selectedDateRange, setSelectedDateRange] = useState({
     startDate: pastWeekDateRanges[0].value,
@@ -60,8 +58,6 @@ const [selectedDateRange, setSelectedDateRange] = useState({
             total_cash: { value: overview.cashSales },
             total_transfers: { value: overview.totalTransfers },
             total_sold: { value: overview.totalSales },
-            low_stock: { value: products.filter((p) => p.bar_stock <= 10).length },
-            out_of_stock: { value: products.filter((p) => p.bar_stock === 0).length },
           });
           } catch (error) {
         console.error("Failed to fetch bar data:", error);

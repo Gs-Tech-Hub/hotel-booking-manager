@@ -52,7 +52,7 @@ export default function GymMembershipTable() {
       });
     });
     setMembers(allMemberships);
-    console.log("members:",allMemberships);
+    // console.log("members:",allMemberships);
     setLoading(false);
   };
 
@@ -109,7 +109,7 @@ export default function GymMembershipTable() {
         waiterId,
         items: [{
           id: gymMembership.id,
-          name: `Gym Membership - ${values.firstName} ${values.lastName}`,
+          name: ` New Membership - ${values.firstName} ${values.lastName}`,
           price: planPrice,
           quantity: 1,
           department: "gym_memberships",
@@ -145,7 +145,7 @@ export default function GymMembershipTable() {
       membershipPlanId = foundPlan ? foundPlan.id : values.membershipType;
       planPrice = values.planPrice;
 
-      console.log("type:",values.paymentMethod);
+      // console.log("type:",values.paymentMethod);
     } else {
       const allPlans = (gymData[0]?.membership_plans || []);
       foundPlan = allPlans.find((plan: any) => plan.id === membershipPlanId);
@@ -171,7 +171,7 @@ export default function GymMembershipTable() {
         waiterId,
         items: [{
           id: renewedMembership.id,
-          name: `Gym Membership - ${values.firstName} ${values.lastName}`,
+          name: `Renew Membership - ${values.firstName} ${values.lastName}`,
           price: planPrice,
           quantity: 1,
           department: "gym_memberships",

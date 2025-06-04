@@ -35,7 +35,7 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
             product_count,
             payment_type,
             amount_paid,
-            gym_memberships = [],
+            gym_membership = [],
         } = item;
 
         // Function to safely access product count
@@ -105,16 +105,16 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
             });
         }
         // Process gym memberships
-        if (gym_memberships.length > 0) {
-            gym_memberships.forEach((membership, i) => {
+        if (gym_membership.length > 0) {
+            gym_membership.forEach((membership, i) => {
                 itemsByDept.gym_memberships.push({
                     id,
                     documentId: item.bookings?.[0]?.id ?? documentId ?? null,
-                    name: membership.name ?? 'Gym Membership', // Fallback to 'Gym Membership'
-                    price: membership.price ?? 0, // Default to 0 if price is missing
+                    name: membership.name ?? 'Gym Membership',
+                    price: membership.price ?? amount_paid ?? 0, // Use membership price, fallback to amount_paid
                     quantity: getProductCount(i),
-                    paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
-                    amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
+                    paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash',
+                    amountPaid: amount_paid ?? 0,
                     department: 'gym_memberships'
                 });
             });
@@ -126,6 +126,7 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
             food_items.length === 0 &&
             hotel_services.length === 0 &&
             games.length === 0 &&
+            gym_membership.length === 0 && // Only push to account if not a gym membership
             item.amount_paid
         ) {
             itemsByDept.account.push({

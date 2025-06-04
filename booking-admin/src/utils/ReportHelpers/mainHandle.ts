@@ -17,7 +17,7 @@ export interface OverviewCardData {
   foodSales: number;
   hotelSales: number;
   gameSales: number;
-  gym_memberships?: number;
+  gym_memberships: number;
 }
 
 export interface ExtendedProduct extends Product {
@@ -88,7 +88,7 @@ export async function handleMainRecord(
     // Aggregate totals and flatten
     const { updatedItems: flatItems, salesByProduct, paymentMethods, departmentTotals } = calculateDepartmentTotals(mergedGroupedItems, productCountItems, department);
 
-    console.log("Aggregated Items:", flatItems);
+    // console.log("Aggregated Items:", flatItems);
     console.log("Sales by Product:", salesByProduct);
     console.log("Department Totals:", departmentTotals);
 
@@ -101,17 +101,20 @@ export async function handleMainRecord(
       totalTransfers: departmentTotals.totalTransfers,
       totalSales: departmentTotals.totalSales,
       totalUnits,
-      totalProfit: 0, // calculated below
+      totalProfit: 0, 
       barSales: 0,
       foodSales: 0,
       hotelSales: 0,
       gameSales: 0,
+      gym_memberships: 0,
     };
 
     if (department === "bar") overviewBase.barSales = departmentTotals.totalSales;
     if (department === "restaurant") overviewBase.foodSales = departmentTotals.totalSales;
     if (department === "hotel") overviewBase.hotelSales = departmentTotals.totalSales;
     if (department === "games") overviewBase.gameSales = departmentTotals.totalSales;
+    if (department === "gym_memberships") overviewBase.gym_memberships = departmentTotals.totalSales;
+    
 
     // Optional inventory fetch
     const inventoryData = fetchInventory
@@ -140,6 +143,7 @@ export async function handleMainRecord(
         isRestaurant: department === "restaurant",
         isHotel: department === "hotel",
         isGame: department === "games",
+        isGymAndSports: department === "gym_memberships",
         showStock: true,
         showProfit: true,
         type: product.type || "",

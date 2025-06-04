@@ -72,23 +72,25 @@ export const calculateDepartmentTotals = (
     const amount = totalQuantity * base.price; // Calculate total amount
     const amountPaid = items.reduce((sum, i) => sum + i.amountPaid, 0); // Sum up amounts paid
 
-    // Track payment methods
-    const paymentMethod = base.paymentMethods.toLowerCase();
-    if (paymentMethod === 'cash') {
-      paymentMethods.cash += amount;
-      if (base.department === department) {
-        departmentTotals.cashSales += amount;
+    // Track payment methods for all items in the group
+    items.forEach((i) => {
+      const paymentMethod = i.paymentMethods.toLowerCase();
+      const itemAmount = i.quantity * i.price;
+      if (paymentMethod === 'cash') {
+        paymentMethods.cash += itemAmount || i.amountPaid;
+        if (i.department === department) {
+          departmentTotals.cashSales += itemAmount || i.amountPaid;
+        }
+      } else {
+        paymentMethods.other += itemAmount || i.amountPaid;
+        if (i.department === department) {
+          departmentTotals.totalTransfers += itemAmount || i.amountPaid;
+        }
       }
-    } else {
-      paymentMethods.other += amount;
-      if (base.department === department) {
-        departmentTotals.totalTransfers += amount;
+      if (i.department === department) {
+        departmentTotals.totalSales += itemAmount || i.amountPaid;
       }
-    }
-
-    if (base.department === department) {
-      departmentTotals.totalSales += amount;
-    }
+    });
 
     // Exclude cash/other from product sales
     if (name !== 'cash' && name !== 'other') {

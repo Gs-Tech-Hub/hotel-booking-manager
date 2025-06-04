@@ -68,7 +68,7 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
   useEffect(() => {
     async function fetchMembershipTypes() {
       const plans = await strapiService.membershipPlansEndpoints.getMembershipPlans();
-      console.log('plans:', plans);
+      // console.log('plans:', plans);
       if (Array.isArray(plans)) {
         setMembershipPlans(plans);
         setMembershipTypes(
@@ -93,7 +93,9 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     if (name === 'paymentMethod') {
-      setForm((prev) => ({ ...prev, paymentMethod: { ...prev.paymentMethod, type: value as PaymentMethod['type'] } }));
+      // Find the full payment method object by type
+      const selectedMethod = paymentMethods.find((method) => method.type === value);
+      setForm((prev) => ({ ...prev, paymentMethod: selectedMethod || prev.paymentMethod }));
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
@@ -191,24 +193,21 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
         />
       </div>
         <label htmlFor="payment-method" className="block text-body-sm font-medium text-dark dark:text-white">
-              Payment Method
-            </label>
-            <select
-              id="payment-method"
-              name="paymentMethod"
-              value={form.paymentMethod.type}
-               onChange={(e) => {
-                                   const value = e.target.value;
-                                     paymentMethods.find(
-                                     (method) => method.type === value
-                                   );
-                                 }}  
-              className="w-full appearance-none rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary mb-4"
-            >
-              <option value="cash">Cash</option>
-              <option value="bank_transfer">Bank Transfer</option>
-              <option value="card">Debit Card</option>
-            </select>
+  Payment Method
+</label>
+<select
+  id="payment-method"
+  name="paymentMethod"
+  value={form.paymentMethod.type}
+  onChange={handleChange}
+  className="w-full appearance-none rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary mb-4"
+>
+  {paymentMethods.map((method) => (
+    <option key={method.type} value={method.type}>
+      {method.type}
+    </option>
+  ))}
+</select>
       <Button label={submitLabel}
        />
     </form>
