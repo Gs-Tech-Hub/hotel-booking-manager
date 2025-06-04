@@ -4,7 +4,7 @@
     "info": {
         "singularName": "boooking",
         "pluralName": "boookings",
-        "displayName": "boooking",
+        "displayName": "booking",
         "description": ""
     },
     "options": {
@@ -27,10 +27,11 @@
             "relation": "oneToOne",
             "target": "api::payment.payment"
         },
-        "food_item": {
+        "food_items": {
             "type": "relation",
-            "relation": "oneToOne",
-            "target": "api::food-item.food-item"
+            "relation": "oneToMany",
+            "target": "api::food-item.food-item",
+            "mappedBy": "boooking"
         },
         "room": {
             "type": "relation",
@@ -46,6 +47,55 @@
             "type": "relation",
             "relation": "oneToOne",
             "target": "api::bar-and-club.bar-and-club"
+        },
+        "bookingId": {
+            "type": "string"
+        },
+        "hotel_services": {
+            "type": "relation",
+            "relation": "oneToMany",
+            "target": "api::hotel-service.hotel-service",
+            "mappedBy": "boooking"
+        },
+        "guests": {
+            "type": "integer"
+        },
+        "nights": {
+            "type": "integer"
+        },
+        "customerId": {
+            "type": "string"
+        },
+        "totalPrice": {
+            "type": "integer"
+        },
+        "drinks": {
+            "type": "relation",
+            "relation": "oneToMany",
+            "target": "api::drink.drink",
+            "mappedBy": "boooking"
+        },
+        "booking_items": {
+            "type": "relation",
+            "relation": "oneToMany",
+            "target": "api::booking-item.booking-item"
+        },
+        "timeIn": {
+            "type": "time"
+        },
+        "timeOut": {
+            "type": "time"
+        },
+        "isShortRest": {
+            "type": "boolean"
+        },
+        "booking_status": {
+            "type": "string"
+        },
+        "product_count": {
+            "type": "relation",
+            "relation": "oneToOne",
+            "target": "api::product-count.product-count"
         }
     }
 }

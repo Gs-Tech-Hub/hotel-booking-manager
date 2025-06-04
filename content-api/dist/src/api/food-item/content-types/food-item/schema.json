@@ -40,6 +40,12 @@
             "type": "relation",
             "relation": "oneToOne",
             "target": "api::food-type.food-type"
+        },
+        "boooking": {
+            "type": "relation",
+            "relation": "manyToOne",
+            "target": "api::boooking.boooking",
+            "inversedBy": "food_items"
         }
     }
 }

@@ -4,26 +4,39 @@
     "info": {
         "singularName": "customer",
         "pluralName": "customers",
-        "displayName": "customer"
+        "displayName": "customer",
+        "description": ""
     },
     "options": {
         "draftAndPublish": true
     },
     "attributes": {
-        "FirstName": {
+        "firstName": {
             "type": "string"
         },
         "lastName": {
             "type": "string"
         },
         "phone": {
-            "type": "integer"
-        },
-        "address": {
-            "type": "text"
+            "type": "string"
         },
         "email": {
             "type": "email"
+        },
+        "street": {
+            "type": "string"
+        },
+        "city": {
+            "type": "string"
+        },
+        "state": {
+            "type": "string"
+        },
+        "nationality": {
+            "type": "string"
+        },
+        "zip": {
+            "type": "integer"
         }
     }
 }
