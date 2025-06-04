@@ -1276,6 +1276,10 @@ export interface ApiGymAndSportSessionGymAndSportSession
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    gym_and_sports: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::gym-and-sport.gym-and-sport'
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1313,6 +1317,10 @@ export interface ApiGymAndSportGymAndSport extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    gym_and_sport_sessions: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::gym-and-sport-session.gym-and-sport-session'
+    >;
     gym_memberships: Schema.Attribute.Relation<
       'manyToMany',
       'api::gym-membership.gym-membership'

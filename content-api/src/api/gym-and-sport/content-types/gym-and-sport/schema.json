@@ -30,6 +30,12 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::sport-membership.sport-membership"
+    },
+    "gym_and_sport_sessions": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::gym-and-sport-session.gym-and-sport-session",
+      "inversedBy": "gym_and_sports"
     }
   }
 }

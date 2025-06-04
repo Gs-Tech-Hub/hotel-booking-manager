@@ -29,6 +29,12 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::schedule.schedule"
+    },
+    "gym_and_sports": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::gym-and-sport.gym-and-sport",
+      "mappedBy": "gym_and_sport_sessions"
     }
   }
 }
