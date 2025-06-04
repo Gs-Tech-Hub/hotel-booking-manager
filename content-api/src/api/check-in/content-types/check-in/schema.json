@@ -22,12 +22,6 @@
     },
     "check_out_time": {
       "type": "datetime"
-    },
-    "gym_and_sports": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::gym-and-sport.gym-and-sport",
-      "inversedBy": "check_ins"
     }
   }
 }

@@ -791,10 +791,6 @@ export interface ApiCheckInCheckIn extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    gym_and_sports: Schema.Attribute.Relation<
-      'manyToMany',
-      'api::gym-and-sport.gym-and-sport'
-    >;
     gym_membership: Schema.Attribute.Relation<
       'manyToOne',
       'api::gym-membership.gym-membership'
@@ -1313,19 +1309,10 @@ export interface ApiGymAndSportGymAndSport extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    check_in: Schema.Attribute.Relation<'oneToOne', 'api::check-in.check-in'>;
-    check_ins: Schema.Attribute.Relation<
-      'manyToMany',
-      'api::check-in.check-in'
-    >;
     CloseTime: Schema.Attribute.Time;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    gym_and_sport_sessions: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::gym-and-sport-session.gym-and-sport-session'
-    >;
     gym_memberships: Schema.Attribute.Relation<
       'manyToMany',
       'api::gym-membership.gym-membership'
@@ -1336,17 +1323,13 @@ export interface ApiGymAndSportGymAndSport extends Struct.CollectionTypeSchema {
       'api::gym-and-sport.gym-and-sport'
     > &
       Schema.Attribute.Private;
-    membership_plans: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::membership-plan.membership-plan'
-    >;
     name: Schema.Attribute.String;
     OpenTime: Schema.Attribute.Time;
-    payment_type: Schema.Attribute.Relation<
-      'oneToOne',
-      'api::payment-type.payment-type'
-    >;
     publishedAt: Schema.Attribute.DateTime;
+    sport_membership: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::sport-membership.sport-membership'
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1510,6 +1493,10 @@ export interface ApiMembershipPlanMembershipPlan
     name: Schema.Attribute.String;
     price: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
+    sport_memberships: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::sport-membership.sport-membership'
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -2004,6 +1991,59 @@ export interface ApiSpecialInfoSpecialInfo extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     promoEnd: Schema.Attribute.Date;
     promoStart: Schema.Attribute.Date;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSportMembershipSportMembership
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'sport_memberships';
+  info: {
+    displayName: 'Sport-Membership';
+    pluralName: 'sport-memberships';
+    singularName: 'sport-membership';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    check_ins: Schema.Attribute.Relation<'oneToMany', 'api::check-in.check-in'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    customer: Schema.Attribute.Relation<'oneToOne', 'api::customer.customer'>;
+    emergency_contact: Schema.Attribute.String;
+    expiry_date: Schema.Attribute.Date;
+    gym_and_sports: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::gym-and-sport.gym-and-sport'
+    >;
+    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    joined_date: Schema.Attribute.Date;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::sport-membership.sport-membership'
+    > &
+      Schema.Attribute.Private;
+    membership_plans: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::membership-plan.membership-plan'
+    >;
+    payment_type: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::payment-type.payment-type'
+    >;
+    product_counts: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::product-count.product-count'
+    >;
+    profile_photo: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -2596,6 +2636,7 @@ declare module '@strapi/strapi' {
       'api::service.service': ApiServiceService;
       'api::slider.slider': ApiSliderSlider;
       'api::special-info.special-info': ApiSpecialInfoSpecialInfo;
+      'api::sport-membership.sport-membership': ApiSportMembershipSportMembership;
       'api::vendor.vendor': ApiVendorVendor;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

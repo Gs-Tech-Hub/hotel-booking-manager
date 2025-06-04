@@ -17,40 +17,19 @@
       "target": "api::gym-membership.gym-membership",
       "inversedBy": "gym_and_sports"
     },
-    "membership_plans": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::membership-plan.membership-plan"
-    },
-    "check_in": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::check-in.check-in"
-    },
-    "payment_type": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::payment-type.payment-type"
-    },
     "OpenTime": {
       "type": "time"
     },
     "CloseTime": {
       "type": "time"
     },
-    "gym_and_sport_sessions": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::gym-and-sport-session.gym-and-sport-session"
-    },
     "name": {
       "type": "string"
     },
-    "check_ins": {
+    "sport_membership": {
       "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::check-in.check-in",
-      "mappedBy": "gym_and_sports"
+      "relation": "oneToOne",
+      "target": "api::sport-membership.sport-membership"
     }
   }
 }

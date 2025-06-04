@@ -33,6 +33,12 @@
     },
     "max_checkins_per_month": {
       "type": "integer"
+    },
+    "sport_memberships": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::sport-membership.sport-membership",
+      "mappedBy": "membership_plans"
     }
   }
 }

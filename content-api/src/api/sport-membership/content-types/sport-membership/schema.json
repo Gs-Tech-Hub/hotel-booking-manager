@@ -1,0 +1,70 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sport_memberships",
+  "info": {
+    "singularName": "sport-membership",
+    "pluralName": "sport-memberships",
+    "displayName": "Sport-Membership"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "customer": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::customer.customer"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "emergency_contact": {
+      "type": "string"
+    },
+    "joined_date": {
+      "type": "date"
+    },
+    "expiry_date": {
+      "type": "date"
+    },
+    "check_ins": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::check-in.check-in",
+      "mappedBy": "gym_membership"
+    },
+    "payment_type": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::payment-type.payment-type"
+    },
+    "membership_plans": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::membership-plan.membership-plan"
+    },
+    "gym_and_sports": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::gym-and-sport.gym-and-sport",
+      "mappedBy": "gym_memberships"
+    },
+    "profile_photo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "product_counts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-count.product-count"
+    }
+  }
+}
