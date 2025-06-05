@@ -625,6 +625,7 @@ export interface ApiBookingItemBookingItem extends Struct.CollectionTypeSchema {
       'oneToOne',
       'api::menu-category.menu-category'
     >;
+    name: Schema.Attribute.String;
     payment_type: Schema.Attribute.Relation<
       'oneToOne',
       'api::payment-type.payment-type'
@@ -635,6 +636,10 @@ export interface ApiBookingItemBookingItem extends Struct.CollectionTypeSchema {
     >;
     publishedAt: Schema.Attribute.DateTime;
     quantity: Schema.Attribute.Integer;
+    sport_memberships: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::sport-membership.sport-membership'
+    >;
     status: Schema.Attribute.Enumeration<
       ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled']
     > &
