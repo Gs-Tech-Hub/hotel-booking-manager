@@ -2038,6 +2038,10 @@ export interface ApiSportMembershipSportMembership
       'api::sport-membership.sport-membership'
     > &
       Schema.Attribute.Private;
+    membership_plans: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::membership-plan.membership-plan'
+    >;
     payment_type: Schema.Attribute.Relation<
       'oneToOne',
       'api::payment-type.payment-type'

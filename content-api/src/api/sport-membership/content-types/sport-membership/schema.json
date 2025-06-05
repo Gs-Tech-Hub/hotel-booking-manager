@@ -6,7 +6,7 @@
     "pluralName": "sport-memberships",
     "displayName": "Sport-Membership"
   },
-  "options": {
+ "options": {
     "draftAndPublish": true
   },
   "attributes": {
@@ -38,6 +38,11 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::payment-type.payment-type"
+    },
+    "membership_plans": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::membership-plan.membership-plan"
     },
     "gym_and_sports": {
       "type": "relation",
