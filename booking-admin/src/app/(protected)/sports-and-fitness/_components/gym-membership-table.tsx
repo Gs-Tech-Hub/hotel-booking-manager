@@ -33,6 +33,9 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
   const [attendanceMember, setAttendanceMember] = useState<any | null>(null);
   const [showAttendanceModal, setShowAttendanceModal] = useState(false);
   const [availablePlans, setAvailablePlans] = useState<any[]>([]);
+  // Use membershipPlans prop if provided, otherwise fallback to availablePlans
+  const plansToUse = membershipPlans && membershipPlans.length > 0 ? membershipPlans : availablePlans;
+  const [currentPlans, setCurrentPlans] = useState<any[]>(plansToUse);
 
   const fetchMembers = async () => {
     setLoading(true);
@@ -53,8 +56,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
             gymId: gym.id,
             membership_plans: membership.membership_plans,
             check_ins: membership.check_ins,
-            customer: membership.customer,
-            membership_plan: (gym.membership_plans || []).find((plan: any) => plan.id === membership.membership_plan) || membership.membership_plan,
+            customer: membership.customer
           });
         });
         if (gym.membership_plans) {
@@ -76,8 +78,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
             sportId: sport.id,
             membership_plans: membership.membership_plans,
             check_ins: membership.check_ins,
-            customer: membership.customer,
-            membership_plan: (sport.membership_plans || []).find((plan: any) => plan.id === membership.membership_plan) || membership.membership_plan,
+            customer: membership.customer
           });
         });
         if (sport.membership_plans) {
@@ -99,7 +100,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
     const data = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({
     "filters[name][$eq]": dataType === 'gym' ? "Fitness" : "Sports",
       "populate": "*",
-      "populate[membership_plans] ": "*",
+      "[membership_plans][populate] ": "*",
     });
     const entityId = data[0]?.id;
     // Find the correct membership plan by id or name
@@ -111,12 +112,12 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
       const allPlans = (data[0]?.membership_plans || []);
       foundPlan = allPlans.find((plan: any) => plan.name === values.membershipType || plan.id === values.membershipType);
       membershipPlanId = foundPlan ? foundPlan.id : values.membershipType;
-      planPrice = values.planPrice;
+      planPrice = foundPlan ? foundPlan.price : values.planPrice;
       paymentType = values.paymentMethod;
     } else {
       const allPlans = (data[0]?.membership_plans || []);
       foundPlan = allPlans.find((plan: any) => plan.id === membershipPlanId);
-      planPrice = values.planPrice;
+      planPrice = foundPlan ? foundPlan.price : values.planPrice;
       paymentType = values.paymentMethod;
     }
     const customer = await strapiService.customerEndpoints.createCustomer({
@@ -188,11 +189,11 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
       const allPlans = (data[0]?.membership_plans || []);
       foundPlan = allPlans.find((plan: any) => plan.name === values.membershipType || plan.id === values.membershipType);
       membershipPlanId = foundPlan ? foundPlan.id : values.membershipType;
-      planPrice = values.planPrice;
+      planPrice = foundPlan ? foundPlan.price : values.planPrice;
     } else {
       const allPlans = (data[0]?.membership_plans || []);
       foundPlan = allPlans.find((plan: any) => plan.id === membershipPlanId);
-      planPrice = values.planPrice;
+      planPrice = foundPlan ? foundPlan.price : values.planPrice;
       paymentType = values.paymentMethod;
     }
     let renewedMembership;
@@ -255,7 +256,17 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
         </h2>
         <button
           className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark"
-          onClick={() => setShowAddModal(true)}
+          onClick={async () => {
+            let plans = plansToUse;
+            const data = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({
+              "filters[name][$eq]": dataType === 'gym' ? "Fitness" : "Sports",
+              "populate": "*",
+              "[membership_plans][populate]": "*",
+            });
+            plans = data[0]?.membership_plans || [];
+            setCurrentPlans(plans);
+            setShowAddModal(true);
+          }}
         >
           + Create New Membership
         </button>
@@ -278,7 +289,15 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
             <TableRow
               key={member.id}
               className="cursor-pointer hover:bg-gray-50"
-              onClick={() => {
+              onClick={async () => {
+                let plans = plansToUse;
+                const data = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({
+                  "filters[name][$eq]": dataType === 'gym' ? "Fitness" : "Sports",
+                  "populate": "*",
+                  "populate[membership_plans] ": "*",
+                });
+                plans = data[0]?.membership_plans || [];
+                setCurrentPlans(plans);
                 setRenewMember(member);
                 setShowRenewModal(true);
               }}
@@ -323,7 +342,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onAdd={handleAddMember}
-        membershipPlans={availablePlans}
+        membershipPlans={currentPlans}
       />
       {renewMember && (
         <RenewMembershipModal
@@ -331,7 +350,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
           onClose={() => setShowRenewModal(false)}
           onRenew={handleRenewMember}
           initialValues={renewMember}
-          membershipPlans={availablePlans}
+          membershipPlans={currentPlans}
         />
       )}
       {attendanceMember && (

@@ -69,15 +69,7 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
     if (membershipPlans.length > 0) {
       setMembershipTypes(membershipPlans.map((plan: any) => ({ value: plan.id, label: plan.name })));
     } else {
-      async function fetchMembershipTypes() {
-        const plans = await strapiService.membershipPlansEndpoints.getMembershipPlans();
-        if (Array.isArray(plans)) {
-          setMembershipTypes(
-            plans.map((plan: any) => ({ value: plan.id, label: plan.name }))
-          );
-        }
-      }
-      fetchMembershipTypes();
+      setMembershipTypes([]);
     }
   }, [membershipPlans]);
 
