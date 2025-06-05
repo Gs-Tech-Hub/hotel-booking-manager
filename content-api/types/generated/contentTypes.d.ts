@@ -1338,8 +1338,8 @@ export interface ApiGymAndSportGymAndSport extends Struct.CollectionTypeSchema {
     name: Schema.Attribute.String;
     OpenTime: Schema.Attribute.Time;
     publishedAt: Schema.Attribute.DateTime;
-    sport_membership: Schema.Attribute.Relation<
-      'oneToOne',
+    sport_memberships: Schema.Attribute.Relation<
+      'manyToMany',
       'api::sport-membership.sport-membership'
     >;
     updatedAt: Schema.Attribute.DateTime;
@@ -2011,6 +2011,7 @@ export interface ApiSportMembershipSportMembership
   extends Struct.CollectionTypeSchema {
   collectionName: 'sport_memberships';
   info: {
+    description: '';
     displayName: 'Sport-Membership';
     pluralName: 'sport-memberships';
     singularName: 'sport-membership';

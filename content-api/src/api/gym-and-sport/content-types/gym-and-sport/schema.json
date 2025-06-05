@@ -11,12 +11,6 @@
     "draftAndPublish": true
   },
   "attributes": {
-    "gym_memberships": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::gym-membership.gym-membership",
-      "inversedBy": "gym_and_sports"
-    },
     "OpenTime": {
       "type": "time"
     },
@@ -25,11 +19,6 @@
     },
     "name": {
       "type": "string"
-    },
-    "sport_membership": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::sport-membership.sport-membership"
     },
     "gym_and_sport_sessions": {
       "type": "relation",
@@ -41,6 +30,18 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::membership-plan.membership-plan"
+    },
+    "gym_memberships": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::gym-membership.gym-membership",
+      "inversedBy": "gym_and_sports"
+    },
+    "sport_memberships": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::sport-membership.sport-membership",
+      "inversedBy": "gym_and_sports"
     }
   }
 }

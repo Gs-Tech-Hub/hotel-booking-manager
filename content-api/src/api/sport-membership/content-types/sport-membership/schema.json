@@ -4,9 +4,10 @@
   "info": {
     "singularName": "sport-membership",
     "pluralName": "sport-memberships",
-    "displayName": "Sport-Membership"
+    "displayName": "Sport-Membership",
+    "description": ""
   },
- "options": {
+  "options": {
     "draftAndPublish": true
   },
   "attributes": {
@@ -44,12 +45,6 @@
       "relation": "oneToMany",
       "target": "api::membership-plan.membership-plan"
     },
-    "gym_and_sports": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::gym-and-sport.gym-and-sport",
-      "mappedBy": "gym_memberships"
-    },
     "profile_photo": {
       "type": "media",
       "multiple": false,
@@ -65,6 +60,12 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::product-count.product-count"
+    },
+    "gym_and_sports": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::gym-and-sport.gym-and-sport",
+      "mappedBy": "sport_memberships"
     }
   }
 }
