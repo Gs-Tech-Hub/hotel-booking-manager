@@ -41,8 +41,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
     if (dataType === 'gym') {
       const gymData = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({
         "filters[name][$eq]":"Fitness",
-        "populate": "*",
-        "[gym_memberships][populate]": "*",
+        "populate[gym_memberships][populate]": "*",
         "[membership_plans][populate]": "*",
         "[check_ins][populate]": "*"
       });
@@ -65,13 +64,12 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
     } else if (dataType === 'sports') {
       const sportsData = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({
         "filters[name][$eq]":"Sports",
-        "populate": "*",
-        "[sport_membership][populate]": "*",
+        "populate[sport_memberships][populate]": "*",
         "[membership_plans][populate]": "*",
         "[check_ins][populate]": "*"
       });
       sportsData.forEach((sport: any) => {
-        (sport.sports_memberships || []).forEach((membership: any) => {
+        (sport.sport_memberships || []).forEach((membership: any) => {
           data.push({
             ...membership,
             sportName: sport.name,
@@ -95,12 +93,13 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
   useEffect(() => {
     fetchMembers();
   }, [dataType]);
-
+  console.log("Members:", members);
   const handleAddMember = async (values: any) => {
     // Find the gym or sport id (use the first for now)
     const data = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({
-      populate: "*",
-      "filters[name][$eq]": dataType === 'gym' ? "Fitness" : "Sports"
+    "filters[name][$eq]": dataType === 'gym' ? "Fitness" : "Sports",
+      "populate": "*",
+      "populate[membership_plans] ": "*",
     });
     const entityId = data[0]?.id;
     // Find the correct membership plan by id or name
@@ -156,7 +155,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
           name: ` New Membership - ${values.firstName} ${values.lastName}`,
           price: planPrice,
           quantity: 1,
-          department: dataType === 'gym' ? "gym_memberships" : "sports_memberships",
+          department: dataType === 'gym' ? "gym_memberships" : "sport_memberships",
           documentId: membership.id.toString(),
           count: 1,
           amount_paid: planPrice,
@@ -230,7 +229,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
           name: `Renew Membership - ${values.firstName} ${values.lastName}`,
           price: planPrice,
           quantity: 1,
-          department: dataType === 'gym' ? "gym_memberships" : "sports_memberships",
+          department: dataType === 'gym' ? "gym_memberships" : "sport_memberships",
           documentId: renewMember.documentId,
           count: 1,
           amount_paid: planPrice,
