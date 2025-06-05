@@ -46,7 +46,7 @@
     },
     "gym_and_sports": {
       "type": "relation",
-      "relation": "manyToMany",
+      "relation": "oneToMany",
       "target": "api::gym-and-sport.gym-and-sport",
       "mappedBy": "gym_memberships"
     },
