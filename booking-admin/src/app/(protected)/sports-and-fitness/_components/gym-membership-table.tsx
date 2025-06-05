@@ -37,6 +37,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
   const plansToUse = membershipPlans && membershipPlans.length > 0 ? membershipPlans : availablePlans;
   const [currentPlans, setCurrentPlans] = useState<any[]>(plansToUse);
     const [searchTerm, setSearchTerm] = useState("");
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
 
 
   const fetchMembers = async () => {
@@ -250,10 +251,48 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
   };
    const filteredItems = useMemo(() => {
       if (!members) return [];
-      return members.filter((item) =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      let filtered = members.filter((item) =>
+        item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.customer?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.customer?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.customer?.phone?.toLowerCase().includes(searchTerm.toLowerCase())
       );
-    }, [members, searchTerm]);
+      if (sortConfig) {
+        filtered = [...filtered].sort((a, b) => {
+          let aValue = a;
+          let bValue = b;
+          // Support nested fields for customer
+          if (sortConfig.key.startsWith('customer.')) {
+            const field = sortConfig.key.split('.')[1];
+            aValue = a.customer?.[field] || '';
+            bValue = b.customer?.[field] || '';
+          } else if (sortConfig.key === 'plan') {
+            aValue = a.membership_plans?.[0]?.name || '';
+            bValue = b.membership_plans?.[0]?.name || '';
+          } else {
+            aValue = a[sortConfig.key] || '';
+            bValue = b[sortConfig.key] || '';
+          }
+          if (typeof aValue === 'string' && typeof bValue === 'string') {
+            aValue = aValue.toLowerCase();
+            bValue = bValue.toLowerCase();
+          }
+          if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+          if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+          return 0;
+        });
+      }
+      return filtered;
+    }, [members, searchTerm, sortConfig]);
+
+    const handleSort = (key: string) => {
+      setSortConfig((prev) => {
+        if (prev && prev.key === key) {
+          return { key, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+        }
+        return { key, direction: 'asc' };
+      });
+    };
 
   if (loading) return <Spinner />;
 
@@ -290,18 +329,32 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Phone</TableHead>
-            <TableHead>Plan</TableHead>
-            <TableHead>Registration Date</TableHead>
-            <TableHead>Start</TableHead>
-            <TableHead>End</TableHead>
+            <TableHead className="cursor-pointer" onClick={() => handleSort('customer.firstName')}>
+              Name {sortConfig?.key === 'customer.firstName' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+            </TableHead>
+            <TableHead className="cursor-pointer" onClick={() => handleSort('customer.email')}>
+              Email {sortConfig?.key === 'customer.email' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+            </TableHead>
+            <TableHead className="cursor-pointer" onClick={() => handleSort('customer.phone')}>
+              Phone {sortConfig?.key === 'customer.phone' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+            </TableHead>
+            <TableHead className="cursor-pointer" onClick={() => handleSort('plan')}>
+              Plan {sortConfig?.key === 'plan' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+            </TableHead>
+            <TableHead className="cursor-pointer" onClick={() => handleSort('joined_date')}>
+              Registration Date {sortConfig?.key === 'joined_date' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+            </TableHead>
+            <TableHead className="cursor-pointer" onClick={() => handleSort('joined_date')}>
+              Start {sortConfig?.key === 'joined_date' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+            </TableHead>
+            <TableHead className="cursor-pointer" onClick={() => handleSort('expiry_date')}>
+              End {sortConfig?.key === 'expiry_date' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+            </TableHead>
             <TableHead>Attendance</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {members.map((member) => (
+          {filteredItems.map((member) => (
             <TableRow
               key={member.id}
               className="cursor-pointer hover:bg-gray-50"
