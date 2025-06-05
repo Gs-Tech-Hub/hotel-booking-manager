@@ -38,6 +38,7 @@ const [selectedDateRange, setSelectedDateRange] = useState({
     startDate: pastWeekDateRanges[0].value,
     endDate: pastWeekDateRanges[0].value,
   });
+  const [membershipPlans, setMembershipPlans] = useState<any[]>([]);
 
   
     useEffect(() => {
@@ -71,6 +72,7 @@ const [selectedDateRange, setSelectedDateRange] = useState({
       fetchData();
     }
   }, [selectedDateRange]);
+
   return (
     <div>
         <Suspense fallback={<OverviewCardsSkeleton />}>
@@ -83,7 +85,7 @@ const [selectedDateRange, setSelectedDateRange] = useState({
             />
           </Suspense>
       <div className="p-4">
-      <GymMembershipTable dataType="sports" title="Sports Memberships" />
+      <GymMembershipTable dataType="sports" title="Sports Memberships" membershipPlans={membershipPlans} />
     </div>
     </div>
    

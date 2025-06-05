@@ -19,9 +19,10 @@ import { useAuth } from "@/components/Auth/context/auth-context";
 interface GymMembershipTableProps {
   dataType: 'gym' | 'sports';
   title?: string;
+  membershipPlans?: any[]; // Add this prop for plans
 }
 
-export default function GymMembershipTable({ dataType = 'gym', title = 'Memberships' }: GymMembershipTableProps) {
+export default function GymMembershipTable({ dataType = 'gym', title = 'Memberships', membershipPlans = [] }: GymMembershipTableProps) {
   const { user } = useAuth();
   const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,13 +32,17 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
   const [renewMember, setRenewMember] = useState<any | null>(null);
   const [attendanceMember, setAttendanceMember] = useState<any | null>(null);
   const [showAttendanceModal, setShowAttendanceModal] = useState(false);
+  const [availablePlans, setAvailablePlans] = useState<any[]>([]);
 
   const fetchMembers = async () => {
     setLoading(true);
     let data: any[] = [];
+    let plans: any[] = [];
     if (dataType === 'gym') {
       const gymData = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({
-        "populate[gym_memberships][populate]": "*",
+        "filters[name][$eq]":"Fitness",
+        "populate": "*",
+        "[gym_memberships][populate]": "*",
         "[membership_plans][populate]": "*",
         "[check_ins][populate]": "*"
       });
@@ -53,11 +58,15 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
             membership_plan: (gym.membership_plans || []).find((plan: any) => plan.id === membership.membership_plan) || membership.membership_plan,
           });
         });
+        if (gym.membership_plans) {
+          plans = gym.membership_plans;
+        }
       });
     } else if (dataType === 'sports') {
-      // Example: fetch sports memberships (adjust endpoint as needed)
       const sportsData = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({
-        "populate[sports_memberships][populate]": "*",
+        "filters[name][$eq]":"Sports",
+        "populate": "*",
+        "[sport_membership][populate]": "*",
         "[membership_plans][populate]": "*",
         "[check_ins][populate]": "*"
       });
@@ -73,9 +82,13 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
             membership_plan: (sport.membership_plans || []).find((plan: any) => plan.id === membership.membership_plan) || membership.membership_plan,
           });
         });
+        if (sport.membership_plans) {
+          plans = sport.membership_plans;
+        }
       });
     }
     setMembers(data);
+    setAvailablePlans(plans);
     setLoading(false);
   };
 
@@ -84,59 +97,67 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
   }, [dataType]);
 
   const handleAddMember = async (values: any) => {
-    // Find the gym id (use the first gym for now)
-    const gymData = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({ populate: "*" });
-    const gymId = gymData[0]?.id;
+    // Find the gym or sport id (use the first for now)
+    const data = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({
+      populate: "*",
+      "filters[name][$eq]": dataType === 'gym' ? "Fitness" : "Sports"
+    });
+    const entityId = data[0]?.id;
     // Find the correct membership plan by id or name
     let membershipPlanId = values.membershipType;
     let planPrice = 0;
     let foundPlan: any = undefined;
-    let paymentType = null
+    let paymentType = null;
     if (typeof membershipPlanId !== 'number') {
-      // Try to resolve from plans if it's a name
-      const allPlans = (gymData[0]?.membership_plans || []);
+      const allPlans = (data[0]?.membership_plans || []);
       foundPlan = allPlans.find((plan: any) => plan.name === values.membershipType || plan.id === values.membershipType);
       membershipPlanId = foundPlan ? foundPlan.id : values.membershipType;
       planPrice = values.planPrice;
       paymentType = values.paymentMethod;
     } else {
-      // If it's already an id, try to get the plan for price
-      const allPlans = (gymData[0]?.membership_plans || []);
+      const allPlans = (data[0]?.membership_plans || []);
       foundPlan = allPlans.find((plan: any) => plan.id === membershipPlanId);
       planPrice = values.planPrice;
-      paymentType = values.paymentMethod;  
-      }
-      const customer = await strapiService.customerEndpoints.createCustomer({
+      paymentType = values.paymentMethod;
+    }
+    const customer = await strapiService.customerEndpoints.createCustomer({
       firstName: values.firstName,
       lastName: values.lastName,
       email: values.email,
-      phone: values.phone  
+      phone: values.phone
     });
-    // Ensure customer.id is present
     if (!customer?.id) throw new Error("Customer creation failed: missing id");
-    const gymMembership = await strapiService.gymMembershipsEndpoints.createGymMembership(
-      {
+    let membership;
+    if (dataType === 'gym') {
+      membership = await strapiService.gymMembershipsEndpoints.createGymMembership({
         customer: customer.id,
         joined_date: values.startDate,
         expiry_date: values.endDate,
         membership_plans: membershipPlanId,
-        gym_and_sports: {connect: (gymId).toString() }
-      }
-    );
-    // Null check user.id before using as waiterId
+        gym_and_sports: { connect: (entityId).toString() }
+      });
+    } else {
+      membership = await strapiService.sportMembershipsEndpoints.createSportMembership({
+        customer: customer.id,
+        joined_date: values.startDate,
+        expiry_date: values.endDate,
+        membership_plans: membershipPlanId,
+        gym_and_sports: { connect: (entityId).toString() }
+      });
+    }
     const waiterId = user && user.id ? user.id : '';
     await processOrder({
       order: {
-        id: gymMembership.id.toString(),
+        id: membership.id.toString(),
         totalAmount: planPrice,
         waiterId,
         items: [{
-          id: gymMembership.id,
+          id: membership.id,
           name: ` New Membership - ${values.firstName} ${values.lastName}`,
           price: planPrice,
           quantity: 1,
-          department: "gym_memberships",
-          documentId: gymMembership.id.toString(),
+          department: dataType === 'gym' ? "gym_memberships" : "sports_memberships",
+          documentId: membership.id.toString(),
           count: 1,
           amount_paid: planPrice,
           amount_owed: 0,
@@ -147,44 +168,56 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
       paymentMethod: values.paymentMethod,
       waiterId,
       customerId: customer.id,
-    })
+    });
     fetchMembers();
   };
 
   const handleRenewMember = async (values: any) => {
     // Update gym membership instead of create
     if (!renewMember?.id) return;
-    // Find the gym id (use the first gym for now)
-    const gymData = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({ populate: "*" });
-    const gymId = gymData[0]?.id;
+    const data = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({
+      populate: "*",
+      "filters[name][$eq]": dataType === 'gym' ? "Fitness" : "Sports"
+    });
+    const entityId = data[0]?.id;
     // Find the correct membership plan by id or name
     let membershipPlanId = values.membershipType;
     let planPrice = 0;
     let foundPlan: any = undefined;
-    let paymentType = null
+    let paymentType = null;
     if (typeof membershipPlanId !== 'number') {
-      const allPlans = (gymData[0]?.membership_plans || []);
+      const allPlans = (data[0]?.membership_plans || []);
       foundPlan = allPlans.find((plan: any) => plan.name === values.membershipType || plan.id === values.membershipType);
       membershipPlanId = foundPlan ? foundPlan.id : values.membershipType;
       planPrice = values.planPrice;
-
-      // console.log("type:",values.paymentMethod);
     } else {
-      const allPlans = (gymData[0]?.membership_plans || []);
+      const allPlans = (data[0]?.membership_plans || []);
       foundPlan = allPlans.find((plan: any) => plan.id === membershipPlanId);
       planPrice = values.planPrice;
-      paymentType = values.paymentMethod;    }
-    // Update membership
-  const renewedMembership = await strapiService.gymMembershipsEndpoints.updateGymMembership(
-      renewMember.documentId,
-      {
-        joined_date: values.startDate,
-        expiry_date: values.endDate,
-        membership_plans: {connect: { id: membershipPlanId } },
-        gym_and_sports: { connect: (gymId).toString() },
-      }
-    );
-    // Process order for renewal
+      paymentType = values.paymentMethod;
+    }
+    let renewedMembership;
+    if (dataType === 'gym') {
+      renewedMembership = await strapiService.gymMembershipsEndpoints.updateGymMembership(
+        renewMember.documentId,
+        {
+          joined_date: values.startDate,
+          expiry_date: values.endDate,
+          membership_plans: { connect: { id: membershipPlanId } },
+          gym_and_sports: { connect: (entityId).toString() },
+        }
+      );
+    } else {
+      renewedMembership = await strapiService.sportMembershipsEndpoints.updateSportMembership(
+        renewMember.documentId,
+        {
+          joined_date: values.startDate,
+          expiry_date: values.endDate,
+          membership_plans: { connect: { id: membershipPlanId } },
+          gym_and_sports: { connect: (entityId).toString() },
+        }
+      );
+    }
     const customer = renewMember.customer || {};
     const waiterId = user && user.id ? user.id : '';
     await processOrder({
@@ -197,7 +230,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
           name: `Renew Membership - ${values.firstName} ${values.lastName}`,
           price: planPrice,
           quantity: 1,
-          department: "gym_memberships",
+          department: dataType === 'gym' ? "gym_memberships" : "sports_memberships",
           documentId: renewMember.documentId,
           count: 1,
           amount_paid: planPrice,
@@ -291,6 +324,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onAdd={handleAddMember}
+        membershipPlans={availablePlans}
       />
       {renewMember && (
         <RenewMembershipModal
@@ -298,6 +332,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
           onClose={() => setShowRenewModal(false)}
           onRenew={handleRenewMember}
           initialValues={renewMember}
+          membershipPlans={availablePlans}
         />
       )}
       {attendanceMember && (

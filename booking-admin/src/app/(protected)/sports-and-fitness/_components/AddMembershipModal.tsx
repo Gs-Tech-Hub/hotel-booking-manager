@@ -6,9 +6,10 @@ interface AddMembershipModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (values: MembershipFormValues) => void;
+  membershipPlans?: any[]; // Add this prop
 }
 
-const AddMembershipModal: React.FC<AddMembershipModalProps> = ({ isOpen, onClose, onAdd }) => {
+const AddMembershipModal: React.FC<AddMembershipModalProps> = ({ isOpen, onClose, onAdd, membershipPlans = [] }) => {
   return (
     <Modal
       isOpen={isOpen}
@@ -21,6 +22,7 @@ const AddMembershipModal: React.FC<AddMembershipModalProps> = ({ isOpen, onClose
             onClose();
           }}
           submitLabel="Add Membership"
+          membershipPlans={membershipPlans}
         />
       }
     />

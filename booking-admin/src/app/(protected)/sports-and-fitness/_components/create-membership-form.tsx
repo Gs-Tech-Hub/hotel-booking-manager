@@ -22,9 +22,10 @@ interface MembershipFormProps {
   initialValues?: Partial<MembershipFormValues>;
   onSubmit: (values: MembershipFormValues) => void;
   submitLabel?: string;
+  membershipPlans?: any[]; // Add this prop
 }
 
-export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = {}, onSubmit, submitLabel = 'Submit' }) => {
+export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = {}, onSubmit, submitLabel = 'Submit', membershipPlans = [] }) => {
   // If initialValues is a gym membership object, map to MembershipFormValues
   const mapInitialValues = (vals: any): MembershipFormValues => {
     // If already in MembershipFormValues shape, return as is
@@ -62,28 +63,29 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
   const [form, setForm] = useState<MembershipFormValues>(mapInitialValues(initialValues));
 
   const [membershipTypes, setMembershipTypes] = useState<{ value: string; label: string }[]>([]);
-  const [membershipPlans, setMembershipPlans] = useState<any[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<any | null>(null);
 
   useEffect(() => {
-    async function fetchMembershipTypes() {
-      const plans = await strapiService.membershipPlansEndpoints.getMembershipPlans();
-      // console.log('plans:', plans);
-      if (Array.isArray(plans)) {
-        setMembershipPlans(plans);
-        setMembershipTypes(
-          plans.map((plan: any) => ({ value: plan.id, label: plan.name }))
-        );
+    if (membershipPlans.length > 0) {
+      setMembershipTypes(membershipPlans.map((plan: any) => ({ value: plan.id, label: plan.name })));
+    } else {
+      async function fetchMembershipTypes() {
+        const plans = await strapiService.membershipPlansEndpoints.getMembershipPlans();
+        if (Array.isArray(plans)) {
+          setMembershipTypes(
+            plans.map((plan: any) => ({ value: plan.id, label: plan.name }))
+          );
+        }
       }
+      fetchMembershipTypes();
     }
-    fetchMembershipTypes();
-  }, []);
+  }, [membershipPlans]);
 
   useEffect(() => {
-    if (form.membershipType && membershipPlans.length > 0) {
-      const plan = membershipPlans.find((p) => p.id.toString() === form.membershipType);
+    const plans = membershipPlans.length > 0 ? membershipPlans : [];
+    if (form.membershipType && plans.length > 0) {
+      const plan = plans.find((p: any) => p.id.toString() === form.membershipType);
       setSelectedPlan(plan || null);
-      // Always update planPrice in form when plan changes
       setForm((prev) => ({ ...prev, planPrice: plan ? plan.price : undefined }));
     } else {
       setSelectedPlan(null);

@@ -7,9 +7,10 @@ interface RenewMembershipModalProps {
   onClose: () => void;
   onRenew: (values: MembershipFormValues) => void;
   initialValues: MembershipFormValues;
+  membershipPlans?: any[]; // Add this prop
 }
 
-const RenewMembershipModal: React.FC<RenewMembershipModalProps> = ({ isOpen, onClose, onRenew, initialValues }) => {
+const RenewMembershipModal: React.FC<RenewMembershipModalProps> = ({ isOpen, onClose, onRenew, initialValues, membershipPlans = [] }) => {
   return (
     <Modal
       isOpen={isOpen}
@@ -23,6 +24,7 @@ const RenewMembershipModal: React.FC<RenewMembershipModalProps> = ({ isOpen, onC
             onClose();
           }}
           submitLabel="Renew Membership"
+          membershipPlans={membershipPlans}
         />
       }
     />

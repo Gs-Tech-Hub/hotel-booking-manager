@@ -71,12 +71,12 @@ export const NAV_DATA: NavSection[] = [
           },
           {
             title: "Gym Fitness",
-            url: "/sports-and-fitness",
+            url: "/sports-and-fitness/fitness",
             roles: ["admin", "manager"],
           },
            {
             title: "Sports & Club",
-            url: "/sports-and-fitness",
+            url: "/sports-and-fitness/sports",
             roles: ["admin", "manager"],
           },
         ],

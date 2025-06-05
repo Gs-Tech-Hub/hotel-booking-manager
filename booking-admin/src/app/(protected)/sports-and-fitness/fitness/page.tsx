@@ -82,7 +82,10 @@ const [selectedDateRange, setSelectedDateRange] = useState({
             />
           </Suspense>
       <div className="p-4">
-      <GymMembershipTable dataType={"gym"} />
+      <GymMembershipTable 
+      dataType={"gym"} 
+      title="Gym Memberships"
+      />
     </div>
     </div>
    

@@ -9,6 +9,10 @@ export * from './authEndpoints';
 export * from './miscEndpoints';
 export * from './utilityEndpoints';
 export * from './sportsAndFitness';
+export * from './membershipPlans';
+export * from './gymMemberships';
+export * from './sportMemberships';
+export * from './checkIn';
 export * from './gymAndSportSessions';
 
 // Maintain a strapiService for backward compatibility and convenience
@@ -24,7 +28,8 @@ import * as utilityEndpoints from './utilityEndpoints';
 import * as sportsAndFitnessEndpoints from './sportsAndFitness';
 import * as gymAndSportSessionsEndpoints from './gymAndSportSessions'; 
 import * as membershipPlansEndpoints from './membershipPlans';
-import * as gymMembershipsEndpoints from './gymMemberships';  
+import * as gymMembershipsEndpoints from './gymMemberships'; 
+import * as sportMembershipsEndpoints from './sportMemberships'; 
 import * as checkinEndpoints from './checkIn';
 
 
@@ -42,6 +47,7 @@ export const strapiService = {
   ...gymAndSportSessionsEndpoints,
   ...membershipPlansEndpoints,
   ...gymMembershipsEndpoints,
+  ...sportMembershipsEndpoints,
   ...checkinEndpoints
 
 };
