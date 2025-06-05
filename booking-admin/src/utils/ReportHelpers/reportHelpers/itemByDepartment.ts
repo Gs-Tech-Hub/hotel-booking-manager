@@ -107,12 +107,14 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
         }
         // Process gym memberships
         if (gym_membership.length > 0) {
+            const fname = item.name;
+           const itemname = `${fname} membership`; // Fallback name
             gym_membership.forEach((membership, i) => {
                 itemsByDept.gym_memberships.push({
                     id,
                     documentId: item.bookings?.[0]?.id ?? documentId ?? null,
-                    name: membership.name ?? 'Gym Membership',
-                    price: membership.price ?? amount_paid ?? 0, // Use membership price, fallback to amount_paid
+                    name: membership.name ?? itemname, 
+                    price: membership.price ?? amount_paid ?? 0, 
                     quantity: getProductCount(i),
                     paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash',
                     amountPaid: amount_paid ?? 0,
@@ -122,14 +124,16 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
         }   
 
         // process sport memberships
-        if (item.sport_membership.length > 0) {
-            item.sport_membership.forEach((membership, i) => {
+        if (item.sport_memberships.length > 0) {
+            const fname = item.name;
+            const itemname = `${fname} membership`; // Fallback name
+            item.sport_memberships.forEach((membership, i) => {
                 itemsByDept.sport_memberships.push({
                     id,
                     documentId: item.bookings?.[0]?.id ?? documentId ?? null,
-                    name: membership.name ?? 'Sport Membership',
-                    price: membership.price ?? amount_paid ?? 0, // Use membership price, fallback to amount_paid
-                    quantity: getProductCount(i),
+                    name: membership.name ?? itemname,
+                    price: membership.price ?? amount_paid ?? 0, 
+                    quantity: Number(getProductCount(i)) || 1,
                     paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash',
                     amountPaid: amount_paid ?? 0,
                     department: 'sport_memberships'
@@ -144,6 +148,7 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
             hotel_services.length === 0 &&
             games.length === 0 &&
             gym_membership.length === 0 && // Only push to account if not a gym membership
+            item.sport_memberships.length === 0 && // Only push to account if not a sport membership
             item.amount_paid
         ) {
             itemsByDept.account.push({

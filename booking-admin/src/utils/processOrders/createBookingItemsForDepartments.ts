@@ -54,12 +54,13 @@ export const createBookingItemForDepartment = async ({
 
     // Create the payload
     const bookingItemPayload = {
+      name: items[0]?.name || 'Booking Item', // Fallback name
       quantity: items.reduce((sum, item) => sum + item.quantity, 0),
       drinks: toIdArray(drinks),
       food_items: toIdArray(food_items),
       hotel_services: toIdArray(hotel_services),
       gym_membership: toIdArray(gym_memberships),
-      sport_membership: toIdArray(sport_memberships),
+      sport_memberships: toIdArray(sport_memberships),
       product_count: {
         connect: productCountIds.map(id => ({ id }))
       },

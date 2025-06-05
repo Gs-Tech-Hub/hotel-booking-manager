@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Table,
   TableBody,
@@ -36,6 +36,8 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
   // Use membershipPlans prop if provided, otherwise fallback to availablePlans
   const plansToUse = membershipPlans && membershipPlans.length > 0 ? membershipPlans : availablePlans;
   const [currentPlans, setCurrentPlans] = useState<any[]>(plansToUse);
+    const [searchTerm, setSearchTerm] = useState("");
+
 
   const fetchMembers = async () => {
     setLoading(true);
@@ -153,7 +155,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
         waiterId,
         items: [{
           id: membership.id,
-          name: ` New Membership - ${values.firstName} ${values.lastName}`,
+          name: dataType === 'gym' ? "Gym-Registration" : "Sport-Registration",
           price: planPrice,
           quantity: 1,
           department: dataType === 'gym' ? "gym_memberships" : "sport_memberships",
@@ -176,8 +178,9 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
     // Update gym membership instead of create
     if (!renewMember?.id) return;
     const data = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({
-      populate: "*",
-      "filters[name][$eq]": dataType === 'gym' ? "Fitness" : "Sports"
+    "filters[name][$eq]": dataType === 'gym' ? "Fitness" : "Sports",
+      "populate": "*",
+      "[membership_plans][populate] ": "*",
     });
     const entityId = data[0]?.id;
     // Find the correct membership plan by id or name
@@ -227,7 +230,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
         waiterId,
         items: [{
           id: renewedMembership.id,
-          name: `Renew Membership - ${values.firstName} ${values.lastName}`,
+          name: dataType === 'gym' ? "Gym-Renewal" : "Sport-Renewal",
           price: planPrice,
           quantity: 1,
           department: dataType === 'gym' ? "gym_memberships" : "sport_memberships",
@@ -245,12 +248,25 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
     });
     fetchMembers();
   };
+   const filteredItems = useMemo(() => {
+      if (!members) return [];
+      return members.filter((item) =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }, [members, searchTerm]);
 
   if (loading) return <Spinner />;
 
   return (
     <div className="rounded-[10px] bg-white p-4 shadow-1 dark:bg-gray-dark">
       <div className="flex items-center justify-between mb-4">
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="border border-gray-300 rounded px-2 py-1 w-48"
+        />
         <h2 className="text-body-2xlg font-bold text-dark dark:text-white">
           {title}
         </h2>
@@ -294,7 +310,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
                 const data = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({
                   "filters[name][$eq]": dataType === 'gym' ? "Fitness" : "Sports",
                   "populate": "*",
-                  "populate[membership_plans] ": "*",
+                  "[membership_plans][populate]": "*",
                 });
                 plans = data[0]?.membership_plans || [];
                 setCurrentPlans(plans);

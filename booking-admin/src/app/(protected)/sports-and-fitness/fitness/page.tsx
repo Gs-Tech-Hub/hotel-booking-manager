@@ -33,6 +33,8 @@ export default function SportsAndFitnessDashboard() {
     total_cash: { value: 0 },
     total_transfers: { value: 0 },
     total_sold: { value: 0 },
+    registration: { value: 0, name: "" },
+    renewal: { value: 0, name: "" },
   });
 const [selectedDateRange, setSelectedDateRange] = useState({
     startDate: pastWeekDateRanges[0].value,
@@ -46,18 +48,31 @@ const [selectedDateRange, setSelectedDateRange] = useState({
         try {
           console.log("Fetching data for date:", selectedDateRange.startDate);
   
-          const { overview, products } = await handleMainRecord(
+          const { overview } = await handleMainRecord(
             selectedDateRange.startDate,
             selectedDateRange.endDate,
             "gym_memberships",
           );
-  
-          console.log("Data fetched successfully:", { overview, products });
+
+          // Extract registration and renewal from gymItems
+          let registration = { value: 0, name: "" };
+          let renewal = { value: 0, name: "" };
+          if (overview.gymItems && Array.isArray(overview.gymItems)) {
+            for (const item of overview.gymItems) {
+              if (item.name.toLowerCase().includes("registration")) {
+                registration = { value: item.units, name: item.name };
+              } else if (item.name.toLowerCase().includes("renewal")) {
+                renewal = { value: item.units, name: item.name };
+              }
+            }
+          }
   
           setOverviewData({
             total_cash: { value: overview.cashSales },
             total_transfers: { value: overview.totalTransfers },
             total_sold: { value: overview.totalSales },
+            registration,
+            renewal,
           });
           } catch (error) {
         console.error("Failed to fetch bar data:", error);
@@ -72,15 +87,40 @@ const [selectedDateRange, setSelectedDateRange] = useState({
   }, [selectedDateRange]);
   return (
     <div>
+        <div className="mb-4">
+        <label htmlFor="dateRange" className="block text-sm font-medium text-gray-700">
+          Select Date:
+        </label>
+        <select
+          id="dateRange"
+          disabled={loadingData}
+          className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          value={selectedDateRange.startDate}
+          onChange={(e) => {
+            const selectedDate = e.target.value;
+            setSelectedDateRange({ startDate: selectedDate, endDate: selectedDate });
+          }}
+        >
+          {loadingData ? (
+            <option>... Getting data</option>
+          ) : (
+            pastWeekDateRanges.map((range) => (
+              <option key={range.value} value={range.value}>
+                {range.label}
+              </option>
+            ))
+          )}
+        </select>
+      </div>
         <Suspense fallback={<OverviewCardsSkeleton />}>
-            <OverviewCardsGroup 
-              registration={{ value: 0}}
-              renewal={{ value: 0 }}
-              total_earned={{ value: overviewData.total_sold.value }}
-              cash={{ value: overviewData.total_cash.value}}
-              transfer_card={{ value: overviewData.total_transfers.value }}
-            />
-          </Suspense>
+          <OverviewCardsGroup 
+            registration={{ value: overviewData.registration.value }}
+            renewal={{ value: overviewData.renewal.value }}
+            total_earned={{ value: overviewData.total_sold.value }}
+            cash={{ value: overviewData.total_cash.value}}
+            transfer_card={{ value: overviewData.total_transfers.value }}
+          />
+        </Suspense>
       <div className="p-4">
       <GymMembershipTable 
       dataType={"gym"} 

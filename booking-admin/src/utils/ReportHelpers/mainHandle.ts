@@ -19,6 +19,8 @@ export interface OverviewCardData {
   gameSales: number;
   gym_memberships: number;
   sport_memberships: number;
+  gymItems?: Array<{ name: string; units: number }>;
+  sportItems?: Array<{ name: string; units: number }>;
 }
 
 export interface ExtendedProduct extends Product {
@@ -89,13 +91,26 @@ export async function handleMainRecord(
     // Aggregate totals and flatten
     const { updatedItems: flatItems, salesByProduct, paymentMethods, departmentTotals } = calculateDepartmentTotals(mergedGroupedItems, productCountItems, department);
 
-    // console.log("Aggregated Items:", flatItems);
+    console.log("Aggregated Items:", flatItems);
     console.log("Sales by Product:", salesByProduct);
     console.log("Department Totals:", departmentTotals);
 
     // Totals
     const totalUnits = flatItems.reduce((sum, item) => sum + item.quantity, 0);
-    // const totalAmount = flatItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    // Map gym and sport items for overview
+    let gymItems: Array<{ name: string; units: number }> = [];
+    let sportItems: Array<{ name: string; units: number }> = [];
+    if (department === "gym_memberships") {
+      gymItems = flatItems
+        .filter((item) => item.department === "gym_memberships")
+        .map((item) => ({ name: item.name, units: item.quantity }));
+    }
+    if (department === "sport_memberships") {
+      sportItems = flatItems
+        .filter((item) => item.department === "sport_memberships")
+        .map((item) => ({ name: item.name, units: item.quantity }));
+    }
 
     const overviewBase = {
       cashSales: departmentTotals.cashSales,
@@ -109,6 +124,8 @@ export async function handleMainRecord(
       gameSales: 0,
       gym_memberships: 0,
       sport_memberships: 0,
+      gymItems,
+      sportItems,
     };
 
     if (department === "bar") overviewBase.barSales = departmentTotals.totalSales;

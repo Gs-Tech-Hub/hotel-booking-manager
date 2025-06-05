@@ -77,6 +77,7 @@ export interface BookingItem {
     documentId: string;
     quantity: number;
     amount_paid?: number;
+    name?: string;
     status?: string;
     drinks: Drink[];
     food_items: FoodItem[];
@@ -84,7 +85,7 @@ export interface BookingItem {
     games: Game[];
     product_count: ProductCount[];
     gym_membership: GymMembership[];
-    sport_membership: GymMembership[];
+    sport_memberships: GymMembership[];
     bookings: Booking[];
     payment_type?: PaymentType;
     food_type: string | null;
