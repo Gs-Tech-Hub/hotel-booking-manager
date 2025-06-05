@@ -1713,8 +1713,13 @@ export interface ApiProductCountProductCount
       'api::product-count.product-count'
     > &
       Schema.Attribute.Private;
+    name: Schema.Attribute.String;
     product_count: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
+    sport_memberships: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::sport-membership.sport-membership'
+    >;
     total_amount: Schema.Attribute.Integer;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

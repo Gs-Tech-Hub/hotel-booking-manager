@@ -41,6 +41,14 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::gym-membership.gym-membership"
+    },
+    "sport_memberships": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::sport-membership.sport-membership"
+    },
+    "name": {
+      "type": "string"
     }
   }
 }
