@@ -5,7 +5,8 @@ const departmentFieldMap: Record<string, string> = {
   hotel: "hotel_services",
   games: "games",
   product_count: "product_count", 
-  gym_membership: "gym_memberships"
+  gym_membership: "gym_memberships",
+  sport_membership: "sport_memberships"
 };
 
 export const generateFilters = (

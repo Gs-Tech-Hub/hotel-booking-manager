@@ -38,6 +38,8 @@ export const resolveProductCountIds = async (
       data.hotel_service = { connect: Number(validItemId) };
     } else if (item.department === 'gym_memberships') {
       data.gym_memberships = { connect: Number(validItemId) };
+    } else if (item.department === 'sport_memberships') {
+      data.sport_memberships = { connect: Number(validItemId) };
     } else {
       console.warn(`Unknown department for item: ${item.name}`);
       continue;

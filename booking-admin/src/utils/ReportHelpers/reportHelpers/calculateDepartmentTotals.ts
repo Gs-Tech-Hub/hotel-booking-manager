@@ -1,5 +1,5 @@
 // Types
-export type DepartmentKey = 'bar' | 'restaurant' | 'hotel' | 'games' | 'account' | 'gym_memberships';
+export type DepartmentKey = 'bar' | 'restaurant' | 'hotel' | 'games' | 'account' | 'gym_memberships' | 'sport_memberships';
 
 export interface DepartmentItem {
   id: number;

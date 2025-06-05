@@ -10,6 +10,7 @@ export const createBookingItemForDepartment = async ({
   food_items = null,
   hotel_services = null,
   gym_memberships = null,
+  sport_memberships = null,
   discountPrice =null,
   finalPrice = null
 }: {
@@ -21,6 +22,7 @@ export const createBookingItemForDepartment = async ({
   food_items?: ConnectedItem[] | null;
   hotel_services?: ConnectedItem[] | null;
   gym_memberships?: ConnectedItem[] | null;
+  sport_memberships?: ConnectedItem[] | null;
   discountPrice?: number | null;
   finalPrice?: number | null;
 }) => {
@@ -57,6 +59,7 @@ export const createBookingItemForDepartment = async ({
       food_items: toIdArray(food_items),
       hotel_services: toIdArray(hotel_services),
       gym_membership: toIdArray(gym_memberships),
+      sport_membership: toIdArray(sport_memberships),
       product_count: {
         connect: productCountIds.map(id => ({ id }))
       },

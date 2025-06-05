@@ -1,6 +1,6 @@
 import { BookingItem } from "@/types/bookingItem";
 
-type DepartmentKey = 'bar' | 'restaurant' | 'hotel' | 'games' | 'account' | 'gym_memberships';
+type DepartmentKey = 'bar' | 'restaurant' | 'hotel' | 'games' | 'account' | 'gym_memberships' | 'sport_memberships';
 
 interface DepartmentItem {
     id: number;
@@ -21,6 +21,7 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
         games: [],
         account: [],
         gym_memberships: [],
+        sport_memberships: [],
     };
 
     for (const item of bookingItems) {
@@ -119,6 +120,22 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                 });
             });
         }   
+
+        // process sport memberships
+        if (item.sport_membership.length > 0) {
+            item.sport_membership.forEach((membership, i) => {
+                itemsByDept.sport_memberships.push({
+                    id,
+                    documentId: item.bookings?.[0]?.id ?? documentId ?? null,
+                    name: membership.name ?? 'Sport Membership',
+                    price: membership.price ?? amount_paid ?? 0, // Use membership price, fallback to amount_paid
+                    quantity: getProductCount(i),
+                    paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash',
+                    amountPaid: amount_paid ?? 0,
+                    department: 'sport_memberships'
+                });
+            });
+        }
 
         // Process account items (for payment)
         if (

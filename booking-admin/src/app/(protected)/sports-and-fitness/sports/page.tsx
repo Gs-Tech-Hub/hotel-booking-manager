@@ -50,7 +50,7 @@ const [selectedDateRange, setSelectedDateRange] = useState({
           const { overview, products } = await handleMainRecord(
             selectedDateRange.startDate,
             selectedDateRange.endDate,
-            "gym_memberships",
+            "sport_memberships",
             
           );
   

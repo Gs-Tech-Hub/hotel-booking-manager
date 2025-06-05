@@ -18,6 +18,7 @@ export interface OverviewCardData {
   hotelSales: number;
   gameSales: number;
   gym_memberships: number;
+  sport_memberships: number;
 }
 
 export interface ExtendedProduct extends Product {
@@ -52,7 +53,7 @@ async function fetchPaginatedData(fetchFunction: Function, params: any): Promise
 export async function handleMainRecord(
   startDate: string,
   endDate: string,
-  department: "bar" | "restaurant" | "hotel" | "games" | "gym_memberships" ,
+  department: "bar" | "restaurant" | "hotel" | "games" | "gym_memberships" | "sport_memberships",
   options: {
     inventoryEndpoint: keyof typeof strapiService;
     departmentStockField: string;
@@ -107,6 +108,7 @@ export async function handleMainRecord(
       hotelSales: 0,
       gameSales: 0,
       gym_memberships: 0,
+      sport_memberships: 0,
     };
 
     if (department === "bar") overviewBase.barSales = departmentTotals.totalSales;
@@ -114,6 +116,7 @@ export async function handleMainRecord(
     if (department === "hotel") overviewBase.hotelSales = departmentTotals.totalSales;
     if (department === "games") overviewBase.gameSales = departmentTotals.totalSales;
     if (department === "gym_memberships") overviewBase.gym_memberships = departmentTotals.totalSales;
+    if (department === "sport_memberships") overviewBase.sport_memberships = departmentTotals.totalSales;
     
 
     // Optional inventory fetch
@@ -143,7 +146,8 @@ export async function handleMainRecord(
         isRestaurant: department === "restaurant",
         isHotel: department === "hotel",
         isGame: department === "games",
-        isGymAndSports: department === "gym_memberships",
+        isGym: department === "gym_memberships",
+        isSports: department === "sport_memberships",
         showStock: true,
         showProfit: true,
         type: product.type || "",
