@@ -58,7 +58,8 @@ export function GuestList({ className, dateRange }: { className?: string, dateRa
         checkout: item.checkout,
         status: item.book_status || "Pending",
       }));
-      
+      // Sort by check-in date ascending
+      mappedData.sort((a: Guest, b: Guest) => new Date(a.checkin).getTime() - new Date(b.checkin).getTime());
       setData(mappedData);
     };
     fetchData();

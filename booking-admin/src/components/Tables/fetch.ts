@@ -1,4 +1,3 @@
-
 export async function getTopProducts() {
   // Fake delay
   await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -114,61 +113,63 @@ export async function getTopChannels() {
   ];
 }
 
-
 export async function getGuestList() {
   await new Promise((resolve) => setTimeout(resolve, 1500));
-  return (
-     [
-      {
-        bookingId: "BK-202401",
-        name: "John Doe",
-        roomType: "Deluxe Suite",
-        roomNumber: "101",
-        duration: 3,
-        checkin: "2025-04-20",
-        checkout: "2025-04-23",
-        status: "Confirmed",
-      },
-      {
-        bookingId: "BK-202402",
-        name: "Jane Smith",
-        roomType: "Standard Room",
-        roomNumber: "204",
-        duration: 2,
-        checkin: "2025-04-18",
-        checkout: "2025-04-20",
-        status: "Pending",
-      },
-      {
-        bookingId: "BK-202403",
-        name: "Michael Lee",
-        roomType: "Executive Suite",
-        roomNumber: "305",
-        duration: 5,
-        checkin: "2025-04-15",
-        checkout: "2025-04-20",
-        status: "Cancelled",
-      },
-      {
-        bookingId: "BK-202404",
-        name: "Aisha Bello",
-        roomType: "Single Room",
-        roomNumber: "110",
-        duration: 1,
-        checkin: "2025-04-22",
-        checkout: "2025-04-23",
-        status: "Confirmed",
-      },
-      {
-        bookingId: "BK-202405",
-        name: "Carlos Mendoza",
-        roomType: "Double Room",
-        roomNumber: "217",
-        duration: 4,
-        checkin: "2025-04-25",
-        checkout: "2025-04-29",
-        status: "Confirmed",
-      }
-    ]
+  const data = [
+    {
+      bookingId: "BK-202401",
+      name: "John Doe",
+      roomType: "Deluxe Suite",
+      roomNumber: "101",
+      duration: 3,
+      checkin: "2025-04-20",
+      checkout: "2025-04-23",
+      status: "Confirmed",
+    },
+    {
+      bookingId: "BK-202402",
+      name: "Jane Smith",
+      roomType: "Standard Room",
+      roomNumber: "204",
+      duration: 2,
+      checkin: "2025-04-18",
+      checkout: "2025-04-20",
+      status: "Pending",
+    },
+    {
+      bookingId: "BK-202403",
+      name: "Michael Lee",
+      roomType: "Executive Suite",
+      roomNumber: "305",
+      duration: 5,
+      checkin: "2025-04-15",
+      checkout: "2025-04-20",
+      status: "Cancelled",
+    },
+    {
+      bookingId: "BK-202404",
+      name: "Aisha Bello",
+      roomType: "Single Room",
+      roomNumber: "110",
+      duration: 1,
+      checkin: "2025-04-22",
+      checkout: "2025-04-23",
+      status: "Confirmed",
+    },
+    {
+      bookingId: "BK-202405",
+      name: "Carlos Mendoza",
+      roomType: "Double Room",
+      roomNumber: "217",
+      duration: 4,
+      checkin: "2025-04-25",
+      checkout: "2025-04-29",
+      status: "Confirmed",
+    },
+  ];
+  data.sort(
+    (a, b) =>
+      new Date(a.checkin).getTime() - new Date(b.checkin).getTime()
   );
+  return data;
 }

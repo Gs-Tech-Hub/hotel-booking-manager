@@ -8,11 +8,35 @@ import { GuestList } from "@/app/(protected)/(home)/_components/guest-list";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/Auth/context/auth-context";
 import { handleBookingRecords } from "@/utils/handleBookingRecords";
-import { DateRangePicker } from "@/components/FormElements/DateRangePicker";
+
+const generatePastWeekDateRanges = () => {
+  const now = new Date();
+  const ranges = [];
+  for (let i = 0; i <= 7; i++) {
+    const pastDate = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+    ranges.push({
+      label:
+        i === 0
+          ? `Today (${pastDate.toLocaleDateString()})`
+          : i === 1
+          ? `Yesterday (${pastDate.toLocaleDateString()})`
+          : `${i} days ago (${pastDate.toLocaleDateString()})`,
+      value: pastDate.toISOString().split("T")[0],
+    });
+  }
+  return ranges;
+};
+
+const pastWeekDateRanges = generatePastWeekDateRanges();
 
 export default function Home() {
   const router = useRouter();
   const { user, defaultLandingPage, loading } = useAuth();
+    const [loadingData, setLoadingData] = useState(false);
+  const [selectedDateRange, setSelectedDateRange] = useState({
+     startDate: pastWeekDateRanges[0].value,
+     endDate: pastWeekDateRanges[0].value,
+   });
   const [bookingStats, setbookingStats] = useState<{
     totalAvailableRooms: number;
     occupiedRooms: number;
@@ -30,18 +54,13 @@ export default function Home() {
     transfer: 0,
     totalSales: 0
   });
-  const [dateRange, setDateRange] = useState({
-    start: new Date(new Date().setDate(new Date().getDate() - 6)).toISOString().split("T")[0],
-    end: new Date().toISOString().split("T")[0],
-  });
-  
   // 👇 Redirect based on role
   useEffect(() => {
     const fetchData = async () => {
       if (loading) return;
       const data = await handleBookingRecords({
-        startDate: dateRange.start,
-        endDate: dateRange.end,
+        startDate: selectedDateRange.startDate,
+        endDate: selectedDateRange.endDate,
       });
       setbookingStats(data);
       if (user && defaultLandingPage) {
@@ -51,17 +70,38 @@ export default function Home() {
       }
     };
     fetchData();
-  }, [user, defaultLandingPage, loading, router, dateRange]);
+  }, [user, defaultLandingPage, loading, router]);
 
   const { totalAvailableRooms: availableRooms, occupiedRooms, totalCheckIns: checkin, totalCheckOuts: checkout, cash, transfer, totalSales } = bookingStats
 
   return (
     <>
-      <div className="mb-4">
-        <DateRangePicker
-          onChange={(start, end) => setDateRange({ start, end })}
-        />
+     <div className="mb-4">
+        <label htmlFor="dateRange" className="block text-lg font-medium text-gray-700">
+          Select Date:
+        </label>
+        <select
+          id="dateRange"
+          disabled={loadingData}
+          className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          value={selectedDateRange.startDate}
+          onChange={(e) => {
+            const selectedDate = e.target.value;
+            setSelectedDateRange({ startDate: selectedDate, endDate: selectedDate });
+          }}
+        >
+          {loadingData ? (
+            <option>... Getting Stock data</option>
+          ) : (
+            pastWeekDateRanges.map((range) => (
+              <option key={range.value} value={range.value}>
+                {range.label}
+              </option>
+            ))
+          )}
+        </select>
       </div>
+
       <Suspense fallback={<OverviewCardsSkeleton />}>
         <OverviewCardsGroup
           availableRooms={{ value: availableRooms }}
@@ -77,7 +117,7 @@ export default function Home() {
       
       <div className="mt-12 col-span-12 grid xl:col-span-8">
           <Suspense fallback={<TopChannelsSkeleton />}>
-            <GuestList dateRange={dateRange} />
+            <GuestList dateRange={{ start: selectedDateRange.startDate, end: selectedDateRange.endDate }} />
           </Suspense>
        </div>
     </>

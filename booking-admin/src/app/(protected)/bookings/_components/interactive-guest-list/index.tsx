@@ -60,7 +60,8 @@ export function InterActiveGuestList({ className }: { className?: string }) {
         status: item.booking_status || "Pending",
         documentId: item.documentId,
       }));
-
+      // Sort by check-in date ascending
+      mappedData.sort((a: Guest, b: Guest) => new Date(a.checkin).getTime() - new Date(b.checkin).getTime());
       setData(mappedData);
     };
     fetchData();
@@ -72,7 +73,7 @@ export function InterActiveGuestList({ className }: { className?: string }) {
       case "checkedin":
         return "bg-green-100 text-green-600";
       case "checkedout":
-        return "bg-blue-100 text-blue-600"
+        return "bg-blue-100 text-blue-600";
       case "pending":
         return "bg-yellow-100 text-yellow-700";
       case "cancelled":
@@ -92,7 +93,10 @@ export function InterActiveGuestList({ className }: { className?: string }) {
     setSelectedGuest(null);
   };
 
-  const handleUpdate = async (updatedData: { checkout: string; status: string }) => {
+  const handleUpdate = async (updatedData: {
+    checkout: string;
+    status: string;
+  }) => {
     if (selectedGuest) {
       try {
         await strapiService.updateBooking(selectedGuest.documentId, updatedData);
@@ -123,7 +127,9 @@ export function InterActiveGuestList({ className }: { className?: string }) {
       <Table>
         <TableHeader>
           <TableRow className="border-none uppercase [&>th]:text-center">
-            <TableHead className="min-w-[120px] !text-left">Booking-Id</TableHead>
+            <TableHead className="min-w-[120px] !text-left">
+              Booking-Id
+            </TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Room Type</TableHead>
             <TableHead>Room Number</TableHead>
@@ -174,13 +180,12 @@ export function InterActiveGuestList({ className }: { className?: string }) {
           onClose={handleModalClose}
           booking={{
             documentId: selectedGuest.documentId,
-            checkin:  selectedGuest.checkin,
+            checkin: selectedGuest.checkin,
             checkout: selectedGuest.checkout,
             status: selectedGuest.status,
             payment: selectedGuest.booking_status,
           }}
           onSubmit={handleUpdate}
-          
         />
       )}
     </div>
