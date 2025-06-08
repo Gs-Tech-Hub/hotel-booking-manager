@@ -13,7 +13,7 @@ import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { strapiService } from "@/utils/dataEndPoint";
 
-export function GuestList({ className }: { className?: string }) {
+export function GuestList({ className, dateRange }: { className?: string, dateRange: { start: string, end: string } }) {
   interface Guest {
     documentId: string
     bookingId: string;
@@ -43,7 +43,9 @@ export function GuestList({ className }: { className?: string }) {
     const fetchData = async () => {
       const result = await strapiService.getBookings({
         populate: '*',
-        pagination: 25
+        pagination: 25,
+        "filters[createdAt][$gte]": dateRange.start,
+        "filters[createdAt][$lte]": dateRange.end,
       });
 
       const mappedData = result.map((item: Guest) => ({
@@ -60,21 +62,7 @@ export function GuestList({ className }: { className?: string }) {
       setData(mappedData);
     };
     fetchData();
-  }, []);
-
-  // Optional: badge color function for status
-  // const getStatusBadge = (status: string) => {
-  //   switch (status.toLowerCase()) {
-  //     case "checked-In":
-  //       return "bg-green-100 text-green-600";
-  //     case "pending":
-  //       return "bg-yellow-100 text-yellow-700";
-  //     case "cancelled":
-  //       return "bg-red-100 text-red-600";
-  //     default:
-  //       return "bg-gray-100 text-gray-600";
-  //   }
-  // };
+  }, [dateRange]);
 
   return (
     <div 
