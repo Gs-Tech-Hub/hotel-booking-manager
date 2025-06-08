@@ -17,11 +17,17 @@ export default function Home() {
     occupiedRooms: number;
     totalCheckIns: number;
     totalCheckOuts: number;
+    cash: number;
+    transfer: number;
+    totalSales: number;
   }>({
     totalAvailableRooms: 0,
     occupiedRooms: 0,
     totalCheckIns: 0,
-    totalCheckOuts: 0
+    totalCheckOuts: 0,
+    cash: 0,
+    transfer: 0,
+    totalSales: 0
   });
   
   // 👇 Redirect based on role
@@ -44,7 +50,7 @@ export default function Home() {
     fetchData();
   }, [user, defaultLandingPage, loading, router]); 
 
-  const { totalAvailableRooms: availableRooms, occupiedRooms, totalCheckIns: checkin, totalCheckOuts: checkout } = bookingStats
+  const { totalAvailableRooms: availableRooms, occupiedRooms, totalCheckIns: checkin, totalCheckOuts: checkout, cash, transfer, totalSales } = bookingStats
 
   return (
     <>
@@ -54,6 +60,9 @@ export default function Home() {
           occupiedRooms={{ value: occupiedRooms }}
           checkin={{ value: checkin }}
           checkout={{ value: checkout }}
+          cash={{value: cash}}
+          Transfer={{value: transfer}}
+          TotalSales={{value: totalSales}}
         />
       </Suspense>
 

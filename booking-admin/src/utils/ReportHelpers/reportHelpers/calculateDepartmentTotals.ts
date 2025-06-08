@@ -19,7 +19,7 @@ export interface ProductCountItem {
   product_count: number;
 }
 
-export type SalesByProduct = Record<string, { units: number; amount: number }>;
+export type SalesByProduct = Record<string, { units: number; amount: number; amountPaid: number }>;
 
 export const calculateDepartmentTotals = (
   groupedItems: Record<DepartmentKey, DepartmentItem[]>,
@@ -27,7 +27,7 @@ export const calculateDepartmentTotals = (
   department: DepartmentKey
 ): {
   updatedItems: DepartmentItem[];
-  salesByProduct: Array<{ name: string; units: number; amount: number }>;
+  salesByProduct: Array<{ name: string; units: number; amount: number; amountPaid: number }>;
   paymentMethods: { cash: number; other: number };
   departmentTotals: { cashSales: number; totalTransfers: number; totalSales: number };
 } => {
@@ -62,7 +62,7 @@ export const calculateDepartmentTotals = (
 
   // Reduce grouped items and calculate sales
   const updatedItems: DepartmentItem[] = [];
-  const salesByProduct: Array<{ name: string; units: number; amount: number }> = [];
+  const salesByProduct: Array<{ name: string; units: number; amount: number; amountPaid: number }> = [];
   const paymentMethods = { cash: 0, other: 0 };
   const departmentTotals = { cashSales: 0, totalTransfers: 0, totalSales: 0 };
 
@@ -70,6 +70,7 @@ export const calculateDepartmentTotals = (
     const totalQuantity = items.reduce((sum, i) => sum + i.quantity, 0); // Sum up quantities
     const base = items[0]; // Preserve other fields from one item
     const amount = totalQuantity * base.price; // Calculate total amount
+    const amountPaid = items.reduce((sum, i) => sum + i.amountPaid, 0); // Sum up amounts paid
 
     // Track payment methods
     const paymentMethod = base.paymentMethods.toLowerCase();
@@ -100,6 +101,7 @@ export const calculateDepartmentTotals = (
         name: base.name,
         units: totalQuantity,
         amount,
+        amountPaid,
       });
     }
   });

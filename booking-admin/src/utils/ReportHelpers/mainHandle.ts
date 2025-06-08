@@ -92,7 +92,7 @@ export async function handleMainRecord(
 
     // Totals
     const totalUnits = flatItems.reduce((sum, item) => sum + item.quantity, 0);
-    const totalAmount = flatItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    // const totalAmount = flatItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
     const overviewBase = {
       cashSales: departmentTotals.cashSales,
@@ -120,6 +120,7 @@ export async function handleMainRecord(
       const sales = salesByProduct.find((p) => p.name === product.name) || {
         units: 0,
         amount: 0,
+        amountPaid: 0,
       };
 
       const profit = sales.amount - (Number(product.price) * sales.units);
@@ -131,6 +132,7 @@ export async function handleMainRecord(
         other_stock: product[otherStockField] || 0,
         sold: sales.units,
         amount: sales.amount,
+        amountPaid: sales.amountPaid, 
         profit,
         isBar: department === "bar",
         isRestaurant: department === "restaurant",

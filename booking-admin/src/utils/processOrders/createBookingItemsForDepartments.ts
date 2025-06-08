@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { OrderItem, ConnectedItem, PaymentMethod } from "@/types/order";
+import { OrderItem, ConnectedItem, PaymentMethod, Order } from "@/types/order";
 import { strapiService } from "../dataEndPoint";
 
 export const createBookingItemForDepartment = async ({
@@ -9,6 +9,8 @@ export const createBookingItemForDepartment = async ({
   drinks = null,
   food_items = null,
   hotel_services = null,
+  discountPrice =null,
+  finalPrice = null
 }: {
   department: string;
   items: OrderItem[];
@@ -17,13 +19,16 @@ export const createBookingItemForDepartment = async ({
   drinks?: ConnectedItem[] | null;
   food_items?: ConnectedItem[] | null;
   hotel_services?: ConnectedItem[] | null;
+  discountPrice?: number | null;
+  finalPrice?: number | null;
 }) => {
   try {
     console.log("Starting createBookingItemForDepartment...");
 
     // Calculate department total
-    const deptTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    console.log("Department Total:", deptTotal);
+    // console.log("order.discountPrice", discountPrice);
+    const deptTotal =  items.reduce((sum, item) => (sum + item.price * item.quantity - (discountPrice ?? 0)), 0);
+    // console.log("Department Total:", deptTotal);
 
     // Helper function to convert to id array
     const toIdArray = (data: any): { id: string }[] | null => {
@@ -36,12 +41,12 @@ export const createBookingItemForDepartment = async ({
     };
 
     // Log the input data
-    console.log("Input Data - Items:", items);
-    console.log("Input Data - Product Count IDs:", productCountIds);
-    console.log("Input Data - Payment Method:", paymentMethod);
-    console.log("Input Data - Drinks:", drinks);
-    console.log("Input Data - Food Items:", food_items);
-    console.log("Input Data - Hotel Services:", hotel_services);
+    // console.log("Input Data - Items:", items);
+    // console.log("Input Data - Product Count IDs:", productCountIds);
+    // console.log("Input Data - Payment Method:", paymentMethod);
+    // console.log("Input Data - Drinks:", drinks);
+    // console.log("Input Data - Food Items:", food_items);
+    // console.log("Input Data - Hotel Services:", hotel_services);
 
     // Create the payload
     const bookingItemPayload = {
@@ -58,15 +63,15 @@ export const createBookingItemForDepartment = async ({
       menu_category: null,
     };
 
-    console.log("Booking Item Payload:", bookingItemPayload);
+    // console.log("Booking Item Payload:", bookingItemPayload);
 
     // Create the booking item
     const res = await strapiService.createBookingItem(bookingItemPayload);
-    console.log("Booking item created:", res);
+    // console.log("Booking item created:", res);
 
     return res;
   } catch (error) {
-    console.error("Error in createBookingItemForDepartment:", error);
+    // console.error("Error in createBookingItemForDepartment:", error);
     throw error; // Rethrow the error to be handled by calling code if needed
   }
 };

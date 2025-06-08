@@ -16,6 +16,7 @@ interface ProductData {
   type: string;
   sold: number;
   amount: number;
+  amountPaid: number;
   profit: number;
   
   drink_type: {

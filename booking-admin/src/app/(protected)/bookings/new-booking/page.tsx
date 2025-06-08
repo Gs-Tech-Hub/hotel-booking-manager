@@ -24,7 +24,6 @@ const CreateBookingForm: React.FC = () => {
   });
   const [roomData, setRoomData] = useState<any[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<any | null>(null);
-  const [unavailableDates] = useState<Set<string>>(new Set());
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [customerId, setCustomerId] = useState<number | null>(null);
   const router = useRouter();
@@ -52,20 +51,12 @@ const CreateBookingForm: React.FC = () => {
     fetchRoomsAndAvailability();
   }, []);
 
-  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-  //   const { name, value } = e.target;
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     [name]: value,
-  //   }));
-  // };
-
   const handleNestedChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, key: keyof Booking) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [key]: {
-        ...prev,
+        ...((prev[key] as object) || {}), // Ensure prev[key] is treated as an object
         [name]: value,
       },
     }));
@@ -108,8 +99,6 @@ const CreateBookingForm: React.FC = () => {
     }
   };
 
-  // const isDateDisabled = (date: string) => unavailableDates.has(date);
-
   const handleNextStep = () => {
     setStep((prev) => prev + 1);
   };
@@ -137,9 +126,17 @@ const CreateBookingForm: React.FC = () => {
       // Destructure the necessary fields from formData
       const { checkin, checkout, guests, nights, totalPrice, payment } = formData;
 
-    
+    console.log("form Data:", formData);
+
+      const transactionData = {
+      PaymentStatus: payment.PaymentStatus,
+      paymentMethod: payment.paymentMethod,
+      totalPrice: totalPrice,
+    };
 
       // Post the payload directly
+      const paymentId = await strapiService.createTransaction(transactionData);
+
       const response = await strapiService.createBooking({
         checkin,
         checkout,
@@ -148,10 +145,11 @@ const CreateBookingForm: React.FC = () => {
         totalPrice,
         customer: customerId, // Use the customer ID
         room: selectedRoom?.documentId, // Use the room's documentId
-        payment,
+        payment: paymentId,
       });
 
       const bookingResponse = await response;
+      console.log("booking Response:", bookingResponse);
       toast.success("Booking created successfully!");
 
       // Redirect to the booking summary page
@@ -174,7 +172,7 @@ const CreateBookingForm: React.FC = () => {
         className="create-booking-form"
         onSubmit={(e) => {
           e.preventDefault();
-          handleBookingSubmission();
+          // handleBookingSubmission();
         }}
       >
         <h2 className="text-xl font-bold mb-4">Create Booking</h2>
@@ -281,7 +279,7 @@ const CreateBookingForm: React.FC = () => {
             </label>
             <select
               id="payment-status"
-              name="paymentStatus"
+              name="PaymentStatus" // Ensure this matches the key in the payment object
               value={formData.payment.PaymentStatus}
               onChange={(e) => handleNestedChange(e, "payment")}
               className="w-full appearance-none rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary mb-4"

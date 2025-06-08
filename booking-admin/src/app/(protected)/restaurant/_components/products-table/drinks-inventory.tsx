@@ -43,7 +43,7 @@ export default function DrinksInventoryPage({ products }: { products: Product[] 
              <SelectItem value="price">Price</SelectItem>
              <SelectItem value="quantity">Quantity</SelectItem>
              <SelectItem value="sold">Sold</SelectItem>
-             <SelectItem value="bar_stock">Bar Stock</SelectItem>
+             <SelectItem value="bar_stock">Stock</SelectItem>
            </Select>
          </div>
        </div>

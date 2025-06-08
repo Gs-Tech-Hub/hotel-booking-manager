@@ -180,13 +180,13 @@ export function AddNewCustomerModal({ isOpen, onClose, onSubmit }: CreateCustome
           <Button label="Cancel" onClick={onClose} />
            {showUserForm ? (
                   <Button
-                    label={isLoading ? "Creating..." : "Create User + Game"}
+                    label={isLoading ? "Creating..." : "Create User"}
                     onClick={handleCreateUser}
                     className={cn(isLoading && "opacity-50")}
                   />
                 ) : (
                   <Button
-                    label={isLoading ? "Checking..." : "Check & Start Game"}
+                    label={isLoading ? "Checking..." : "Check"}
                     onClick={handleLookup}
                     className={cn(isLoading && "opacity-50")}
                   />
