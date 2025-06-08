@@ -5,6 +5,7 @@ import { Select } from '@/components/ui-elements/select';
 import { strapiService } from '@/utils/dataEndpoint/index';
 import type { PaymentMethod } from '@/types/order';
 import { paymentMethods } from '@/app/stores/useOrderStore';
+import { toast } from "react-toastify";
 
 export interface MembershipFormValues {
   firstName: string;
@@ -101,12 +102,34 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Validate all required fields
+    if (!form.firstName || !form.lastName || !form.email || !form.phone || !form.membershipType || !form.startDate || !form.endDate || !form.paymentMethod) {
+      toast.error("Please fill out all required fields.");
+      return;
+    }
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+    // Phone validation (basic)
+    if (form.phone.length < 7) {
+      toast.error("Please enter a valid phone number.");
+      return;
+    }
+    // Date validation
+    if (form.startDate > form.endDate) {
+      toast.error("End date must be after start date.");
+      return;
+    }
     // If initialValues has an id, call update instead of create
     if (initialValues && (initialValues as any).id) {
-      // Include id in the form values
       onSubmit({ ...form, id: (initialValues as any).id } as MembershipFormValues);
+      toast.success("Membership updated successfully!");
     } else {
       onSubmit(form);
+      toast.success("Membership created successfully!");
     }
   };
 

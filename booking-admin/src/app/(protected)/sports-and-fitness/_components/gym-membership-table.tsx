@@ -15,6 +15,7 @@ import RenewMembershipModal from "./RenewMembershipModal";
 import AttendanceModal from "./AttendanceModal";
 import { processOrder } from "@/utils/processOrders/finalizeOrder";
 import { useAuth } from "@/components/Auth/context/auth-context";
+import { toast } from "react-toastify";
 
 interface GymMembershipTableProps {
   dataType: 'gym' | 'sports';
@@ -123,12 +124,21 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
       planPrice = foundPlan ? foundPlan.price : values.planPrice;
       paymentType = values.paymentMethod;
     }
+    // check for existing customer, if exist don't create
+     const email = (values.email ).toString();
+     
+    const existingCustomer = await strapiService.customerEndpoints.findCustomerByPhoneOrEmail(email);
+    console.log('existing customer:', existingCustomer);
+    if(existingCustomer){
+      return  toast.error(`there is an existing customer with same credential`)
+    }
     const customer = await strapiService.customerEndpoints.createCustomer({
       firstName: values.firstName,
       lastName: values.lastName,
       email: values.email,
       phone: values.phone
     });
+    toast.success('Customer created successfully!');
     if (!customer?.id) throw new Error("Customer creation failed: missing id");
     let membership;
     if (dataType === 'gym') {
