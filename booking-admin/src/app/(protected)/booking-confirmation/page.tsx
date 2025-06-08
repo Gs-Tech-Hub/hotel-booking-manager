@@ -53,7 +53,7 @@ const BookingConfirmationContent = () => {
               style={{ width: '100px', height: '100px', objectFit: 'cover' }}
               />      
             <h1 className="text-2xl font-bold">FMMM1 Hotel</h1>
-            <p className="text-sm text-gray-600">https://fmmm1hotel.com</p>
+            <p className="text-sm text-gray-600">https://f-mmm1-hotel.nl</p>
           </div>
 
           <h1 className="booking-header text-3xl font-bold mb-4">Booking Confirmed!</h1>
@@ -93,6 +93,8 @@ const BookingConfirmationContent = () => {
             {reference && <p><strong>Reference:</strong> {reference}</p>}
             {email && <p><strong>Email:</strong> {email}</p>}
             {checkIn && <p><strong>Check-in:</strong> {checkIn}</p>}
+            {checkOut && <p><strong>Check-Out:</strong>{checkOut}</p>}
+            {room && <p><strong>Room:</strong>{room}</p>}
             {amount && (
               <h3 className="mt-4">
                 <strong>Amount Paid:</strong> {formatPrice(parseFloat(amount!), "NGN")}  
@@ -106,6 +108,13 @@ const BookingConfirmationContent = () => {
             © {new Date().getFullYear()} FMMM1 Hotel. All rights reserved.
             <br />
             Visit us at: <span className="text-blue-600">https://fmmm1hotel.com</span>
+            <br />
+            Address: <span className="text-gray-500">FMMM1 CLOSE, off Board Road, Alihame, Agbor. Delta State. Nigeria</span>
+            <br />
+            Email: <span className="text-gray-500">fmmmhotels@gmail.com</span>
+            <br /> 
+            Phone: <span className="text-blue-600">0704 523 2697</span>
+            
           </div>
         </div>
 
