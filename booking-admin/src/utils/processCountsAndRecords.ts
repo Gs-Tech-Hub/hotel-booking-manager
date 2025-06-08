@@ -206,6 +206,7 @@ export async function handleDepartmentRecord(
         other_stock: product[otherStockField] || 0,
         sold: sales.units,
         amount: sales.amount,
+        amountPaid: sales.amount,
         profit: sales.amount - (product.price * sales.units),
         isBar: department === "bar",
         isRestaurant: department === "restaurant",
