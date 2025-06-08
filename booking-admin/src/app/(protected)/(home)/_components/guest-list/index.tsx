@@ -41,11 +41,16 @@ export function GuestList({ className, dateRange }: { className?: string, dateRa
 
   useEffect(() => {
     const fetchData = async () => {
+      // Ensure full-day ISO string range for filtering
+      const start = new Date(dateRange.start);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(dateRange.end);
+      end.setHours(23, 59, 59, 999);
       const result = await strapiService.getBookings({
         populate: '*',
         pagination: 25,
-        "filters[createdAt][$gte]": dateRange.start,
-        "filters[createdAt][$lte]": dateRange.end,
+        "filters[createdAt][$gte]": start.toISOString(),
+        "filters[createdAt][$lte]": end.toISOString(),
       });
 
       const mappedData = result.map((item: Guest) => ({
