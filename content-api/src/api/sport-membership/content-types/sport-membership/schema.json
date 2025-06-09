@@ -29,12 +29,6 @@
     "expiry_date": {
       "type": "date"
     },
-    "check_ins": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::check-in.check-in",
-      "mappedBy": "sport_membership"
-    },
     "payment_type": {
       "type": "relation",
       "relation": "oneToOne",
@@ -66,6 +60,11 @@
       "relation": "manyToMany",
       "target": "api::gym-and-sport.gym-and-sport",
       "mappedBy": "sport_memberships"
+    },
+    "check_ins": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::check-in.check-in"
     }
   }
 }
