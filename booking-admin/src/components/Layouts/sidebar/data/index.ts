@@ -62,22 +62,22 @@ export const NAV_DATA: NavSection[] = [
       {
         title: "Sports & Fitness",
         icon: Icons.FitnessIcon,
-        roles: ["admin", "receptionist", "manager"],
+        roles: [ "canadaworld-admin", "admin", "receptionist", "manager"],
         items: [
           {
             title: "addNewSport",
             url: "/sports-and-fitness/add-new",
-            roles: ["admin"],
+            roles: ["canadaworld-admin", "admin"],
           },
           {
             title: "Gym Fitness",
             url: "/sports-and-fitness/fitness",
-            roles: ["admin", "manager"],
+            roles: [ "canadaworld-admin", "admin", "manager"],
           },
            {
             title: "Sports & Club",
             url: "/sports-and-fitness/sports",
-            roles: ["admin", "manager"],
+            roles: [ "canadaworld-admin", "admin", "manager"],
           },
         ],
       },
