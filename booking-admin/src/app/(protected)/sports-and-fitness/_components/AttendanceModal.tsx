@@ -61,11 +61,28 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
       alert("You already have an active check-in for today. Please check out before checking in again.");
       return;
     }
-    // Prepare payload for API: only gym_membership and check_in_time
-    const data = {
+    // Prepare payload for API: only gym_membership or sport_membership and check_in_time
+    let data: any = {
       check_in_time: now.toISOString(),
-    gym_membership: {connect: memberId}
     };
+    // Determine which membership type to connect
+    if (memberName.toLowerCase().includes('gym') || memberName.toLowerCase().includes('fitness')) {
+      data.gym_membership = { connect: memberId };
+    } else if (memberName.toLowerCase().includes('sport')) {
+      data.sport_membership = { connect: memberId };
+    } else {
+      // fallback: try to infer from attendance logs
+      if (attendance && attendance.length > 0) {
+        if (attendance[0].hasOwnProperty('gym_membership')) {
+          data.gym_membership = { connect: memberId };
+        } else if (attendance[0].hasOwnProperty('sport_membership')) {
+          data.sport_membership = { connect: memberId };
+        }
+      } else {
+        // default to gym_membership if unsure
+        data.gym_membership = { connect: memberId };
+      }
+    }
     try {
       await strapiService.checkInEndpoints.createCheckIn(data);
       // Optionally update local state for immediate UI feedback
