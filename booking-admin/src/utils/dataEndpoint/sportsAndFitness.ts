@@ -21,7 +21,7 @@ export const sportsAndFitnessEndpoints = {
   },
   async updateSportAndFitness(sportId: string, sportData: any) {
     const result = await apiHandlerInstance.updateData({
-      endpoint: `gym-and-sports/${sportId}`,
+      endpoint: `gym-and-sports`,
       id: sportId,
       updatedData: sportData
     });

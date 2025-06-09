@@ -28,17 +28,18 @@ export default function SportAndFitnessForm() {
   const [membershipPlans, setMembershipPlans] = useState<MembershipPlan[]>([]);
   const [fitnessSessions, setFitnessSessions] = useState<FitnessSession[]>([]);
   const [creationId, setCreationId] = useState<string | null>(null);
-  const [sportOptions, setSportOptions] = useState<{ id: string; name: string }[]>([]);
+  const [sportOptions, setSportOptions] = useState<{ id: string; name: string; documentId: string; }[]>([]);
   const [selectedSportId, setSelectedSportId] = useState<string>("");
-  const [planLoading, setPlanLoading] = useState(false);
-  const [planSuccess, setPlanSuccess] = useState<string | null>(null);
-  const [planError, setPlanError] = useState<string | null>(null);
+  const [planLoading, setPlanLoading] = useState<number | null>(null);
+  const [planSuccess, setPlanSuccess] = useState<number | null>(null);
+  const [planError, setPlanError] = useState<number | null>(null);
+  const [notification, setNotification] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchSports() {
       try {
         const data = await sportsAndFitnessEndpoints.getSportsAndFitnessList();
-        setSportOptions(Array.isArray(data) ? data.map((s: any) => ({ id: s.id, name: s.name })) : []);
+        setSportOptions(Array.isArray(data) ? data.map((s: any) => ({ id: s.id, name: s.name, documentId: s.documentId })) : []);
       } catch (e) {
         setSportOptions([]);
       }
@@ -98,7 +99,33 @@ export default function SportAndFitnessForm() {
   const updateMembershipPlan = (idx: number, field: keyof MembershipPlan, value: any) => {
     setMembershipPlans(plans => plans.map((plan, i) => i === idx ? { ...plan, [field]: value } : plan));
   };
-  const removeMembershipPlan = (idx: number) => {
+  const removeMembershipPlan = async (idx: number) => {
+    const plan = membershipPlans[idx];
+    // If the plan has an id, remove it from the backend relation
+    if (plan.id !== undefined) {
+      try {
+        if (!selectedSportId) throw new Error("Please select a sport/gym");
+        const selectedSport = sportOptions.find(opt => String(opt.id) === String(selectedSportId));
+        const sSDocumentID = selectedSport?.documentId;
+        if (!sSDocumentID) throw new Error("Sport/Gym documentId not found");
+        // Fetch current membership plans for this sport/gym
+        const data = await sportsAndFitnessEndpoints.getSportsAndFitnessList({
+          'filters[id][$eq]': selectedSportId,
+          'populate[membership_plans][populate]': '*',
+        });
+        const currentPlanIds = (data[0]?.membership_plans || []).map((p: any) => p.id);
+        // Remove the plan id from the list
+        const updatedPlanIds = currentPlanIds.filter((id: number) => id !== plan.id);
+        // Update the correct endpoint using documentId
+        await strapiService.sportsAndFitnessEndpoints.updateSportAndFitness(
+          sSDocumentID,
+          { membership_plans: updatedPlanIds }
+        );
+      } catch (e) {
+        // Optionally handle error (e.g., show notification)
+      }
+    }
+    // Remove from local state
     setMembershipPlans(plans => plans.filter((_, i) => i !== idx));
   };
 
@@ -114,8 +141,8 @@ export default function SportAndFitnessForm() {
   };
 
   // Create Membership Plan API call
-  const createMembershipPlan = async (plan: MembershipPlan) => {
-    setPlanLoading(true);
+  const createMembershipPlan = async (plan: MembershipPlan, planId?: number) => {
+    setPlanLoading(planId ?? null);
     setPlanSuccess(null);
     setPlanError(null);
     try {
@@ -131,12 +158,32 @@ export default function SportAndFitnessForm() {
         isActive: plan.isActive,
         max_checkins_per_month: plan.max_checkins_per_month,
       };
-      await strapiService.membershipPlansEndpoints.createMembershipPlan(payload);
-      setPlanSuccess("Membership plan created successfully");
+      // Find the selected sport/gym and get its documentId
+      const selectedSport = sportOptions.find(opt => String(opt.id) === String(selectedSportId));
+      const sSDocumentID = selectedSport?.documentId;
+      if (!sSDocumentID) throw new Error("Sport/Gym documentId not found");
+      // Fetch current membership plans for this sport/gym
+      const data = await sportsAndFitnessEndpoints.getSportsAndFitnessList({
+        'filters[id][$eq]': selectedSportId,
+        'populate[membership_plans][populate]': '*',
+      });
+      const currentPlanIds = (data[0]?.membership_plans || []).map((p: any) => p.id);
+      // Create the plan
+      const pla = await strapiService.membershipPlansEndpoints.createMembershipPlan(payload);
+      // Add the new plan to the list
+      const updatedPlanIds = [...currentPlanIds, pla.id];
+      // Update the correct endpoint using documentId
+      await strapiService.sportsAndFitnessEndpoints.updateSportAndFitness(
+        sSDocumentID,
+        { membership_plans: updatedPlanIds }
+      );
+      setPlanSuccess(planId ?? null);
+      setNotification("Membership plan created successfully!");
+      setTimeout(() => setNotification(null), 3000);
     } catch (e: any) {
-      setPlanError(e.message || "Failed to create plan");
+      setPlanError(planId ?? null);
     } finally {
-      setPlanLoading(false);
+      setPlanLoading(null);
     }
   };
 
@@ -148,6 +195,11 @@ export default function SportAndFitnessForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
+      {notification && (
+        <div className="mb-4 p-3 rounded bg-green-100 text-green-800 font-semibold text-center">
+          {notification}
+        </div>
+      )}
       <Card
         title="Sport & Fitness Info"
         content={
@@ -265,22 +317,28 @@ export default function SportAndFitnessForm() {
                   </label>
                 </div>
                 <div className="flex gap-2 items-center">
-                  <button
-                    type="button"
-                    className="bg-primary text-white px-3 py-1 rounded font-semibold"
-                    disabled={planLoading}
-                    onClick={() => createMembershipPlan(plan)}
-                  >
-                    {planLoading ? "Creating..." : "Create Plan"}
-                  </button>
-                  {planSuccess && <span className="text-green-600 ml-2">{planSuccess}</span>}
-                  {planError && <span className="text-red-600 ml-2">{planError}</span>}
+                  {/* Only show Create button for plans without an id (i.e., new/unsaved) */}
+                  {plan.id === undefined && (
+                    <button
+                      type="button"
+                      className="bg-primary text-white px-3 py-1 rounded font-semibold"
+                      disabled={!!planLoading && plan.id === planLoading}
+                      onClick={() => createMembershipPlan(plan, plan.id)}
+                    >
+                      {planLoading && plan.id === planLoading ? "Creating..." : "Create Plan"}
+                    </button>
+                  )}
+                  {planSuccess && plan.id === planSuccess && <span className="text-green-600 ml-2">Membership plan created successfully</span>}
+                  {planError && plan.id === planError && <span className="text-red-600 ml-2">{planError}</span>}
                 </div>
               </div>
             ))}
-            <button type="button" className="text-primary underline" onClick={addMembershipPlan}>
-              + Add Membership Plan
-            </button>
+            {/* Only show add button if there are no loaded plans or if the last plan is saved */}
+            {(!membershipPlans.length || membershipPlans[membershipPlans.length - 1].id !== undefined) && (
+              <button type="button" className="text-primary underline" onClick={addMembershipPlan}>
+                + Add Membership Plan
+              </button>
+             )}
           </div>
         }
       />
@@ -323,16 +381,16 @@ export default function SportAndFitnessForm() {
           </div>
         }
       />
-
+{/* 
       <div className="flex justify-end">
         <button type="submit" className="bg-primary text-white px-6 py-2 rounded font-semibold">
           Create Sport & Fitness
         </button>
-      </div>
+      </div> */}
 
-      {creationId && (
+      {/* {creationId && (
         <div className="mt-4 text-green-600 font-bold">Created! ID: {creationId}</div>
-      )}
+      )} */}
     </form>
   );
 }
