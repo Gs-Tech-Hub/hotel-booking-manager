@@ -1,6 +1,8 @@
 "use client"
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card } from "../../../../components/ui-elements/card";
+import { sportsAndFitnessEndpoints } from "../../../../utils/dataEndpoint/sportsAndFitness";
+import { strapiService } from "@/utils/dataEndpoint/index";
 
 interface MembershipPlan {
   name: string;
@@ -11,6 +13,7 @@ interface MembershipPlan {
   discount_amount: string | null;
   isActive: boolean;
   max_checkins_per_month: number;
+  id?: number; // Added id for editing
 }
 
 interface FitnessSession {
@@ -25,6 +28,56 @@ export default function SportAndFitnessForm() {
   const [membershipPlans, setMembershipPlans] = useState<MembershipPlan[]>([]);
   const [fitnessSessions, setFitnessSessions] = useState<FitnessSession[]>([]);
   const [creationId, setCreationId] = useState<string | null>(null);
+  const [sportOptions, setSportOptions] = useState<{ id: string; name: string }[]>([]);
+  const [selectedSportId, setSelectedSportId] = useState<string>("");
+  const [planLoading, setPlanLoading] = useState(false);
+  const [planSuccess, setPlanSuccess] = useState<string | null>(null);
+  const [planError, setPlanError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchSports() {
+      try {
+        const data = await sportsAndFitnessEndpoints.getSportsAndFitnessList();
+        setSportOptions(Array.isArray(data) ? data.map((s: any) => ({ id: s.id, name: s.name })) : []);
+      } catch (e) {
+        setSportOptions([]);
+      }
+    }
+    fetchSports();
+  }, []);
+
+  // Fetch plans for selected sport/gym
+  useEffect(() => {
+    async function fetchPlansForSport() {
+      if (!selectedSportId) {
+        setMembershipPlans([]);
+        return;
+      }
+      try {
+        const data = await sportsAndFitnessEndpoints.getSportsAndFitnessList({
+          'filters[id][$eq]': selectedSportId,
+          'populate[membership_plans][populate]': '*',
+        });
+        const plans = data && data[0]?.membership_plans ? data[0].membership_plans : [];
+        setMembershipPlans(
+          plans.map((plan: any) => ({
+            name: plan.name || '',
+            price: plan.price?.toString() || '',
+            duration: plan.duration || '',
+            duration_months: plan.duration_months || 1,
+            access_to_classes: plan.access_to_classes || false,
+            discount_amount: plan.discount_amount === null ? null : plan.discount_amount?.toString() || '',
+            isActive: plan.isActive ?? true,
+            max_checkins_per_month: plan.max_checkins_per_month || 0,
+            id: plan.id, // Attach id for editing
+          }))
+        );
+      } catch (e) {
+        setMembershipPlans([]);
+      }
+    }
+    fetchPlansForSport();
+  }, [selectedSportId]);
 
   // Membership Plan handlers
   const addMembershipPlan = () => {
@@ -60,6 +113,33 @@ export default function SportAndFitnessForm() {
     setFitnessSessions(sessions => sessions.filter((_, i) => i !== idx));
   };
 
+  // Create Membership Plan API call
+  const createMembershipPlan = async (plan: MembershipPlan) => {
+    setPlanLoading(true);
+    setPlanSuccess(null);
+    setPlanError(null);
+    try {
+      if (!selectedSportId) throw new Error("Please select a sport/gym");
+      // Build payload matching the required schema
+      const payload = {
+        name: plan.name,
+        description: description || null,
+        duration_months: plan.duration_months,
+        price: Number(plan.price),
+        access_to_classes: plan.access_to_classes,
+        discount_amount: plan.discount_amount === '' ? null : plan.discount_amount,
+        isActive: plan.isActive,
+        max_checkins_per_month: plan.max_checkins_per_month,
+      };
+      await strapiService.membershipPlansEndpoints.createMembershipPlan(payload);
+      setPlanSuccess("Membership plan created successfully");
+    } catch (e: any) {
+      setPlanError(e.message || "Failed to create plan");
+    } finally {
+      setPlanLoading(false);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setCreationId(`sportfit-${Date.now()}`);
@@ -72,6 +152,20 @@ export default function SportAndFitnessForm() {
         title="Sport & Fitness Info"
         content={
           <div className="space-y-4">
+            <div>
+              <label className="block font-medium mb-1">Select Sport/Gym</label>
+              <select
+                className="w-full border rounded px-3 py-2"
+                value={selectedSportId}
+                onChange={e => setSelectedSportId(e.target.value)}
+                required
+              >
+                <option value="">Select...</option>
+                {sportOptions.map(opt => (
+                  <option key={opt.id} value={opt.id}>{opt.name}</option>
+                ))}
+              </select>
+            </div>
             <div>
               <label className="block font-medium mb-1">Name</label>
               <input
@@ -117,7 +211,7 @@ export default function SportAndFitnessForm() {
                   />
                   <input
                     className="border rounded px-2 py-1 w-32"
-                    placeholder="Duration (e.g. 1 month)"
+                    placeholder="Duration in months"
                     value={plan.duration}
                     onChange={e => updateMembershipPlan(idx, "duration", e.target.value)}
                     required
@@ -169,6 +263,18 @@ export default function SportAndFitnessForm() {
                     />
                     Active
                   </label>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <button
+                    type="button"
+                    className="bg-primary text-white px-3 py-1 rounded font-semibold"
+                    disabled={planLoading}
+                    onClick={() => createMembershipPlan(plan)}
+                  >
+                    {planLoading ? "Creating..." : "Create Plan"}
+                  </button>
+                  {planSuccess && <span className="text-green-600 ml-2">{planSuccess}</span>}
+                  {planError && <span className="text-red-600 ml-2">{planError}</span>}
                 </div>
               </div>
             ))}
