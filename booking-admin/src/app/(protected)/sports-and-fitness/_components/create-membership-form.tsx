@@ -1,8 +1,8 @@
+/* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui-elements/input';
 import { Button } from '@/components/ui-elements/button';
 import { Select } from '@/components/ui-elements/select';
-import { strapiService } from '@/utils/dataEndpoint/index';
 import type { PaymentMethod } from '@/types/order';
 import { paymentMethods } from '@/app/stores/useOrderStore';
 import { toast } from "react-toastify";

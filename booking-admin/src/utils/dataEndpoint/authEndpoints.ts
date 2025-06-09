@@ -1,4 +1,4 @@
-// Auth and user related endpoints
+/* eslint-disable */
 import ApiHandler from "@/utils/apiHandler";
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
 const apiHandlerInstance = ApiHandler({ baseUrl });

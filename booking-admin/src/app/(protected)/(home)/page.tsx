@@ -32,7 +32,7 @@ const pastWeekDateRanges = generatePastWeekDateRanges();
 export default function Home() {
   const router = useRouter();
   const { user, defaultLandingPage, loading } = useAuth();
-    const [loadingData, setLoadingData] = useState(false);
+    const [loadingData] = useState(false);
   const [selectedDateRange, setSelectedDateRange] = useState({
      startDate: pastWeekDateRanges[0].value,
      endDate: pastWeekDateRanges[0].value,

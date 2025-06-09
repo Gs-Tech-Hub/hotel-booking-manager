@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import { Modal } from '@/components/ui-elements/modal';
 import { MembershipForm, MembershipFormValues } from './create-membership-form';

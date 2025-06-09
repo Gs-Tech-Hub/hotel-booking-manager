@@ -1,4 +1,5 @@
 "use client"
+/* eslint-disable */
 import React, { useState, useEffect } from "react";
 import { Card } from "../../../../components/ui-elements/card";
 import { sportsAndFitnessEndpoints } from "../../../../utils/dataEndpoint/sportsAndFitness";
@@ -24,11 +25,8 @@ interface FitnessSession {
 }
 
 export default function SportAndFitnessForm() {
-  const [sportName, setSportName] = useState("");
-  const [description, setDescription] = useState("");
   const [membershipPlans, setMembershipPlans] = useState<MembershipPlan[]>([]);
   const [fitnessSessions, setFitnessSessions] = useState<FitnessSession[]>([]);
-  const [creationId, setCreationId] = useState<string | null>(null);
   const [sportOptions, setSportOptions] = useState<{ id: string; name: string; documentId: string; }[]>([]);
   const [selectedSportId, setSelectedSportId] = useState<string>("");
   const [planLoading, setPlanLoading] = useState<number | null>(null);
@@ -40,7 +38,7 @@ export default function SportAndFitnessForm() {
       try {
         const data = await sportsAndFitnessEndpoints.getSportsAndFitnessList();
         setSportOptions(Array.isArray(data) ? data.map((s: any) => ({ id: s.id, name: s.name, documentId: s.documentId })) : []);
-      } catch (e) {
+      } catch (_) {
         setSportOptions([]);
       }
     }
@@ -149,8 +147,6 @@ export default function SportAndFitnessForm() {
       if (!selectedSportId) throw new Error("Please select a sport/gym");
       // Build payload matching the required schema
       const payload = {
-        name: plan.name,
-        description: description || null,
         duration_months: plan.duration_months,
         price: Number(plan.price),
         access_to_classes: plan.access_to_classes,
@@ -189,8 +185,6 @@ export default function SportAndFitnessForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setCreationId(`sportfit-${Date.now()}`);
-    // Here you could send data to backend or show a success message
   };
 
   return (

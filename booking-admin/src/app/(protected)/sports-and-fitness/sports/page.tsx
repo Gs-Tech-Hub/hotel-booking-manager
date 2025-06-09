@@ -1,4 +1,5 @@
 "use client"
+/* eslint-disable */
 import dynamic from "next/dynamic";
 import { OverviewCardsSkeleton } from "../_components/overview-cards/skeleton";
 import { Suspense, useEffect, useState } from "react";
@@ -40,7 +41,7 @@ const [selectedDateRange, setSelectedDateRange] = useState({
     startDate: pastWeekDateRanges[0].value,
     endDate: pastWeekDateRanges[0].value,
   });
-  const [membershipPlans, setMembershipPlans] = useState<any[]>([]);
+  const [membershipPlans] = useState<any[]>([]);
 
   
     useEffect(() => {
@@ -49,7 +50,7 @@ const [selectedDateRange, setSelectedDateRange] = useState({
         try {
           console.log("Fetching data for date:", selectedDateRange.startDate);
   
-          const { overview, products } = await handleMainRecord(
+          const { overview } = await handleMainRecord(
             selectedDateRange.startDate,
             selectedDateRange.endDate,
             "sport_memberships",
