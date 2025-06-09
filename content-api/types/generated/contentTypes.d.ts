@@ -807,6 +807,10 @@ export interface ApiCheckInCheckIn extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    sport_memberships: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::sport-membership.sport-membership'
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

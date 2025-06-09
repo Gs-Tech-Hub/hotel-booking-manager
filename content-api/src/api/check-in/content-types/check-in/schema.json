@@ -22,6 +22,11 @@
     },
     "check_out_time": {
       "type": "datetime"
+    },
+    "sport_memberships": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::sport-membership.sport-membership"
     }
   }
 }

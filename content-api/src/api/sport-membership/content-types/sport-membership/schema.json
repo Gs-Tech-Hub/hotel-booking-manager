@@ -33,7 +33,7 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::check-in.check-in",
-      "mappedBy": "gym_membership"
+      "mappedBy": "sport_membership"
     },
     "payment_type": {
       "type": "relation",
