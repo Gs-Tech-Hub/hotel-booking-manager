@@ -65,23 +65,27 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
     let data: any = {
       check_in_time: now.toISOString(),
     };
-    // Determine which membership type to connect
-    if (memberName.toLowerCase().includes('gym') || memberName.toLowerCase().includes('fitness')) {
-      data.gym_membership = { connect: memberId };
-    } else if (memberName.toLowerCase().includes('sport')) {
-      data.sport_membership = { connect: memberId };
-    } else {
-      // fallback: try to infer from attendance logs
-      if (attendance && attendance.length > 0) {
-        if (attendance[0].hasOwnProperty('gym_membership')) {
-          data.gym_membership = { connect: memberId };
-        } else if (attendance[0].hasOwnProperty('sport_membership')) {
-          data.sport_membership = { connect: memberId };
-        }
+    // Determine which membership type to connect based on attendance or memberId
+    // Try to infer department from attendance logs or fallback to prop
+    let isGym = false;
+    let isSport = false;
+    if (attendance && attendance.length > 0) {
+      // If any log has gym_membership, treat as gym
+      isGym = attendance.some((log: any) => log.gym_membership || log.gym_membership_id);
+      isSport = attendance.some((log: any) => log.sport_membership || log.sport_membership_id);
+    }
+    // If not found, fallback to memberName (legacy)
+    if (!isGym && !isSport) {
+      if (memberName.toLowerCase().includes('gym') || memberName.toLowerCase().includes('fitness')) {
+        isGym = true;
       } else {
-        // default to gym_membership if unsure
-        data.gym_membership = { connect: memberId };
+        isSport = true;
       }
+    }
+    if (isGym) {
+      data.gym_membership = { connect: memberId };
+    } else if (isSport) {
+      data.sport_memberships = { connect: memberId };
     }
     try {
       await strapiService.checkInEndpoints.createCheckIn(data);

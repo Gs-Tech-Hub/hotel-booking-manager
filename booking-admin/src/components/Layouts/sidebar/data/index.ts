@@ -67,7 +67,7 @@ export const NAV_DATA: NavSection[] = [
           {
             title: "addNewSport",
             url: "/sports-and-fitness/add-new",
-            roles: ["super-admin"],
+            roles: ["admin"],
           },
           {
             title: "Gym Fitness",
