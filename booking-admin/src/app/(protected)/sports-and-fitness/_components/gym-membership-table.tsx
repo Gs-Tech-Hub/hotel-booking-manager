@@ -138,18 +138,14 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
       customerJustCreated = true;
     }
     if (!customer?.id) throw new Error("Customer creation failed: missing id");
-    // Prevent multiple membership registration
-    let existingMemberships = [];
-    if (dataType === 'gym') {
-      existingMemberships = await strapiService.gymMembershipsEndpoints.getGymMemberships({
-        "filters[customer][id][$eq]": customer.id
-      });
-    } else {
-      existingMemberships = await strapiService.sportMembershipsEndpoints.getSportMemberships({
-        "filters[customer][id][$eq]": customer.id
-      });
-    }
-    if (existingMemberships && existingMemberships.length > 0) {
+    // Prevent multiple membership registration (check both gym and sport memberships)
+    let gymMemberships = await strapiService.gymMembershipsEndpoints.getGymMemberships({
+      "filters[customer][id][$eq]": customer.id
+    });
+    let sportMemberships = await strapiService.sportMembershipsEndpoints.getSportMemberships({
+      "filters[customer][id][$eq]": customer.id
+    });
+    if ((gymMemberships && gymMemberships.length > 0) || (sportMemberships && sportMemberships.length > 0)) {
       toast.error('Customer already has an active membership.');
       return;
     }
