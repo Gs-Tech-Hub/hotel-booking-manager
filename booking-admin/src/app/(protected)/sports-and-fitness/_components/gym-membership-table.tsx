@@ -102,7 +102,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
   const handleAddMember = async (values: any) => {
     // Find the gym or sport id (use the first for now)
     const data = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({
-    "filters[name][$eq]": dataType === 'gym' ? "Fitness" : "Sports",
+      "filters[name][$eq]": dataType === 'gym' ? "Fitness" : "Sports",
       "populate": "*",
       "[membership_plans][populate] ": "*",
     });
@@ -124,22 +124,38 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
       planPrice = foundPlan ? foundPlan.price : values.planPrice;
       paymentType = values.paymentMethod;
     }
-    // check for existing customer, if exist don't create
-     const email = (values.email ).toString();
-     
-    const existingCustomer = await strapiService.customerEndpoints.findCustomerByPhoneOrEmail(email);
-    console.log('existing customer:', existingCustomer);
-    if(existingCustomer){
-      return  toast.error(`there is an existing customer with same credential`)
+    // check for existing customer, if exist use id, else create
+    const emailOrPhone = (values.email || values.phone).toString();
+    let customer = await strapiService.customerEndpoints.findCustomerByPhoneOrEmail(emailOrPhone);
+    let customerJustCreated = false;
+    if (!customer) {
+      customer = await strapiService.customerEndpoints.createCustomer({
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        phone: values.phone
+      });
+      customerJustCreated = true;
     }
-    const customer = await strapiService.customerEndpoints.createCustomer({
-      firstName: values.firstName,
-      lastName: values.lastName,
-      email: values.email,
-      phone: values.phone
-    });
-    toast.success('Customer created successfully!');
     if (!customer?.id) throw new Error("Customer creation failed: missing id");
+    // Prevent multiple membership registration
+    let existingMemberships = [];
+    if (dataType === 'gym') {
+      existingMemberships = await strapiService.gymMembershipsEndpoints.getGymMemberships({
+        "filters[customer][id][$eq]": customer.id
+      });
+    } else {
+      existingMemberships = await strapiService.sportMembershipsEndpoints.getSportMemberships({
+        "filters[customer][id][$eq]": customer.id
+      });
+    }
+    if (existingMemberships && existingMemberships.length > 0) {
+      toast.error('Customer already has an active membership.');
+      return;
+    }
+    if (customerJustCreated) {
+      toast.success('Customer created successfully!');
+    }
     let membership;
     if (dataType === 'gym') {
       membership = await strapiService.gymMembershipsEndpoints.createGymMembership({
