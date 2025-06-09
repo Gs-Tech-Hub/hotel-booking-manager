@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Card } from "../../../../components/ui-elements/card";
 import { sportsAndFitnessEndpoints } from "../../../../utils/dataEndpoint/sportsAndFitness";
 import { strapiService } from "@/utils/dataEndpoint/index";
+import { ToastContainer, toast } from "react-toastify";
 
 interface MembershipPlan {
   name: string;
@@ -33,7 +34,6 @@ export default function SportAndFitnessForm() {
   const [planLoading, setPlanLoading] = useState<number | null>(null);
   const [planSuccess, setPlanSuccess] = useState<number | null>(null);
   const [planError, setPlanError] = useState<number | null>(null);
-  const [notification, setNotification] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchSports() {
@@ -178,10 +178,10 @@ export default function SportAndFitnessForm() {
         { membership_plans: updatedPlanIds }
       );
       setPlanSuccess(planId ?? null);
-      setNotification("Membership plan created successfully!");
-      setTimeout(() => setNotification(null), 3000);
+      toast.success("Membership plan created successfully!");
     } catch (e: any) {
       setPlanError(planId ?? null);
+      toast.error(e.message || "Failed to create plan");
     } finally {
       setPlanLoading(null);
     }
@@ -195,11 +195,7 @@ export default function SportAndFitnessForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
-      {notification && (
-        <div className="mb-4 p-3 rounded bg-green-100 text-green-800 font-semibold text-center">
-          {notification}
-        </div>
-      )}
+      <ToastContainer position="top-center" autoClose={3000} />
       <Card
         title="Sport & Fitness Info"
         content={
@@ -217,24 +213,6 @@ export default function SportAndFitnessForm() {
                   <option key={opt.id} value={opt.id}>{opt.name}</option>
                 ))}
               </select>
-            </div>
-            <div>
-              <label className="block font-medium mb-1">Name</label>
-              <input
-                className="w-full border rounded px-3 py-2"
-                value={sportName}
-                onChange={e => setSportName(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label className="block font-medium mb-1">Description</label>
-              <textarea
-                className="w-full border rounded px-3 py-2"
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-                rows={3}
-              />
             </div>
           </div>
         }
