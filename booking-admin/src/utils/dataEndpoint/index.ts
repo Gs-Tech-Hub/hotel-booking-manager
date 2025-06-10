@@ -14,6 +14,7 @@ export * from './gymMemberships';
 export * from './sportMemberships';
 export * from './checkIn';
 export * from './gymAndSportSessions';
+export * from '../../brand/brandConfig'; // <-- Add brandConfig to central exports
 
 // Maintain a strapiService for backward compatibility and convenience
 import * as bookingEndpoints from './bookingEndpoints';
