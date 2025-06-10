@@ -64,7 +64,8 @@
     "check_ins": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::check-in.check-in"
+      "target": "api::check-in.check-in",
+      "mappedBy": "sport_membership"
     }
   }
 }

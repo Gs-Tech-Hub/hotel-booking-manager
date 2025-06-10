@@ -807,6 +807,10 @@ export interface ApiCheckInCheckIn extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    sport_membership: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::sport-membership.sport-membership'
+    >;
     sport_memberships: Schema.Attribute.Relation<
       'manyToOne',
       'api::sport-membership.sport-membership'
@@ -1589,6 +1593,48 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
       'oneToOne',
       'plugin::users-permissions.user'
     >;
+  };
+}
+
+export interface ApiOrganisationInfoOrganisationInfo
+  extends Struct.SingleTypeSchema {
+  collectionName: 'organisation_infos';
+  info: {
+    description: '';
+    displayName: 'Organisation-Info';
+    pluralName: 'organisation-infos';
+    singularName: 'organisation-info';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    address: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email;
+    facebook: Schema.Attribute.String;
+    instagram: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::organisation-info.organisation-info'
+    > &
+      Schema.Attribute.Private;
+    logo_dark: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    logo_light: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    name: Schema.Attribute.String;
+    phone: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    twitter: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    website: Schema.Attribute.String;
+    youTube: Schema.Attribute.String;
   };
 }
 
@@ -2648,6 +2694,7 @@ declare module '@strapi/strapi' {
       'api::membership-plan.membership-plan': ApiMembershipPlanMembershipPlan;
       'api::menu-category.menu-category': ApiMenuCategoryMenuCategory;
       'api::order.order': ApiOrderOrder;
+      'api::organisation-info.organisation-info': ApiOrganisationInfoOrganisationInfo;
       'api::payment-detail.payment-detail': ApiPaymentDetailPaymentDetail;
       'api::payment-type.payment-type': ApiPaymentTypePaymentType;
       'api::payment.payment': ApiPaymentPayment;

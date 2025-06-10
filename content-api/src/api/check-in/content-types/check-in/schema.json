@@ -27,6 +27,12 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::sport-membership.sport-membership"
+    },
+    "sport_membership": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::sport-membership.sport-membership",
+      "inversedBy": "check_ins"
     }
   }
 }
