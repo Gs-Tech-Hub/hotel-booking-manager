@@ -126,7 +126,7 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
     // If initialValues has an id, call update instead of create
     if (initialValues && (initialValues as any).id) {
       onSubmit({ ...form, id: (initialValues as any).id } as MembershipFormValues);
-      toast.success("Membership updated successfully!");
+      toast.success("Please Wait! Processing Membership");
     } else {
       onSubmit(form);
       toast.success("Membership created successfully!");
