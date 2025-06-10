@@ -86,7 +86,7 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
     if (isGym) {
       data.gym_membership = { connect: memberId };
     } else if (isSport) {
-      data.sport_memberships = { connect: memberId };
+      data.sport_membership = { connect: memberId };
     }
     try {
       await strapiService.checkInEndpoints.createCheckIn(data);
