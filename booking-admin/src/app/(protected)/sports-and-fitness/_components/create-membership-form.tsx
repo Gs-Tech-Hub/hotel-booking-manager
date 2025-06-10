@@ -129,7 +129,7 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({ initialValues = 
       toast.success("Please Wait! Processing Membership");
     } else {
       onSubmit(form);
-      toast.success("Membership created successfully!");
+      toast.success("Please Wait! Processing Membership!");
     }
   };
 
