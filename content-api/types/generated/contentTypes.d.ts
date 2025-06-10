@@ -811,10 +811,6 @@ export interface ApiCheckInCheckIn extends Struct.CollectionTypeSchema {
       'manyToOne',
       'api::sport-membership.sport-membership'
     >;
-    sport_memberships: Schema.Attribute.Relation<
-      'manyToOne',
-      'api::sport-membership.sport-membership'
-    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
