@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Card } from "../../../../components/ui-elements/card";
 import { sportsAndFitnessEndpoints } from "../../../../utils/dataEndpoint/sportsAndFitness";
 import { strapiService } from "@/utils/dataEndpoint/index";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 interface MembershipPlan {
   name: string;
@@ -190,7 +190,6 @@ export default function SportAndFitnessForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
-      <ToastContainer position="top-center" autoClose={3000} />
       <Card
         title="Sport & Fitness Info"
         content={
@@ -291,7 +290,7 @@ export default function SportAndFitnessForm() {
                 </div>
                 <div className="flex gap-2 items-center">
                   {/* Only show Create button for plans without an id (i.e., new/unsaved) */}
-                  {plan.id === undefined && (
+                  {plan.id === undefined && !planSuccess && (
                     <button
                       type="button"
                       className="bg-primary text-white px-3 py-1 rounded font-semibold"
