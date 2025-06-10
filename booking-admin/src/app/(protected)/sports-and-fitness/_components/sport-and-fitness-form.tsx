@@ -147,6 +147,7 @@ export default function SportAndFitnessForm() {
       if (!selectedSportId) throw new Error("Please select a sport/gym");
       // Build payload matching the required schema
       const payload = {
+        name: plan.name,
         duration_months: plan.duration_months,
         price: Number(plan.price),
         access_to_classes: plan.access_to_classes,
