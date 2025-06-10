@@ -29,6 +29,7 @@ interface AttendanceModalProps {
   attendance: AttendanceLog[];
   imageUrl: string;
   planExpiry: string; // ISO date string
+  dataType: 'gym' | 'sports'; // Add this prop
 }
 
 const AttendanceModal: React.FC<AttendanceModalProps> = ({
@@ -39,6 +40,7 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
   attendance: initialAttendance,
   imageUrl,
   planExpiry,
+  dataType,
 }) => {
   const [attendance, setAttendance] = useState(initialAttendance);
   console.log("attendance logs:", attendance);
@@ -52,7 +54,6 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
     }
     // Prevent multiple check-ins for the same day if there is an active check-in (no check_out_time)
     const today = now.toLocaleDateString();
-    
     const hasActiveCheckInToday = attendance?.some(
       (log) =>
         !log.check_out_time &&
@@ -66,26 +67,10 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
     let data: any = {
       check_in_time: now.toISOString(),
     };
-    // Determine which membership type to connect based on attendance or memberId
-    // Try to infer department from attendance logs or fallback to prop
-    let isGym = false;
-    let isSport = false;
-    if (attendance && attendance.length > 0) {
-      // If any log has gym_membership, treat as gym
-      isGym = attendance.some((log: any) => log.gym_membership || log.gym_membership_id);
-      isSport = attendance.some((log: any) => log.sport_membership || log.sport_membership_id);
-    }
-    // If not found, fallback to memberName (legacy)
-    if (!isGym && !isSport) {
-      if (memberName.toLowerCase().includes('gym') || memberName.toLowerCase().includes('fitness')) {
-        isGym = true;
-      } else {
-        isSport = true;
-      }
-    }
-    if (isGym) {
+    // Use dataType to set the correct field
+    if (dataType === 'gym') {
       data.gym_membership = { connect: memberId };
-    } else if (isSport) {
+    } else if (dataType === 'sports') {
       data.sport_membership = { connect: memberId };
     }
     try {

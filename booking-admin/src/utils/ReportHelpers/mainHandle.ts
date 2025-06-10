@@ -104,12 +104,14 @@ export async function handleMainRecord(
     if (department === "gym_memberships") {
       gymItems = flatItems
         .filter((item) => item.department === "gym_memberships")
-        .map((item) => ({ name: item.name, units: item.quantity }));
+        .map((item) => ({ name: item.name, units: item.quantity }))
+        .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically by name
     }
     if (department === "sport_memberships") {
       sportItems = flatItems
         .filter((item) => item.department === "sport_memberships")
-        .map((item) => ({ name: item.name, units: item.quantity }));
+        .map((item) => ({ name: item.name, units: item.quantity }))
+        .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically by name
     }
 
     const overviewBase = {

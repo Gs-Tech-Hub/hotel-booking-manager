@@ -457,6 +457,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
           attendance={attendanceMember.check_ins}
           imageUrl={attendanceMember.profile_photo?.formats?.medium?.url || '/default-avatar.png'}
           planExpiry={attendanceMember.expiry_date}
+          dataType={dataType} // Pass dataType here
         />
       )}
     </div>
