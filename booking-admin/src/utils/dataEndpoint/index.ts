@@ -15,6 +15,7 @@ export * from './sportMemberships';
 export * from './checkIn';
 export * from './gymAndSportSessions';
 export * from '../../brand/brandConfig'; // <-- Add brandConfig to central exports
+export * from './organisation-info'; // <-- Add organisationInfo to central exports
 
 // Maintain a strapiService for backward compatibility and convenience
 import * as bookingEndpoints from './bookingEndpoints';
@@ -32,6 +33,7 @@ import * as membershipPlansEndpoints from './membershipPlans';
 import * as gymMembershipsEndpoints from './gymMemberships'; 
 import * as sportMembershipsEndpoints from './sportMemberships'; 
 import * as checkinEndpoints from './checkIn';
+import * as organisationInfo  from './organisation-info';
 
 
 export const strapiService = {
@@ -49,6 +51,7 @@ export const strapiService = {
   ...membershipPlansEndpoints,
   ...gymMembershipsEndpoints,
   ...sportMembershipsEndpoints,
-  ...checkinEndpoints
+  ...checkinEndpoints,
+  ...organisationInfo,
 
 };

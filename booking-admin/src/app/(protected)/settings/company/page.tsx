@@ -1,11 +1,20 @@
 "use client";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { brandConfig as initialConfig, BrandConfig } from "@/brand/brandConfig";
+import { useOrganisationInfo } from "@/hooks/useOrganisationInfo";
+import { organisationInfoEndpoints } from "@/utils/dataEndpoint/organisation-info";
+import { defaultOrganisationInfo } from "@/config/settings";
 
 export default function CompanySettingsPage() {
-  const [form, setForm] = useState<BrandConfig>(initialConfig);
+  const { organisation, loading } = useOrganisationInfo();
+  const [form, setForm] = useState<BrandConfig>({ ...defaultOrganisationInfo, ...organisation });
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  // Update form state when organisation info loads
+  useEffect(() => {
+    setForm({ ...defaultOrganisationInfo, ...organisation });
+  }, [organisation]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -27,12 +36,20 @@ export default function CompanySettingsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    // TODO: Replace with API call to persist changes
-    setTimeout(() => {
-      setSaving(false);
+    try {
+      // Try to update the first organisation info (or create if not exists)
+      if (organisation && (organisation as any).id) {
+        await organisationInfoEndpoints.updateOrganisationInfo((organisation as any).id, form);
+      } else {
+        await organisationInfoEndpoints.createOrganisationInfo(form);
+      }
       setSuccess(true);
       setTimeout(() => setSuccess(false), 2000);
-    }, 1000);
+    } catch (err) {
+      // Optionally handle error
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
