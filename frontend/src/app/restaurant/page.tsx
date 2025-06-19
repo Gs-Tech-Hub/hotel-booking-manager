@@ -41,8 +41,8 @@ export default function RestaurantSection() {
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
-        const foodRes = await apiHandler.fetchData('food-items?pagination[pageSize]=50');
-        const drinksRes = await apiHandler.fetchData('drinks?pagination[pageSize]=50');
+        const foodRes = await apiHandler.fetchData('food-items?pagination[pageSize]=100');
+        const drinksRes = await apiHandler.fetchData('drinks?pagination[pageSize]=100');
         
         const categorizedFoodItems = foodRes.data.map((item: MenuItem) => ({
           ...item,
@@ -167,7 +167,7 @@ export default function RestaurantSection() {
           />
           <div className="thumbnail-gallery">
             <Image
-              src="/images/restaurant/DSC_8119.jpg"
+              src="/images/restaurant/DSC_8200.jpg"
               alt="Thumbnail 3"
               width={250}
               height={200}
