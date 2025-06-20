@@ -50,7 +50,7 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                                 documentId: item.bookings?.[0]?.id ?? documentId ?? null,
                                 name: drink.name ?? 'Bar Item', // Fallback to 'Bar Item'
                                 price: drink.price ?? 0, // Default to 0 if price is missing
-                                quantity: getProductCount(i),
+                                quantity: Number(getProductCount(i)) || 1,
                                 paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
                                 amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
                                 department: 'bar'
@@ -66,7 +66,7 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                     documentId: item.bookings?.[0]?.id ?? documentId ?? null,
                     name: food.name ?? 'Restaurant Item', // Fallback to 'Restaurant Item'
                     price: food.price ?? 0, // Default to 0 if price is missing
-                    quantity: getProductCount(i),
+                    quantity: Number(getProductCount(i)) || 1,
                     paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
                     amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
                     department: 'restaurant'
@@ -82,7 +82,7 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                     documentId: item.bookings?.[0]?.id ?? documentId ?? null,
                     name: svc.name ?? 'Hotel Service', // Fallback to 'Hotel Service'
                     price: svc.price ?? 0, // Default to 0 if price is missing
-                    quantity: getProductCount(i),
+                    quantity: Number(getProductCount(i)) || 1,
                     paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
                     amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
                     department: 'hotel'
@@ -98,7 +98,7 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                     documentId: item.bookings?.[0]?.id ?? documentId ?? null,
                     name: game.name ?? 'Game', // Fallback to 'Game'
                     price: game.amount_paid ?? 0, // Default to 0 if price is missing
-                    quantity: getProductCount(i),
+                    quantity: Number(getProductCount(i)) || 1,
                     paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash', // Fallback to 'cash'
                     amountPaid: amount_paid ?? 0, // Default to 0 if amount_paid is missing
                     department: 'games'
@@ -115,7 +115,7 @@ export const itemsByDepartment = (bookingItems: BookingItem[]): Record<Departmen
                     documentId: item.bookings?.[0]?.id ?? documentId ?? null,
                     name: membership.name ?? itemname, 
                     price: membership.price ?? amount_paid ?? 0, 
-                    quantity: getProductCount(i),
+                    quantity: Number(getProductCount(i)) || 1,
                     paymentMethods: payment_type?.types?.toLowerCase() ?? 'cash',
                     amountPaid: amount_paid ?? 0,
                     department: 'gym_memberships'

@@ -18,14 +18,14 @@ export interface BrandConfig {
 }
 
 export const brandConfig: BrandConfig = {
-  name: "FMMM1 Hotel",
+  name: "OZONE Management Suite",
   logo: {
     light: "/images/fmmm1-logo.svg", // adjust path as needed
     dark: "/images/fmmm1-dark.svg", // adjust path as needed
   },
   address: "123 Main Street, City, Country", // update as needed
   phone: "+1234567890",
-  email: "info@fmmm1hotel.com",
+  email: "info@ozone-ms.com",
   website: "https://f-mmm1-hotel.netlify.app",
   socials: {
     facebook: "https://facebook.com/fmmm1hotel",

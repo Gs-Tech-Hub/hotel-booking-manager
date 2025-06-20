@@ -25,12 +25,7 @@ export const calculateDepartmentTotals = (
   groupedItems: Record<DepartmentKey, DepartmentItem[]>,
   productCountData: ProductCountItem[],
   department: DepartmentKey
-): {
-  updatedItems: DepartmentItem[];
-  salesByProduct: Array<{ name: string; units: number; amount: number; amountPaid: number }>;
-  paymentMethods: { cash: number; other: number };
-  departmentTotals: { cashSales: number; totalTransfers: number; totalSales: number };
-} => {
+) => {
   const allItems: DepartmentItem[] = [];
 
   // Flatten all department items into a single list
@@ -51,11 +46,17 @@ export const calculateDepartmentTotals = (
     }
   });
 
+  // Ensure all quantities are numbers (sum if array, else keep as is)
+  allItems.forEach((item) => {
+    if (Array.isArray(item.quantity)) {
+      item.quantity = item.quantity.reduce((sum, q) => sum + (q.product_count || 0), 0);
+    }
+  });
+
   // Group and sum up quantities for identical items (group by name, not documentId)
   const groupedByName: Record<string, DepartmentItem[]> = {};
-
   allItems.forEach((item) => {
-    const safeName = item.name.trim().toLowerCase(); // Normalize item name (case insensitive)
+    const safeName = item.name.trim().toLowerCase();
     if (!groupedByName[safeName]) groupedByName[safeName] = [];
     groupedByName[safeName].push(item);
   });
@@ -67,15 +68,16 @@ export const calculateDepartmentTotals = (
   const departmentTotals = { cashSales: 0, totalTransfers: 0, totalSales: 0 };
 
   Object.entries(groupedByName).forEach(([name, items]) => {
-    const totalQuantity = items.reduce((sum, i) => sum + i.quantity, 0); // Sum up quantities
-    const base = items[0]; // Preserve other fields from one item
-    const amount = totalQuantity * base.price; // Calculate total amount
-    const amountPaid = items.reduce((sum, i) => sum + i.amountPaid, 0); // Sum up amounts paid
+    const totalQuantity = items.reduce((sum, i) => sum + (typeof i.quantity === 'number' ? i.quantity : 0), 0);
+    const base = items[0];
+    const amount = totalQuantity * base.price;
+    const amountPaid = items.reduce((sum, i) => sum + i.amountPaid, 0);
 
     // Track payment methods for all items in the group
     items.forEach((i) => {
       const paymentMethod = i.paymentMethods.toLowerCase();
-      const itemAmount = i.quantity * i.price;
+      const itemQuantity = typeof i.quantity === 'number' ? i.quantity : 0;
+      const itemAmount = itemQuantity * i.price;
       if (paymentMethod === 'cash') {
         paymentMethods.cash += itemAmount || i.amountPaid;
         if (i.department === department) {
