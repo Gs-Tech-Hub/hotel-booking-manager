@@ -1,6 +1,6 @@
-// src/config/settings.ts
 
 export const defaultOrganisationInfo = {
+  id: 1, // Default ID, can be updated later
   name: "FMMM-1 HOTEL",
   address: "123 Main St, City, Country",
   phone: "+1234567890",

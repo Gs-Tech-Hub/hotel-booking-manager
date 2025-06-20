@@ -1,12 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { brandConfig as initialConfig, BrandConfig } from "@/brand/brandConfig";
+import { BrandConfig } from "@/brand/brandConfig";
 import { useOrganisationInfo } from "@/hooks/useOrganisationInfo";
 import { organisationInfoEndpoints } from "@/utils/dataEndpoint/organisation-info";
 import { defaultOrganisationInfo } from "@/config/settings";
 
 export default function CompanySettingsPage() {
-  const { organisation, loading } = useOrganisationInfo();
+  const { organisation } = useOrganisationInfo();
   const [form, setForm] = useState<BrandConfig>({ ...defaultOrganisationInfo, ...organisation });
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -37,15 +37,14 @@ export default function CompanySettingsPage() {
     e.preventDefault();
     setSaving(true);
     try {
-      // Try to update the first organisation info (or create if not exists)
-      if (organisation && (organisation as any).id) {
-        await organisationInfoEndpoints.updateOrganisationInfo((organisation as any).id, form);
+      if (organisation?.id) {
+        await organisationInfoEndpoints.updateOrganisationInfo(organisation.id, form);
       } else {
         await organisationInfoEndpoints.createOrganisationInfo(form);
       }
       setSuccess(true);
       setTimeout(() => setSuccess(false), 2000);
-    } catch (err) {
+    } catch {
       // Optionally handle error
     } finally {
       setSaving(false);

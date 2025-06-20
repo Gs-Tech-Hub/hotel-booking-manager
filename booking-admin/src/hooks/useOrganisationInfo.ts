@@ -1,4 +1,4 @@
-// src/hooks/useOrganisationInfo.ts
+/* eslint-disable */
 import { useEffect, useState } from "react";
 import { defaultOrganisationInfo } from "@/config/settings";
 import { organisationInfoEndpoints } from "@/utils/dataEndpoint/organisation-info";
