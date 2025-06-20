@@ -6,7 +6,6 @@ import "jsvectormap/dist/jsvectormap.css";
 import 'react-toastify/dist/ReactToastify.css';
 
 
-import type { Metadata } from "next";
 import NextTopLoader from "nextjs-toploader";
 import type { PropsWithChildren } from "react";
 import { Providers } from "./providers";
