@@ -183,12 +183,12 @@ export default function RestaurantSection() {
               onClick={() => setSelectedImage('/images/restaurant/DSC_8115.jpg')}
             />
             <Image
-              src="/images/restaurant/DSC_8116.jpg"
+              src="/images/restaurant/DSC_8201.jpg"
               alt="Thumbnail 2"
               width={250}
               height={200}
               className="thumbnail-image"
-              onClick={() => setSelectedImage('/images/restaurant/DSC_8116.jpg')}
+              onClick={() => setSelectedImage('/images/restaurant/DSC_8201.jpg')}
             />
           </div>
         </div>
