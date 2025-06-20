@@ -8,18 +8,18 @@ export const organisationInfoEndpoints = {
     const queryString = params
       ? '?' + new URLSearchParams(params as Record<string, string>).toString()
       : '';
-    const result = await apiHandlerInstance.fetchData(`organisation-infos${queryString}`);
+    const result = await apiHandlerInstance.fetchData(`organisation-info${queryString}`);
     if (result.error) throw new Error(result.error);
     return result.data;
   },
     async getOrganisationInfoById(id: number | string) {
-        const result = await apiHandlerInstance.fetchData(`organisation-infos/${id}`);
+        const result = await apiHandlerInstance.fetchData(`organisation-info/${id}`);
         if (result.error) throw new Error(result.error);
         return result.data;
     },
     async createOrganisationInfo(data: any) {
         const result = await apiHandlerInstance.createData({
-            endpoint: "organisation-infos",
+            endpoint: "organisation-info",
             data,
         });
         if (result.error) throw new Error(result.error);
@@ -27,7 +27,7 @@ export const organisationInfoEndpoints = {
     },
     async updateOrganisationInfo(id: number | string, data: any) {
         const result = await apiHandlerInstance.updateData({
-            endpoint: 'organisation-infos',
+            endpoint: 'organisation-info',
             id: id,
             updatedData: data,
         });
@@ -36,7 +36,7 @@ export const organisationInfoEndpoints = {
     },
     async deleteOrganisationInfo(id: number | string) {
         const result = await apiHandlerInstance.deleteData({
-            endpoint: 'organisation-infos',
+            endpoint: 'organisation-info',
             id: id,
         });
         if (result.error) throw new Error(result.error);
