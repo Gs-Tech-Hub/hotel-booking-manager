@@ -11,16 +11,20 @@ import NextTopLoader from "nextjs-toploader";
 import type { PropsWithChildren } from "react";
 import { Providers } from "./providers";
 import { ToastContainer } from "react-toastify";
+import { getOrganisationInfo } from "@/lib/getOrganisationInfo";
 
 
 
-export const metadata: Metadata = {
-  title: {
-    template: "Canada World HOTEL Admin",
-    default: "Canada World HOTEL - Dashboard",
-  },
-  description:"Admin Dashboard",
-};
+export async function generateMetadata() {
+  const organisation = await getOrganisationInfo();
+  return {
+    title: {
+      template: `${organisation.organisation.name} Admin`,
+      default: `${organisation.organisation.name} - Dashboard`,
+    },
+    description: "Admin Dashboard",
+  };
+}
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (

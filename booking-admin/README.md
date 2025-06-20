@@ -1,9 +1,15 @@
-# Investigate booking failing when "success" is selected
+# Hotel Booking Admin  @Version 2 Web.  
 
-# The dashboard guest list should be trimmed to the last 10 guest
+## MV2Web: Fix department totals calculation
+- **Consistent Quantity Reporting:**  
+  Updated the reporting logic to ensure that the `quantity` field for all department items is always stored and processed as a number, not an array of objects. This change simplifies calculations, improves consistency across all departments, and reduces the risk of errors in reporting and analytics.
 
-# The booking guest list will have filter options to the last 24 hours
+  - Previous: `quantity` could be an array of objects (with `product_count`).
+  - Now: `quantity` is always a number (sum of all `product_count` values).
 
-# Booking section will have department dashboard to see sales analytics
+  - **Location of Change:**  
+  The main logic was updated in  
+  `src/utils/ReportHelpers/reportHelpers/calculateDepartmentTotals.ts`  
+  (see the section after merging product counts and before grouping by name, where all `quantity` values are normalized to numbers). 
+  Line `50 - 54`
 
-# Hotel services not filtering items properly. it's not using product_count to effective sieve items

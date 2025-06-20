@@ -13,6 +13,27 @@ import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { strapiService } from "@/utils/dataEndPoint";
 import UpdateCustomerBooking from "../update-booking-modal";
+import React from "react";
+
+const generatePastWeekDateRanges = () => {
+  const now = new Date();
+  const ranges = [];
+  for (let i = 0; i <= 7; i++) {
+    const pastDate = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+    ranges.push({
+      label:
+        i === 0
+          ? `Today (${pastDate.toLocaleDateString()})`
+          : i === 1
+          ? `Yesterday (${pastDate.toLocaleDateString()})`
+          : `${i} days ago (${pastDate.toLocaleDateString()})`,
+      value: pastDate.toISOString().split("T")[0],
+    });
+  }
+  return ranges;
+};
+
+const pastWeekDateRanges = generatePastWeekDateRanges();
 
 export function InterActiveGuestList({ className }: { className?: string }) {
   interface Guest {
@@ -39,12 +60,24 @@ export function InterActiveGuestList({ className }: { className?: string }) {
   const [data, setData] = useState<Guest[]>([]);
   const [selectedGuest, setSelectedGuest] = useState<Guest | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDateRange, setSelectedDateRange] = useState({
+    startDate: pastWeekDateRanges[0].value,
+    endDate: pastWeekDateRanges[0].value,
+  });
 
   useEffect(() => {
     const fetchData = async () => {
+      // Set full-day ISO string range for filtering
+      const start = new Date(selectedDateRange.startDate);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(selectedDateRange.endDate);
+      end.setHours(23, 59, 59, 999);
+
       const result = await strapiService.getBookings({
         populate: "*",
         pagination: 25,
+        "filters[createdAt][$gte]": start.toISOString(),
+        "filters[createdAt][$lte]": end.toISOString(),
       });
 
       const mappedData = result.map((item: Guest) => ({
@@ -65,7 +98,7 @@ export function InterActiveGuestList({ className }: { className?: string }) {
       setData(mappedData);
     };
     fetchData();
-  }, []);
+  }, [selectedDateRange]);
 
   // Optional: badge color function for status
   const getStatusBadge = (status: string | null) => {
@@ -121,6 +154,32 @@ export function InterActiveGuestList({ className }: { className?: string }) {
         className
       )}
     >
+      <div className="mb-4">
+        <label
+          htmlFor="dateRange"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Select Date:
+        </label>
+        <select
+          id="dateRange"
+          className="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          value={selectedDateRange.startDate}
+          onChange={(e) => {
+            const selectedDate = e.target.value;
+            setSelectedDateRange({
+              startDate: selectedDate,
+              endDate: selectedDate,
+            });
+          }}
+        >
+          {pastWeekDateRanges.map((range) => (
+            <option key={range.value} value={range.value}>
+              {range.label}
+            </option>
+          ))}
+        </select>
+      </div>
       <h2 className="mb-4 text-body-2xlg font-bold text-dark dark:text-white">
         Guest List
       </h2>
