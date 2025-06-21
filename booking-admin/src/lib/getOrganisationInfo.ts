@@ -15,7 +15,8 @@ export async function getOrganisationInfo() {
       merged = { ...merged, ...apiData[0], logo: { ...merged.logo, ...apiLogo } };
     }
     return { organisation: merged };
-  } catch (_err: unknown) {
+  } catch (err: unknown) {
+     console.error(`Failed to fetch organisation info:, ${err}`);
     return { organisation: defaultOrganisationInfo };
   }
 }
