@@ -15,7 +15,7 @@ export async function getOrganisationInfo() {
       merged = { ...merged, ...apiData[0], logo: { ...merged.logo, ...apiLogo } };
     }
     return { organisation: merged };
-  } catch (err: any) {
+  } catch (_err: unknown) {
     return { organisation: defaultOrganisationInfo };
   }
 }
