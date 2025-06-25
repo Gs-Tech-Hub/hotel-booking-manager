@@ -159,7 +159,6 @@ export async function handleMainRecord(
         other_stock: product[otherStockField] || 0,
         sold: sales.units,
         amount: sales.amount,
-        amountPaid: sales.amountPaid, 
         profit,
         isBar: department === "bar",
         isRestaurant: department === "restaurant",

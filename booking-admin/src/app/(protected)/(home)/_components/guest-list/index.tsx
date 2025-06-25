@@ -20,6 +20,9 @@ export function GuestList({ className, dateRange }: { className?: string, dateRa
     customer: {
       firstName: string;
       lastName: string;
+      street: string;
+      city: string;
+      state: string;
     };
 
     room: {
@@ -28,12 +31,12 @@ export function GuestList({ className, dateRange }: { className?: string, dateRa
     
     name: string;
     roomType: string;
-    roomNumber: string;
+    address: string;
     nights: number;
     duration: number;
     checkin: string;
     checkout: string;
-    book_status: string;
+    booking_status: string;
     status: string;
   }
 
@@ -53,16 +56,23 @@ export function GuestList({ className, dateRange }: { className?: string, dateRa
         "filters[createdAt][$lte]": end.toISOString(),
       });
 
-      const mappedData = result.map((item: Guest) => ({
-        bookingId: item.documentId?.slice(0, 5) || "-----", 
-        name: `${item.customer?.firstName || "Unknown"} ${item.customer?.lastName || ""}`,
-        roomType: item.room?.title || "N/A",
-        roomNumber: "-", // Use dash as placeholder
-        duration: item.nights,
-        checkin: item.checkin,
-        checkout: item.checkout,
-        status: item.book_status || "Pending",
-      }));
+  const mappedData = result.map((item: Guest) => {
+  const street = item.customer?.street;
+  const city = item.customer?.city;
+  const state = item.customer?.state;
+  const hasAddress = street && city && state;
+  return {
+    bookingId: item.documentId?.slice(0, 5) || "-----",
+    name: `${item.customer?.firstName || "Unknown"} ${item.customer?.lastName || ""}`,
+    roomType: item.room?.title || "N/A",
+    address: hasAddress ? `${street} ${city} ${state}` : "no address found",
+    duration: item.nights,
+    checkin: item.checkin,
+    checkout: item.checkout,
+    status: item.booking_status || "Pending",
+    documentId: item.documentId,
+  };
+});
       // Sort by check-in date ascending
       mappedData.sort((a: Guest, b: Guest) => new Date(a.checkin).getTime() - new Date(b.checkin).getTime());
       setData(mappedData);
@@ -85,7 +95,7 @@ export function GuestList({ className, dateRange }: { className?: string, dateRa
             <TableHead className="min-w-[120px] !text-left">Booking-Id</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Room Type</TableHead>
-            <TableHead>Room Number</TableHead>
+            <TableHead>Address</TableHead>
             <TableHead>Duration</TableHead>
             <TableHead>Check-in</TableHead>
             <TableHead>Check-out</TableHead>          
@@ -103,7 +113,7 @@ export function GuestList({ className, dateRange }: { className?: string, dateRa
               </TableCell>
               <TableCell>{guest.name}</TableCell>
               <TableCell>{guest.roomType}</TableCell>
-              <TableCell>{guest.roomNumber}</TableCell>
+              <TableCell>{guest.address}</TableCell>
               <TableCell>{guest.duration} night(s)</TableCell>
               <TableCell>{format(new Date(guest.checkin), "dd MMM yyyy")}</TableCell>
               <TableCell>{format(new Date(guest.checkout), "dd MMM yyyy")}</TableCell>

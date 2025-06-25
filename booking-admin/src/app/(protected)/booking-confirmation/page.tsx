@@ -5,10 +5,12 @@ import Image from "next/image";
 import { Suspense, useRef } from "react";
 import {formatPrice} from "@/utils/priceHandler";
 import axios from "axios";
+import { useOrganisationInfo } from "@/hooks/useOrganisationInfo";
 
 const BookingConfirmationContent = () => {
   const searchParams = useSearchParams();
   const contentRef = useRef<HTMLDivElement>(null);
+  const { organisation } = useOrganisationInfo();
 
   const bookingId = searchParams.get("bookingId");
   const reference = searchParams.get("reference");
@@ -61,7 +63,7 @@ const BookingConfirmationContent = () => {
         await axios.post("/api/send-booking-confirmation", formData);
         alert("Confirmation PDF sent to your email!");
       } catch (err) {
-        alert("Failed to send email. Please try again later.");
+        alert(`Failed to send email. Please try again later.; ${err}`);
       }
     }
   };
@@ -73,15 +75,15 @@ const BookingConfirmationContent = () => {
           {/* Hotel Logo and Name */}
           <div className="mb-4">
             <Image
-              src="https://i.postimg.cc/j5qdbbvk/fmmm1-logo.png"
+              src={organisation.logo?.light || "https://i.postimg.cc/j5qdbbvk/fmmm1-logo.png"}
               width={100}
               height={100}
-              alt="FMMM1 Hotel Logo"
+              alt={organisation.name + " Logo"}
               sizes="100px"
               style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-              />      
-            <h1 className="text-2xl font-bold">FMMM1 Hotel</h1>
-            <p className="text-sm text-gray-600">https://f-mmm1hotel.nl</p>
+            />      
+            <h1 className="text-2xl font-bold">{organisation.name}</h1>
+            <p className="text-sm text-gray-600">{organisation.website}</p>
           </div>
 
           <h1 className="booking-header text-3xl font-bold mb-4">Booking Confirmed!</h1>
@@ -133,16 +135,15 @@ const BookingConfirmationContent = () => {
 
           {/* Website footer for branding */}
           <div className="mt-6 border-t pt-4 text-xs text-gray-500">
-            © {new Date().getFullYear()} FMMM1 Hotel. All rights reserved.
+            © {new Date().getFullYear()} {organisation.name}. All rights reserved.
             <br />
-            Visit us at: <span className="text-blue-600">https://f-mmm1hotel.com</span>
+            Visit us at: <span className="text-blue-600">{organisation.website}</span>
             <br />
-            Address: <span className="text-gray-500">FMMM1 CLOSE, off Board Road, Alihame, Agbor. Delta State. Nigeria</span>
+            Address: <span className="text-gray-500">{organisation.address}</span>
             <br />
-            Email: <span className="text-gray-500">fmmmhotels@gmail.com</span>
+            Email: <span className="text-gray-500">{organisation.email}</span>
             <br /> 
-            Phone: <span className="text-blue-600">0704 523 2697</span>
-            
+            Phone: <span className="text-blue-600">{organisation.phone}</span>
           </div>
         </div>
 

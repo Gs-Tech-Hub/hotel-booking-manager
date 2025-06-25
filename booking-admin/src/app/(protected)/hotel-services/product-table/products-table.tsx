@@ -9,12 +9,6 @@ import {
 import { formatPrice } from "@/utils/priceHandler";
 import { ExtendedProduct } from "@/utils/handleDepartmentRecord";
 
-function getAvailabilityStatus(quantity: number, threshold: number) {
-  if (quantity === 0) return { label: "Out of Stock", color: "text-red-600" };
-  if (quantity <= threshold) return { label: "Low", color: "text-yellow-600" };
-  return { label: "In Stock", color: "text-green-600" };
-}
-
 export type Product = {
   name: string;
   type: string;
@@ -82,10 +76,7 @@ export function ProductsList({
         <TableHeader>
           <TableRow className="border-t text-base [&>th]:h-auto [&>th]:py-3 sm:[&>th]:py-4.5">
             <TableHead>Name</TableHead>
-            <TableHead>Type</TableHead>
             <TableHead>Price</TableHead>
-            <TableHead>Bar Stock</TableHead>
-            <TableHead>Stock Level</TableHead>
             <TableHead>Units Sold</TableHead>
             <TableHead>Amount</TableHead>
           </TableRow>
@@ -93,18 +84,13 @@ export function ProductsList({
 
         <TableBody>
           {filteredData.map((item) => {
-            const status = getAvailabilityStatus(item.stock ?? 0, 10);
-
             return (
               <TableRow
                 className="text-base font-medium text-dark dark:text-white"
                 key={item.name + item.profit}
               >
                 <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{item.name}</TableCell>
-                <TableCell>{item.type}</TableCell>
                 <TableCell>{formatPrice((item.price),'NGN')}</TableCell>
-                <TableCell>{item.showStock ? item.stock : 'N/A'}</TableCell> {/* Use `stock` */}
-                <TableCell className={status.color}>{status.label}</TableCell>
                 <TableCell>{item.sold}</TableCell>
                 <TableCell>{formatPrice((item.amount),'NGN')}</TableCell>
               </TableRow>

@@ -42,13 +42,16 @@ export function InterActiveGuestList({ className }: { className?: string }) {
     customer: {
       firstName: string;
       lastName: string;
+      street: string;
+      city: string;
+      state: string;
     };
     room: {
       title: string;
     };
     name: string;
     roomType: string;
-    roomNumber: string;
+    address: string;
     nights: number;
     duration: number;
     checkin: string;
@@ -80,19 +83,23 @@ export function InterActiveGuestList({ className }: { className?: string }) {
         "filters[createdAt][$lte]": end.toISOString(),
       });
 
-      const mappedData = result.map((item: Guest) => ({
-        bookingId: item.documentId?.slice(0, 5) || "-----",
-        name: `${item.customer?.firstName || "Unknown"} ${
-          item.customer?.lastName || ""
-        }`,
-        roomType: item.room?.title || "N/A",
-        roomNumber: "-", // Use dash as placeholder
-        duration: item.nights,
-        checkin: item.checkin,
-        checkout: item.checkout,
-        status: item.booking_status || "Pending",
-        documentId: item.documentId,
-      }));
+    const mappedData = result.map((item: Guest) => {
+    const street = item.customer?.street;
+    const city = item.customer?.city;
+    const state = item.customer?.state;
+    const hasAddress = street && city && state;
+  return {
+    bookingId: item.documentId?.slice(0, 5) || "-----",
+    name: `${item.customer?.firstName || "Unknown"} ${item.customer?.lastName || ""}`,
+    roomType: item.room?.title || "N/A",
+    address: hasAddress ? `${street} ${city} ${state}` : "no address found",
+    duration: item.nights,
+    checkin: item.checkin,
+    checkout: item.checkout,
+    status: item.booking_status || "Pending",
+    documentId: item.documentId,
+  };
+});
       // Sort by check-in date ascending
       mappedData.sort((a: Guest, b: Guest) => new Date(a.checkin).getTime() - new Date(b.checkin).getTime());
       setData(mappedData);
@@ -191,7 +198,7 @@ export function InterActiveGuestList({ className }: { className?: string }) {
             </TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Room Type</TableHead>
-            <TableHead>Room Number</TableHead>
+            <TableHead>Address</TableHead>
             <TableHead>Duration</TableHead>
             <TableHead>Check-in</TableHead>
             <TableHead>Check-out</TableHead>
@@ -211,7 +218,7 @@ export function InterActiveGuestList({ className }: { className?: string }) {
               </TableCell>
               <TableCell>{guest.name}</TableCell>
               <TableCell>{guest.roomType}</TableCell>
-              <TableCell>{guest.roomNumber}</TableCell>
+              <TableCell>{guest.address}</TableCell>
               <TableCell>{guest.duration} night(s)</TableCell>
               <TableCell>
                 {format(new Date(guest.checkin), "dd MMM yyyy")}

@@ -1,3 +1,4 @@
+/* eslint-disable */
 'use client'
 import { strapiService } from "@/utils/dataEndPoint"
 import { EmployeeEmploymentTable } from "./_components/emp-tables/employee-summary-table"
@@ -10,7 +11,6 @@ import EmployeeRecords from "./_components/EmployeeRecords"
 export default function EmployeeSummaryPage() {
     const [employeeDetails, setEmployeeDetails] = useState<any[]>([]) 
     const [employeeOrdersData, setEmployeeOrdersData] = useState([]);
-    const [showSummary, setShowSummary] = useState(false)
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const [form, setForm] = useState({
@@ -18,7 +18,7 @@ export default function EmployeeSummaryPage() {
         employmentDate: "",
         salary: "",
     });
-    const [showExtra, setShowExtra] = useState(false); // <-- Add state for extra condition
+    const [view, setView] = useState<'employmentTable' | 'orders' | 'details'>('employmentTable');
 
     useEffect(() => {
         fetchEmployees();
@@ -50,7 +50,9 @@ export default function EmployeeSummaryPage() {
             setForm({ username: "", employmentDate: "", salary: "" });
             await fetchEmployees();
         } catch (error) {
-            // handle error (toast, etc)
+            console.error("Error creating employee:", error);
+            // Optionally, you can show an error message to the user
+            alert("Failed to create employee. Please try again.");
         } finally {
             setIsCreating(false);
         }
@@ -59,37 +61,19 @@ export default function EmployeeSummaryPage() {
     return (
         <div>
             <div className="mb-4 flex gap-2">
-                  <Button
-                    label={showExtra ? "Hide Employee List" : "Show Employee List"}
-                    variant="outlinePrimary"
-                    onClick={() => setShowExtra((prev) => !prev)}
-                />
-                <Button 
-                    label={showSummary ? "Show Employee Orders" : "Show Employee Summary"} 
-                    variant="primary" 
-                    onClick={() => setShowSummary(!showSummary)} 
-                />
+                <Button label="Employment Table" onClick={() => setView('employmentTable')} variant={view === 'employmentTable' ? "primary" : "outlinePrimary"} />
+                <Button label="Employee Orders" onClick={() => setView('orders')} variant={view === 'orders' ? "primary" : "outlinePrimary"} />
+                <Button label="Employee Details" onClick={() => setView('details')} variant={view === 'details' ? "primary" : "outlinePrimary"} />
                 <Button
                     label="Add Employee"
                     variant="primary"
                     onClick={() => setShowCreateModal(true)}
                 />
-              
             </div>
             <Suspense>
-                {showExtra ? (
-                    <div className="mt-4 p-4 border rounded bg-gray-50">
-                        <EmployeeRecords employees={employeeDetails} />
-                    </div>
-                ) : (
-                    <>
-                        {showSummary ? (
-                            <EmployeeOrdersTable data={employeeOrdersData} />
-                        ) : (
-                            <EmployeeEmploymentTable employeeDetails={employeeDetails} />
-                        )}
-                    </>
-                )}
+                {view === 'employmentTable' && <EmployeeEmploymentTable employeeDetails={employeeDetails} />}
+                {view === 'orders' && <EmployeeOrdersTable data={employeeOrdersData} />}
+                {view === 'details' && <EmployeeRecords employees={employeeDetails} />}
             </Suspense>
             <Modal
                 isOpen={showCreateModal}

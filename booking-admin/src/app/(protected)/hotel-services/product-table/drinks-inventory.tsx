@@ -1,7 +1,7 @@
 import { Select } from "@/components/ui-elements/select";
 import { SelectItem } from "@/components/ui-elements/select-item";
 import { useState } from "react";
-import { ProductsList } from "../../bar/_components/products-table/products-table";
+import { ProductsList } from "./products-table";
 import type { ExtendedProduct } from "@/utils/ReportHelpers/mainHandle";
 
 export default function DrinksInventoryPage({ products }: { products: ExtendedProduct[] }) {

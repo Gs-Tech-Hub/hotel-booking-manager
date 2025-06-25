@@ -1,7 +1,6 @@
 'use client'
 import React, { useState } from 'react';
 import EmployeeList from '../_components/EmployeeList';
-import EmployeeRecords from '../_components/EmployeeRecords';
 
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState([

@@ -31,6 +31,10 @@ export function AddNewCustomerModal({ isOpen, onClose, onSubmit }: CreateCustome
   const [newUserLastName, setNewUserLastName] = useState("");
   const [newUserPhone, setNewUserPhone] = useState("");
   const [newUserEmail, setNewUserEmail] = useState("");
+  const [newUserStreet, setNewUserStreet] = useState("");
+  const [newUserCity, setNewUserCity] = useState("");
+  const [newUserState, setNewUserState] = useState("");
+  const [newUserCountry, setNewUserCountry] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [phoneError, setPhoneError] = useState('');
 
@@ -68,7 +72,7 @@ export function AddNewCustomerModal({ isOpen, onClose, onSubmit }: CreateCustome
 
 
   const handleCreateUser = async () => {
-    if (!newUserName || !newUserLastName || !newUserPhone || !newUserEmail) {
+    if (!newUserName || !newUserLastName || !newUserPhone || !newUserEmail || !newUserStreet || !newUserCity || !newUserState || !newUserCountry) {
       toast.warning("All fields are required.");
       return;
     }
@@ -88,6 +92,10 @@ export function AddNewCustomerModal({ isOpen, onClose, onSubmit }: CreateCustome
         lastName: newUserLastName,
         phone: newUserPhone,
         email: newUserEmail,
+        street: newUserStreet,
+        city: newUserCity,
+        state: newUserState,
+        nationality: newUserCountry,
       });
 
       if (!response) {
@@ -158,6 +166,47 @@ export function AddNewCustomerModal({ isOpen, onClose, onSubmit }: CreateCustome
                 className="w-full px-3 py-2 mt-1 border rounded"
                 placeholder="Enter email"
               />
+            </div>
+            <div className="flex gap-3">
+              <div>
+              <label>Street</label>
+              <input
+                value={newUserStreet}
+                onChange={(e) => setNewUserStreet(e.target.value)}
+                className="w-full px-3 py-2 mt-1 border rounded"
+                placeholder="Enter street address"
+              />
+              </div>
+              <div>
+              <label>City</label>
+              <input
+                value={newUserCity}
+                onChange={(e) => setNewUserCity(e.target.value)}
+                className="w-full px-3 py-2 mt-1 border rounded"
+                placeholder="Enter city"
+              />
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div>
+              <label>State</label>
+              <input
+                value={newUserState}
+                onChange={(e) => setNewUserState(e.target.value)}
+                className="w-full px-3 py-2 mt-1 border rounded"
+                placeholder="Enter state"
+              />
+              </div>
+              <div>
+              <label>Country</label>
+              <input
+                value={newUserCountry}
+                onChange={(e) => setNewUserCountry(e.target.value)}
+                className="w-full px-3 py-2 mt-1 border rounded"
+                placeholder="Enter country"
+              />
+              </div>
+               
             </div>
           </fieldset>
         ) : (
