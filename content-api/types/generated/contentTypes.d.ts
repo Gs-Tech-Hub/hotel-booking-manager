@@ -990,6 +990,7 @@ export interface ApiEmployeeRecordEmployeeRecord
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    date: Schema.Attribute.Date;
     debts: Schema.Attribute.Integer;
     description: Schema.Attribute.Blocks;
     fines: Schema.Attribute.Integer;
@@ -1025,6 +1026,7 @@ export interface ApiEmployeeSummaryEmployeeSummary
     draftAndPublish: true;
   };
   attributes: {
+    check_in: Schema.Attribute.Relation<'oneToOne', 'api::check-in.check-in'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1038,6 +1040,7 @@ export interface ApiEmployeeSummaryEmployeeSummary
     > &
       Schema.Attribute.Private;
     order_discount_total: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    position: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     salary: Schema.Attribute.Integer;
     salary_advanced: Schema.Attribute.Decimal & Schema.Attribute.Required;
