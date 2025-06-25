@@ -4,20 +4,26 @@ interface EmailParams {
   to: string;
   subject: string;
   html: string;
+  attachments?: { filename: string; content: string; contentType: string }[];
 }
 
-const sendResendEmail = async ({ to, subject, html }: EmailParams) => {
+export const sendResendEmail = async ({ to, subject, html, attachments }: EmailParams) => {
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
   try {
+    const payload: any = {
+      from: 'Your App <no-reply@yourdomain.com>', // Must be a verified domain
+      to,
+      subject,
+      html,
+    };
+    if (attachments) {
+      payload.attachments = attachments;
+    }
+
     const response = await axios.post(
       'https://api.resend.com/emails',
-      {
-        from: 'Your App <no-reply@yourdomain.com>', // Must be a verified domain
-        to,
-        subject,
-        html,
-      },
+      payload,
       {
         headers: {
           Authorization: `Bearer ${RESEND_API_KEY}`,

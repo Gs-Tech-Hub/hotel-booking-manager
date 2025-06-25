@@ -1,5 +1,6 @@
 // Centralized brand configuration
 export interface BrandConfig {
+  id: number;
   name: string;
   logo: {
     light: string;
@@ -18,6 +19,7 @@ export interface BrandConfig {
 }
 
 export const brandConfig: BrandConfig = {
+  id: 1,
   name: "OZONE Management Suite",
   logo: {
     light: "/images/fmmm1-logo.svg", // adjust path as needed

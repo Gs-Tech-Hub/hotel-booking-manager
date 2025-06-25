@@ -13,3 +13,5 @@
   (see the section after merging product counts and before grouping by name, where all `quantity` values are normalized to numbers). 
   Line `50 - 54`
 
+## MV2Web: Refactor HR module 
+ 

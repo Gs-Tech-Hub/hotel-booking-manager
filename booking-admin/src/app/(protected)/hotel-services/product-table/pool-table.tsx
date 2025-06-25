@@ -18,11 +18,11 @@ export function SwimmingPoolList({
     name: string;
     price: number;
     quantity: number; // Number of swimmers
-    amountPaid: number; // Amount paid
+    amountPaid: number; // Amount paid (ignored)
   }[];
 }) {
-  // Calculate the total amount paid
-  const totalAmountPaid = hotelServices.reduce((acc, service) => acc + service.amountPaid, 0);
+  // Calculate the total amount paid using quantity * price for each item
+  const totalAmountPaid = hotelServices.reduce((acc, service) => acc + (service.quantity * service.price), 0);
 
   return (
     <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
@@ -49,7 +49,7 @@ export function SwimmingPoolList({
               <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{service.name}</TableCell>
               <TableCell>₦{service.price}</TableCell>
               <TableCell>{service.quantity}</TableCell>
-              <TableCell>₦{service.amountPaid}</TableCell>
+              <TableCell>₦{service.price * service.quantity}</TableCell>
             </TableRow>
           ))}
         </TableBody>

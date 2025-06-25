@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Suspense, useRef } from "react";
 import {formatPrice} from "@/utils/priceHandler";
+import axios from "axios";
 
 const BookingConfirmationContent = () => {
   const searchParams = useSearchParams();
@@ -37,6 +38,33 @@ const BookingConfirmationContent = () => {
     }
   };
 
+  const handleSendPDFToEmail = async () => {
+    if (!email) {
+      alert("No email found for this booking.");
+      return;
+    }
+    const html2pdf = (await import("html2pdf.js")).default;
+    if (contentRef.current) {
+      const opt = {
+        margin: 0.5,
+        filename: `booking_receipt_${bookingId}.pdf`,
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+      };
+      const worker = html2pdf().set(opt).from(contentRef.current);
+      const pdfBlob: Blob = await worker.outputPdf('blob');
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("subject", "Your Booking Confirmation - FMMM1 Hotel");
+      formData.append("pdf", pdfBlob, `booking_receipt_${bookingId}.pdf`);
+      try {
+        await axios.post("/api/send-booking-confirmation", formData);
+        alert("Confirmation PDF sent to your email!");
+      } catch (err) {
+        alert("Failed to send email. Please try again later.");
+      }
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
@@ -53,7 +81,7 @@ const BookingConfirmationContent = () => {
               style={{ width: '100px', height: '100px', objectFit: 'cover' }}
               />      
             <h1 className="text-2xl font-bold">FMMM1 Hotel</h1>
-            <p className="text-sm text-gray-600">https://f-mmm1-hotel.nl</p>
+            <p className="text-sm text-gray-600">https://f-mmm1hotel.nl</p>
           </div>
 
           <h1 className="booking-header text-3xl font-bold mb-4">Booking Confirmed!</h1>
@@ -107,7 +135,7 @@ const BookingConfirmationContent = () => {
           <div className="mt-6 border-t pt-4 text-xs text-gray-500">
             © {new Date().getFullYear()} FMMM1 Hotel. All rights reserved.
             <br />
-            Visit us at: <span className="text-blue-600">https://fmmm1hotel.com</span>
+            Visit us at: <span className="text-blue-600">https://f-mmm1hotel.com</span>
             <br />
             Address: <span className="text-gray-500">FMMM1 CLOSE, off Board Road, Alihame, Agbor. Delta State. Nigeria</span>
             <br />
@@ -123,6 +151,12 @@ const BookingConfirmationContent = () => {
           className="book-btn mt-8"
         >
           Download PDF Receipt
+        </button>
+        <button
+          onClick={handleSendPDFToEmail}
+          className="book-btn mt-4"
+        >
+          Email PDF Receipt
         </button>
       </div>
     </div>

@@ -5,10 +5,10 @@ import React, { useState } from 'react';
 import { toast } from "react-toastify";
 
 interface AddEmployeeSummaryFormProps {
-  id?: number;
+  id?: string | number;
   documentId: string;
-  employmentDate: Date;
-  salary: number;
+  employmentDate: string | Date;
+  salary: number | string;
   order_discount_total?: number;
   debt_shortage?: number;
   fines_debits?: number;
@@ -73,7 +73,13 @@ const AddEmployeeSummaryForm = ({ initialData = {} as AddEmployeeSummaryFormProp
         <input
           type="date"
           name="employmentDate"
-          value={form.employmentDate ? new Date(form.employmentDate).toISOString().slice(0, 10) : ''}
+          value={
+            form.employmentDate
+              ? typeof form.employmentDate === "string"
+                ? form.employmentDate.slice(0, 10)
+                : new Date(form.employmentDate).toISOString().slice(0, 10)
+              : ''
+          }
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded"
         />

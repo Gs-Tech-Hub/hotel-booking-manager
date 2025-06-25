@@ -1,20 +1,31 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { BrandConfig } from "@/brand/brandConfig";
-import { useOrganisationInfo } from "@/hooks/useOrganisationInfo";
 import { organisationInfoEndpoints } from "@/utils/dataEndpoint/organisation-info";
 import { defaultOrganisationInfo } from "@/config/settings";
+import { getOrganisationInfo } from "@/lib/getOrganisationInfo";
 
 export default function CompanySettingsPage() {
-  const { organisation } = useOrganisationInfo();
-  const [form, setForm] = useState<BrandConfig>({ ...defaultOrganisationInfo, ...organisation });
+  const [form, setForm] = useState<BrandConfig>(defaultOrganisationInfo);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Update form state when organisation info loads
+  // Fetch organisation info dynamically on mount
   useEffect(() => {
-    setForm({ ...defaultOrganisationInfo, ...organisation });
-  }, [organisation]);
+    async function fetchOrg() {
+      setLoading(true);
+      try {
+        const { organisation } = await getOrganisationInfo();
+        setForm({ ...defaultOrganisationInfo, ...organisation });
+      } catch {
+        setForm(defaultOrganisationInfo);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchOrg();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -37,8 +48,8 @@ export default function CompanySettingsPage() {
     e.preventDefault();
     setSaving(true);
     try {
-      if (organisation?.id) {
-        await organisationInfoEndpoints.updateOrganisationInfo(organisation.id, form);
+      if (form?.id) {
+        await organisationInfoEndpoints.updateOrganisationInfo(form.id, form);
       } else {
         await organisationInfoEndpoints.createOrganisationInfo(form);
       }
@@ -50,6 +61,10 @@ export default function CompanySettingsPage() {
       setSaving(false);
     }
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="max-w-2xl mx-auto p-8 bg-white rounded shadow">

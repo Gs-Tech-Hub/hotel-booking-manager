@@ -24,7 +24,7 @@ export default function CreateEmployeeSummaryModal(employeeDetails: EmployeeDeta
           initialData={{ 
             ...employeeDetails, 
             documentId: employeeDetails.documentId || '', 
-            id: employeeDetails.id ? Number(employeeDetails.id) : undefined,
+            id: employeeDetails.id,
             employmentDate: employeeDetails.employmentDate || '',
             salary: employeeDetails.salary || 0
           }}

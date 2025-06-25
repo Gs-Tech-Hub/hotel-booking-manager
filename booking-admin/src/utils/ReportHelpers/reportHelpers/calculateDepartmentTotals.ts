@@ -19,7 +19,7 @@ export interface ProductCountItem {
   product_count: number;
 }
 
-export type SalesByProduct = Record<string, { units: number; amount: number; amountPaid: number }>;
+export type SalesByProduct = Record<string, { units: number; amount: number}>;
 
 export const calculateDepartmentTotals = (
   groupedItems: Record<DepartmentKey, DepartmentItem[]>,
@@ -63,7 +63,7 @@ export const calculateDepartmentTotals = (
 
   // Reduce grouped items and calculate sales
   const updatedItems: DepartmentItem[] = [];
-  const salesByProduct: Array<{ name: string; units: number; amount: number; amountPaid: number }> = [];
+  const salesByProduct: Array<{ name: string; units: number; amount: number }> = [];
   const paymentMethods = { cash: 0, other: 0 };
   const departmentTotals = { cashSales: 0, totalTransfers: 0, totalSales: 0 };
 
@@ -71,7 +71,7 @@ export const calculateDepartmentTotals = (
     const totalQuantity = items.reduce((sum, i) => sum + (typeof i.quantity === 'number' ? i.quantity : 0), 0);
     const base = items[0];
     const amount = totalQuantity * base.price;
-    const amountPaid = items.reduce((sum, i) => sum + i.amountPaid, 0);
+    // const amountPaid = items.reduce((sum, i) => sum + i.amountPaid, 0);
 
     // Track payment methods for all items in the group
     items.forEach((i) => {
@@ -79,18 +79,18 @@ export const calculateDepartmentTotals = (
       const itemQuantity = typeof i.quantity === 'number' ? i.quantity : 0;
       const itemAmount = itemQuantity * i.price;
       if (paymentMethod === 'cash') {
-        paymentMethods.cash += itemAmount || i.amountPaid;
+        paymentMethods.cash += itemAmount;
         if (i.department === department) {
-          departmentTotals.cashSales += itemAmount || i.amountPaid;
+          departmentTotals.cashSales += itemAmount;
         }
       } else {
-        paymentMethods.other += itemAmount || i.amountPaid;
+        paymentMethods.other += itemAmount;
         if (i.department === department) {
-          departmentTotals.totalTransfers += itemAmount || i.amountPaid;
+          departmentTotals.totalTransfers += itemAmount;
         }
       }
       if (i.department === department) {
-        departmentTotals.totalSales += itemAmount || i.amountPaid;
+        departmentTotals.totalSales += itemAmount;
       }
     });
 
@@ -105,7 +105,6 @@ export const calculateDepartmentTotals = (
         name: base.name,
         units: totalQuantity,
         amount,
-        amountPaid,
       });
     }
   });

@@ -16,7 +16,7 @@ export async function handleBookingRecords(timeFrame: { startDate: string, endDa
     "filters[createdAt][$gte]": start.toISOString(),
     "filters[createdAt][$lte]": end.toISOString(),
   });
-
+ console.log('booking data:', bookingData);
   // Only consider bookings that overlap with the selected date range
   const filteredBookings = bookingData.filter((booking: Booking) => {
     if (!booking.checkin || !booking.checkout) return false;

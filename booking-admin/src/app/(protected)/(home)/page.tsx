@@ -29,10 +29,10 @@ const generatePastWeekDateRanges = () => {
 
 const pastWeekDateRanges = generatePastWeekDateRanges();
 
-export default function Home() {
+export default function Home({ timeFrame }: { timeFrame?: string }) {
   const router = useRouter();
   const { user, defaultLandingPage, loading } = useAuth();
-    const [loadingData] = useState(false);
+  const [loadingData] = useState(false);
   const [selectedDateRange, setSelectedDateRange] = useState({
      startDate: pastWeekDateRanges[0].value,
      endDate: pastWeekDateRanges[0].value,
@@ -58,9 +58,10 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       if (loading) return;
+      // Use timeFrame if provided, otherwise use selectedDateRange
       const data = await handleBookingRecords({
-        startDate: selectedDateRange.startDate,
-        endDate: selectedDateRange.endDate,
+        startDate: timeFrame || selectedDateRange.startDate,
+        endDate: timeFrame || selectedDateRange.endDate,
       });
       setbookingStats(data);
       if (user && defaultLandingPage) {
@@ -70,7 +71,7 @@ export default function Home() {
       }
     };
     fetchData();
-  }, [user, defaultLandingPage, loading, router]);
+  }, [user, defaultLandingPage, loading, router, timeFrame, selectedDateRange]);
 
   const { totalAvailableRooms: availableRooms, occupiedRooms, totalCheckIns: checkin, totalCheckOuts: checkout, cash, transfer, totalSales } = bookingStats
 
