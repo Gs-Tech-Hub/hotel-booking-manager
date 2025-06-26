@@ -51,10 +51,11 @@
     "position": {
       "type": "string"
     },
-    "check_in": {
+    "check_ins": {
       "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::check-in.check-in"
+      "relation": "oneToMany",
+      "target": "api::check-in.check-in",
+      "mappedBy": "employee_summary"
     }
   }
 }

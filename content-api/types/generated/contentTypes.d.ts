@@ -796,6 +796,10 @@ export interface ApiCheckInCheckIn extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    employee_summary: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::employee-summary.employee-summary'
+    >;
     gym_membership: Schema.Attribute.Relation<
       'manyToOne',
       'api::gym-membership.gym-membership'
@@ -1026,7 +1030,7 @@ export interface ApiEmployeeSummaryEmployeeSummary
     draftAndPublish: true;
   };
   attributes: {
-    check_in: Schema.Attribute.Relation<'oneToOne', 'api::check-in.check-in'>;
+    check_ins: Schema.Attribute.Relation<'oneToMany', 'api::check-in.check-in'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

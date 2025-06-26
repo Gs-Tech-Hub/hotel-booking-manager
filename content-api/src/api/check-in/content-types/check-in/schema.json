@@ -28,6 +28,12 @@
       "relation": "manyToOne",
       "target": "api::sport-membership.sport-membership",
       "inversedBy": "check_ins"
+    },
+    "employee_summary": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::employee-summary.employee-summary",
+      "inversedBy": "check_ins"
     }
   }
 }
