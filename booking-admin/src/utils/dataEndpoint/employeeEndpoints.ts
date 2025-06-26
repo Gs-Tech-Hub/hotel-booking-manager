@@ -73,4 +73,20 @@ export const employeeEndpoints = {
     if (result.error) throw new Error(result.error);
     return result.data;
   },
+  async getEmployeeRecords(p0: string, params?: Record<string, string | number | boolean>) {
+    const queryString = params
+      ? '?' + new URLSearchParams(params as Record<string, string>).toString()
+      : '';
+    const result = await apiHandlerInstance.fetchData(`employee-records${queryString}`);
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  },
+  async createEmployeeRecords (employeeData: any ) {
+    const result = await apiHandlerInstance.createData({
+      endpoint: "employee-records",
+      data: employeeData,
+    });
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  }, 
 };

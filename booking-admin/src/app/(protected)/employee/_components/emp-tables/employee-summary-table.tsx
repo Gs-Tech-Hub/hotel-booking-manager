@@ -7,7 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatPrice } from "@/utils/priceHandler";
-import CreateEmployeeSummaryModal from "../add-summary-form/create-emp-summary-modal";
+import EmployeeAttendanceModal from "../emp-attendance-modal";
 
 // Employment Data Table
 export function EmployeeEmploymentTable({
@@ -17,6 +17,7 @@ export function EmployeeEmploymentTable({
     id: number;
     documentId: string;
     employmentDate: Date;
+    position: string;
     salary: string;
     users_permissions_user: {
       username: string;
@@ -35,6 +36,7 @@ export function EmployeeEmploymentTable({
           <TableRow className="border-t text-base [&>th]:h-auto [&>th]:py-3 sm:[&>th]:py-4.5">
             <TableHead>Name</TableHead>
             <TableHead>Employment Date</TableHead>
+            <TableHead>Position</TableHead>
             <TableHead>Salary</TableHead>
             <TableHead></TableHead>
           </TableRow>
@@ -51,13 +53,16 @@ export function EmployeeEmploymentTable({
               <TableCell>
                 {emp.employmentDate ? new Date(emp.employmentDate).toLocaleDateString() : null}
               </TableCell>
+              <TableRow>
+                {emp.position}
+              </TableRow>
               <TableCell>{formatPrice(Number(emp.salary), "NGN")}</TableCell>
               <TableCell>
-                <CreateEmployeeSummaryModal
-                  {...emp}
-                  id={emp.id.toString()}
-                  employmentDate={emp.employmentDate}
-                  salary={emp.salary}
+                <EmployeeAttendanceModal
+                  onClose={() => {}}
+                  employeeId={emp.id}
+                  employeeName={emp.users_permissions_user?.username || ""}
+                  attendance={[]}
                 />
               </TableCell>
             </TableRow>
@@ -109,7 +114,7 @@ export function EmployeeFinancialTable({
               className="text-base font-medium text-dark dark:text-white"
               key={emp.id}
             >
-              <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">
+              <TableCell>
                 {emp.users_permissions_user?.username}
               </TableCell>
               <TableCell>{formatPrice(emp.order_discount_total, "NGN")}</TableCell>

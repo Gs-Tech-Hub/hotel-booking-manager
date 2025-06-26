@@ -11,7 +11,7 @@ export default function CreateEmployeeSummaryModal(employeeDetails: EmployeeDeta
     <div>
       <Button   
         onClick={() => setIsOpen(true)}
-        label="View Details"
+        label="Attendance"
         variant="outlinePrimary"
         size="small"
       />

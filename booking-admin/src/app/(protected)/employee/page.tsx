@@ -16,9 +16,10 @@ export default function EmployeeSummaryPage() {
     const [form, setForm] = useState({
         username: "",
         employmentDate: "",
+        position: "",
         salary: "",
     });
-    const [view, setView] = useState<'employmentTable' | 'orders' | 'details'>('employmentTable');
+    const [view, setView] = useState<'employee' | 'orders' | 'details'>('employee');
 
     useEffect(() => {
         fetchEmployees();
@@ -44,10 +45,11 @@ export default function EmployeeSummaryPage() {
             await strapiService.createEmployeeSummary({
                 users_permissions_user: { documentId: "", username: form.username },
                 employmentDate: form.employmentDate,
+                position: form.position,
                 salary: form.salary,
             });
             setShowCreateModal(false);
-            setForm({ username: "", employmentDate: "", salary: "" });
+            setForm({ username: "", employmentDate: "", position: "", salary: "" });
             await fetchEmployees();
         } catch (error) {
             console.error("Error creating employee:", error);
@@ -61,9 +63,9 @@ export default function EmployeeSummaryPage() {
     return (
         <div>
             <div className="mb-4 flex gap-2">
-                <Button label="Employment Table" onClick={() => setView('employmentTable')} variant={view === 'employmentTable' ? "primary" : "outlinePrimary"} />
-                <Button label="Employee Orders" onClick={() => setView('orders')} variant={view === 'orders' ? "primary" : "outlinePrimary"} />
+                <Button label="Employee " onClick={() => setView('employee')} variant={view === 'employee' ? "primary" : "outlinePrimary"} />
                 <Button label="Employee Details" onClick={() => setView('details')} variant={view === 'details' ? "primary" : "outlinePrimary"} />
+                <Button label="Employee Orders" onClick={() => setView('orders')} variant={view === 'orders' ? "primary" : "outlinePrimary"} />
                 <Button
                     label="Add Employee"
                     variant="primary"
@@ -71,7 +73,7 @@ export default function EmployeeSummaryPage() {
                 />
             </div>
             <Suspense>
-                {view === 'employmentTable' && <EmployeeEmploymentTable employeeDetails={employeeDetails} />}
+                {view === 'employee' && <EmployeeEmploymentTable employeeDetails={employeeDetails} />}
                 {view === 'orders' && <EmployeeOrdersTable data={employeeOrdersData} />}
                 {view === 'details' && <EmployeeRecords employees={employeeDetails} />}
             </Suspense>
@@ -98,6 +100,16 @@ export default function EmployeeSummaryPage() {
                                 className="w-full border rounded p-2"
                                 value={form.employmentDate}
                                 onChange={e => setForm(f => ({ ...f, employmentDate: e.target.value }))}
+                                required
+                            />
+                        </div>
+                         <div>
+                            <label className="block mb-1 font-medium">Position</label>
+                            <input
+                                type="number"
+                                className="w-full border rounded p-2"
+                                value={form.position}
+                                onChange={e => setForm(f => ({ ...f, position: e.target.value }))}
                                 required
                             />
                         </div>
