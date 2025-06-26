@@ -8,6 +8,8 @@ import { Button } from "@/components/ui-elements/button"
 import { Modal } from "@/components/ui-elements/modal"
 import EmployeeRecords from "./_components/EmployeeRecords"
 import EmployeeSummary from "./_components/EmployeeSummary"
+import { userEndpoints } from "@/utils/dataEndpoint/userEndPoint";
+import { employeeEndpoints } from "@/utils/dataEndpoint/employeeEndpoints";
 
 export default function EmployeeSummaryPage() {
     const [employeeDetails, setEmployeeDetails] = useState<any[]>([]) 
@@ -21,6 +23,7 @@ export default function EmployeeSummaryPage() {
         salary: "",
     });
     const [view, setView] = useState<'summary' | 'employee' | 'orders' | 'details'>('summary');
+        const { createUser } = userEndpoints();
 
     useEffect(() => {
         fetchEmployees();
@@ -42,19 +45,34 @@ export default function EmployeeSummaryPage() {
         e.preventDefault();
         setIsCreating(true);
         try {
-            // You may need to adjust the payload to match your backend
-            await strapiService.createEmployeeSummary({
-                users_permissions_user: { documentId: "", username: form.username },
+            // 1. Create the user first
+            const sanitizedUsername = form.username.replace(/\s+/g, '').toLowerCase();
+          
+            const user = await createUser(
+                 sanitizedUsername,
+                 sanitizedUsername + "@demostaff.com",
+                 'admin123',
+            );
+            console.log("User created:", user);
+            const userID = user.id;
+            // 2. Use the user id to create the employee summary
+            await employeeEndpoints.createEmployeeSummary({
+                // Properly connect the user permission to the created user
+                users_permissions_user: userID,
                 employmentDate: form.employmentDate,
-                position: form.position,
                 salary: form.salary,
+                position: form.position,
+                order_discount_total: 0,
+                debt_shortage: 0,
+                fines_debits: 0,
+                salary_advanced: 0,
+                salary_advanced_status: "pending",
             });
             setShowCreateModal(false);
             setForm({ username: "", employmentDate: "", position: "", salary: "" });
             await fetchEmployees();
         } catch (error) {
             console.error("Error creating employee:", error);
-            // Optionally, you can show an error message to the user
             alert("Failed to create employee. Please try again.");
         } finally {
             setIsCreating(false);
@@ -118,7 +136,7 @@ export default function EmployeeSummaryPage() {
                          <div>
                             <label className="block mb-1 font-medium">Position</label>
                             <input
-                                type="number"
+                                type="text"
                                 className="w-full border rounded p-2"
                                 value={form.position}
                                 onChange={e => setForm(f => ({ ...f, position: e.target.value }))}
@@ -136,10 +154,8 @@ export default function EmployeeSummaryPage() {
                             />
                         </div>
                         <div className="flex justify-end gap-2">
-                                <button type="submit" disabled={isCreating}>
                                 <Button label="Cancel" onClick={() => setShowCreateModal(false)} />
-                                <Button label={isCreating ? "Creating..." : "Create"} disabled={isCreating} />
-                            </button>
+                            <Button label={isCreating ? "Creating..." : "Create"} disabled={isCreating} />
                         </div>
                     </form>
                 }

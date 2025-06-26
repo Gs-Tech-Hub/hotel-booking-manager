@@ -31,6 +31,7 @@ export const employeeEndpoints = {
   async createEmployeeSummary(employeeData: {
     documentId?: string;
     employmentDate: string | Date;
+    position: string;
     salary: number | string;
     order_discount_total?: number;
     debt_shortage?: number;
@@ -38,7 +39,6 @@ export const employeeEndpoints = {
     salary_advanced?: number;
     salary_advanced_status?: 'pending' | 'approved' | 'rejected';
     users_permissions_user?: {
-      documentId: string;
       id?: number
     };
     id?: string;

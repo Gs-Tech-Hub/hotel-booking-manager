@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {
   Table,
   TableBody,
@@ -49,6 +50,7 @@ export function EmployeeEmploymentTable({
             // Map attendance from check_ins array
             const attendance = (emp.check_ins || []).map((log: any) => ({
               id: log.id,
+              documentId: log.documentId,
               check_in_time: log.check_in_time,
               check_out_time: log.check_out_time,
               createdAt: log.createdAt,

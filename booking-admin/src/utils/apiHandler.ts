@@ -68,12 +68,13 @@ const ApiHandler = ({ baseUrl }: ApiHandlerProps) => {
   };
 
   const createData = async ({ endpoint, data }: CreateDataParams) => {
-    const isAuth = endpoint === "auth/local";
+    // Treat both 'auth/local' and 'auth/local/register' as auth endpoints
+    const isAuth = endpoint === "auth/local" || endpoint === "auth/local/register";
 
     return fetchWithRetry(`${baseUrl}/${endpoint}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(isAuth ? data : { data }), // unwrapped for auth
+      body: JSON.stringify(isAuth ? data : { data }), // unwrapped for auth endpoints
     });
   };
 
