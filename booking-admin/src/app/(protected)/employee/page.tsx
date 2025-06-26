@@ -7,6 +7,7 @@ import EmployeeOrdersTable from "./_components/emp-tables/employee-order-table"
 import { Button } from "@/components/ui-elements/button"
 import { Modal } from "@/components/ui-elements/modal"
 import EmployeeRecords from "./_components/EmployeeRecords"
+import EmployeeSummary from "./_components/EmployeeSummary"
 
 export default function EmployeeSummaryPage() {
     const [employeeDetails, setEmployeeDetails] = useState<any[]>([]) 
@@ -19,7 +20,7 @@ export default function EmployeeSummaryPage() {
         position: "",
         salary: "",
     });
-    const [view, setView] = useState<'employee' | 'orders' | 'details'>('employee');
+    const [view, setView] = useState<'summary' | 'employee' | 'orders' | 'details'>('summary');
 
     useEffect(() => {
         fetchEmployees();
@@ -64,6 +65,7 @@ export default function EmployeeSummaryPage() {
         <div>
             <div className="mb-4 flex gap-2">
                 <Button label="Employee " onClick={() => setView('employee')} variant={view === 'employee' ? "primary" : "outlinePrimary"} />
+                <Button label="Summary" onClick={() => setView('summary')} variant={view === 'summary' ? "primary" : "outlinePrimary"} />
                 <Button label="Employee Details" onClick={() => setView('details')} variant={view === 'details' ? "primary" : "outlinePrimary"} />
                 <Button label="Employee Orders" onClick={() => setView('orders')} variant={view === 'orders' ? "primary" : "outlinePrimary"} />
                 <Button
@@ -74,6 +76,7 @@ export default function EmployeeSummaryPage() {
             </div>
             <Suspense>
                 {view === 'employee' && <EmployeeEmploymentTable employeeDetails={employeeDetails} />}
+                {view === 'summary' && <EmployeeSummary employeeDetails={employeeDetails} />}
                 {view === 'orders' && <EmployeeOrdersTable data={employeeOrdersData} />}
                 {view === 'details' && <EmployeeRecords employees={employeeDetails} />}
             </Suspense>

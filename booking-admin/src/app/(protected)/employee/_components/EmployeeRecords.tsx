@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { strapiService } from '@/utils/dataEndpoint/index';
-import { connect } from 'http2';
+import EmployeeRecordsSummary from "./EmployeeRecordsSummary";
 
 interface User {
   id: number;
@@ -193,53 +193,7 @@ const groupedSummary = employees.map(emp => {
 
   return (
     <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card mb-6">
-      <Card
-        title="Employee Records"
-        content={
-          <>
-            <div className="flex justify-between items-center mb-2">
-              <span>Showing last 5 records</span>
-              <Button size="small" label={sortDesc ? 'Sort: Newest' : 'Sort: Oldest'} onClick={() => setSortDesc(v => !v)} />
-            </div>
-            <Table>
-              <TableHeader>
-                <TableRow className="border-t text-base [&>th]:h-auto [&>th]:py-3 sm:[&>th]:py-4.5">
-                  <TableHead>Date</TableHead>
-                  <TableHead>Employee</TableHead>
-                  <TableHead>Fines</TableHead>
-                  <TableHead>Debts</TableHead>
-                  <TableHead>Shortage</TableHead>
-                  <TableHead>Salary Advance</TableHead>
-                  <TableHead>Description</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  <tr><td colSpan={7}>Loading...</td></tr>
-                ) : lastFiveRecords.length === 0 ? (
-                  <tr><td colSpan={7}>No records found.</td></tr>
-                ) : (
-                  lastFiveRecords.map((rec: EmployeeRecord) => (
-                    <TableRow
-                      className="text-base font-medium text-dark dark:text-white"
-                     key={rec.id}>
-                      <TableCell>{dayjs(rec.date).format('YYYY-MM-DD')}</TableCell>
-                      <TableCell>{rec.users_permissions_user?.username}</TableCell>
-                      <TableCell>{rec.fines ?? '-'}</TableCell>
-                      <TableCell>{rec.debts ?? '-'}</TableCell>
-                      <TableCell>{rec.shortage ?? '-'}</TableCell>
-                      <TableCell>{rec.salary_advance ?? '-'}</TableCell>
-                      <TableCell>{rec.description?.[0]?.children?.[0]?.text ?? '-'}</TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </>
-        }
-        footer={null}
-      />
-
+      {/* Add Record Form at the top */}
       <Card
         title="Add Record"
         content={
@@ -262,7 +216,10 @@ const groupedSummary = employees.map(emp => {
                   },
                 });
               }}
-              items={employees.map(emp => ({ value: newRecord.users_permissions_user.id, label: emp.users_permissions_user?.username || emp.name }))}
+              items={employees.map(emp => ({
+                value: emp.users_permissions_user?.id ?? '',
+                label: emp.users_permissions_user?.username || emp.name
+              }))}
               className="w-40"
             />
             <Input
@@ -315,45 +272,52 @@ const groupedSummary = employees.map(emp => {
         }
       />
 
+      {/* Details Table (last 5 records) */}
       <Card
-        title="Summary"
+        title="Employee Records"
         content={
           <>
-            <div className="flex items-center gap-2 mb-2">
-              <span>Month:</span>
-              <Select
-                value={selectedMonth}
-                onChange={val => setSelectedMonth(String(val))}
-                items={months.map(m => ({ value: m, label: dayjs(m + '-01').format('MMMM YYYY') }))}
-                className="w-40"
-              />
+            <div className="flex justify-between items-center mb-2">
+              <span>Showing last 5 records</span>
+              <Button size="small" label={sortDesc ? 'Sort: Newest' : 'Sort: Oldest'} onClick={() => setSortDesc(v => !v)} />
             </div>
             <Table>
               <TableHeader>
                 <TableRow className="border-t text-base [&>th]:h-auto [&>th]:py-3 sm:[&>th]:py-4.5">
+                  <TableHead>Date</TableHead>
                   <TableHead>Employee</TableHead>
                   <TableHead>Fines</TableHead>
                   <TableHead>Debts</TableHead>
                   <TableHead>Shortage</TableHead>
                   <TableHead>Salary Advance</TableHead>
+                  <TableHead>Description</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {groupedSummary.map((s: any) => (
-                  <TableRow 
-                  className="text-base font-medium text-dark dark:text-white"
-                  key={s.id}>
-                    <TableCell>{s.users_permissions_user.username}</TableCell>
-                    <TableCell>{Math.round(s.totalFines)}</TableCell>
-                    <TableCell>{Math.round(s.totalDebts)}</TableCell>
-                    <TableCell>{Math.round(s.totalShortage)}</TableCell>
-                    <TableCell>{Math.round(s.totalSalaryAdvance)}</TableCell>
-                  </TableRow>
-                ))}
+                {loading ? (
+                  <tr><td colSpan={7}>Loading...</td></tr>
+                ) : lastFiveRecords.length === 0 ? (
+                  <tr><td colSpan={7}>No records found.</td></tr>
+                ) : (
+                  lastFiveRecords.map((rec: EmployeeRecord) => (
+                    <TableRow
+                      className="text-base font-medium text-dark dark:text-white"
+                     key={rec.id}>
+                      <TableCell>{dayjs(rec.date).format('YYYY-MM-DD')}</TableCell>
+                      <TableCell>{rec.users_permissions_user?.username}</TableCell>
+                      <TableCell>{rec.fines ?? '-'}</TableCell>
+                      <TableCell>{rec.debts ?? '-'}</TableCell>
+                      <TableCell>{rec.shortage ?? '-'}</TableCell>
+                      <TableCell>{rec.salary_advance ?? '-'}</TableCell>
+                      <TableCell>{rec.description?.[0]?.children?.[0]?.text ?? '-'}</TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </>
         }
+        footer={null}
       />
     </div>
   );
