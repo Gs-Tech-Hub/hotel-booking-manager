@@ -61,6 +61,15 @@ export default function EmployeeSummaryPage() {
         }
     };
 
+    // Handler to update attendance in employeeDetails after check-in
+    const handleAttendanceUpdate = (employeeId: number, newAttendance: any[]) => {
+        setEmployeeDetails((prev) =>
+            prev.map((emp) =>
+                emp.id === employeeId ? { ...emp, check_ins: newAttendance } : emp
+            )
+        );
+    };
+
     return (
         <div>
             <div className="mb-4 flex gap-2">
@@ -75,7 +84,7 @@ export default function EmployeeSummaryPage() {
                 />
             </div>
             <Suspense>
-                {view === 'employee' && <EmployeeEmploymentTable employeeDetails={employeeDetails} />}
+                {view === 'employee' && <EmployeeEmploymentTable employeeDetails={employeeDetails} onAttendanceUpdate={handleAttendanceUpdate} />}
                 {view === 'summary' && <EmployeeSummary employeeDetails={employeeDetails} />}
                 {view === 'orders' && <EmployeeOrdersTable data={employeeOrdersData} />}
                 {view === 'details' && <EmployeeRecords employees={employeeDetails} />}
@@ -127,8 +136,8 @@ export default function EmployeeSummaryPage() {
                             />
                         </div>
                         <div className="flex justify-end gap-2">
-                            <Button label="Cancel" onClick={() => setShowCreateModal(false)} />
-                            <button type="submit" disabled={isCreating}>
+                                <button type="submit" disabled={isCreating}>
+                                <Button label="Cancel" onClick={() => setShowCreateModal(false)} />
                                 <Button label={isCreating ? "Creating..." : "Create"} disabled={isCreating} />
                             </button>
                         </div>

@@ -12,6 +12,7 @@ import EmployeeAttendanceModal from "../emp-attendance-modal";
 // Employment Data Table
 export function EmployeeEmploymentTable({
   employeeDetails,
+  onAttendanceUpdate,
 }: {
   employeeDetails: {
     id: number;
@@ -24,7 +25,9 @@ export function EmployeeEmploymentTable({
       documentId: string;
       id?: number;
     };
+    check_ins?: any[];
   }[];
+  onAttendanceUpdate?: (employeeId: number, newAttendance: any[]) => void;
 }) {
   return (
     <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card mb-6">
@@ -42,31 +45,49 @@ export function EmployeeEmploymentTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {employeeDetails.map((emp) => (
-            <TableRow
-              className="text-base font-medium text-dark dark:text-white"
-              key={emp.id}
-            >
-              <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">
-                {emp.users_permissions_user?.username}
-              </TableCell>
-              <TableCell>
-                {emp.employmentDate ? new Date(emp.employmentDate).toLocaleDateString() : null}
-              </TableCell>
-              <TableRow>
-                {emp.position}
+          {employeeDetails.map((emp) => {
+            // Map attendance from check_ins array
+            const attendance = (emp.check_ins || []).map((log: any) => ({
+              id: log.id,
+              check_in_time: log.check_in_time,
+              check_out_time: log.check_out_time,
+              createdAt: log.createdAt,
+              updatedAt: log.updatedAt,
+              publishedAt: log.publishedAt,
+            }));
+            // Get latest check-in (if any)
+            const latestCheckIn = attendance.length > 0 ? attendance[0] : null;
+            return (
+              <TableRow
+                className="text-base font-medium text-dark dark:text-white"
+                key={emp.id}
+              >
+                <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">
+                  {emp.users_permissions_user?.username}
+                </TableCell>
+                <TableCell>
+                  {emp.employmentDate ? new Date(emp.employmentDate).toLocaleDateString() : null}
+                </TableCell>
+                <TableCell>{emp.position}</TableCell>
+                <TableCell>{formatPrice(Number(emp.salary), "NGN")}</TableCell>
+                <TableCell>
+                  {/* Show latest check-in status */}
+                  {latestCheckIn ? (
+                    <span className="text-xs text-green-600">Resumed At: {new Date(latestCheckIn.check_in_time).toLocaleTimeString()}</span>
+                  ) : (
+                    <span className="text-xs text-gray-400">No check-in</span>
+                  )}
+                  <EmployeeAttendanceModal
+                    onClose={() => {}}
+                    employeeId={emp.id}
+                    employeeName={emp.users_permissions_user?.username || ""}
+                    attendance={attendance}
+                    onAttendanceUpdate={(newAttendance) => onAttendanceUpdate && onAttendanceUpdate(emp.id, newAttendance)}
+                  />
+                </TableCell>
               </TableRow>
-              <TableCell>{formatPrice(Number(emp.salary), "NGN")}</TableCell>
-              <TableCell>
-                <EmployeeAttendanceModal
-                  onClose={() => {}}
-                  employeeId={emp.id}
-                  employeeName={emp.users_permissions_user?.username || ""}
-                  attendance={[]}
-                />
-              </TableCell>
-            </TableRow>
-          ))}
+            );
+          })}
         </TableBody>
       </Table>
     </div>

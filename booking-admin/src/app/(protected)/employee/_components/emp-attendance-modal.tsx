@@ -27,6 +27,7 @@ interface EmployeeAttendanceModalProps {
   employeeName: string;
   attendance: AttendanceLog[];
   imageUrl?: string;
+  onAttendanceUpdate?: (newAttendance: AttendanceLog[]) => void;
 }
 
 const EmployeeAttendanceModal: React.FC<EmployeeAttendanceModalProps> = ({
@@ -35,13 +36,52 @@ const EmployeeAttendanceModal: React.FC<EmployeeAttendanceModalProps> = ({
   attendance: initialAttendance,
   imageUrl,
   employeeId,
+  onAttendanceUpdate,
 }) => {
   const [attendance, setAttendance] = useState(initialAttendance);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Helper: Check if already checked in today
+  const hasCheckedInToday = attendance.some((log) => {
+    if (!log.check_in_time) return false;
+    const checkInDate = new Date(log.check_in_time);
+    const now = new Date();
+    return (
+      checkInDate.getFullYear() === now.getFullYear() &&
+      checkInDate.getMonth() === now.getMonth() &&
+      checkInDate.getDate() === now.getDate()
+    );
+  });
+
+  // Helper: Get today's check-in(s)
+  const today = new Date();
+  const todayCheckIns = attendance.filter((log) => {
+    if (!log.check_in_time) return false;
+    const checkInDate = new Date(log.check_in_time);
+    return (
+      checkInDate.getFullYear() === today.getFullYear() &&
+      checkInDate.getMonth() === today.getMonth() &&
+      checkInDate.getDate() === today.getDate()
+    );
+  });
+
+  // Helper: Count check-ins for the current month
+  const monthlyCheckInCount = attendance.filter((log) => {
+    if (!log.check_in_time) return false;
+    const checkInDate = new Date(log.check_in_time);
+    return (
+      checkInDate.getFullYear() === today.getFullYear() &&
+      checkInDate.getMonth() === today.getMonth()
+    );
+  }).length;
+
   const handleCheckIn = async () => {
+    if (hasCheckedInToday) {
+      setError("Already checked in today.");
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -51,7 +91,9 @@ const EmployeeAttendanceModal: React.FC<EmployeeAttendanceModalProps> = ({
         check_in_time: now.toISOString(),
       };
       const newLog = await checkInEndpoints.createCheckIn(checkInData);
-      setAttendance([newLog, ...attendance]);
+      const updatedAttendance = [newLog, ...attendance];
+      setAttendance(updatedAttendance);
+      if (onAttendanceUpdate) onAttendanceUpdate(updatedAttendance);
     } catch (err: any) {
       setError(err.message || "Check-in failed");
     } finally {
@@ -69,7 +111,7 @@ const EmployeeAttendanceModal: React.FC<EmployeeAttendanceModalProps> = ({
       />
       <Modal
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={() => { setIsOpen(false); onClose(); }}
         title={`Attendance History for ${employeeName}`}
         content={
           <div>
@@ -85,6 +127,12 @@ const EmployeeAttendanceModal: React.FC<EmployeeAttendanceModalProps> = ({
               </div>
             )}
             {error && <div className="text-red-500 text-xs mb-2">{error}</div>}
+            {/* Monthly summary */}
+            <div className="mb-2 text-lg text-gray-500">
+              Check-ins this month:{" "}
+              <span className="font-bold">{monthlyCheckInCount}</span>
+            </div>
+            {/* Only today's check-ins */}
             <Table>
               <TableHeader>
                 <TableRow>
@@ -94,8 +142,8 @@ const EmployeeAttendanceModal: React.FC<EmployeeAttendanceModalProps> = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {attendance && attendance.length > 0 ? (
-                  attendance.map((log, idx) => (
+                {todayCheckIns.length > 0 ? (
+                  todayCheckIns.map((log, idx) => (
                     <TableRow key={log.id || idx}>
                       <TableCell>
                         {log.check_in_time
@@ -117,7 +165,7 @@ const EmployeeAttendanceModal: React.FC<EmployeeAttendanceModalProps> = ({
                 ) : (
                   <TableRow>
                     <TableCell colSpan={3} className="text-center text-gray-400">
-                      No attendance records found.
+                      No check-in for today.
                     </TableCell>
                   </TableRow>
                 )}
@@ -137,9 +185,9 @@ const EmployeeAttendanceModal: React.FC<EmployeeAttendanceModalProps> = ({
             <button
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs"
               onClick={handleCheckIn}
-              disabled={loading}
+              disabled={loading || hasCheckedInToday}
             >
-              {loading ? "Checking In..." : "Check In"}
+              {loading ? "Checking In..." : hasCheckedInToday ? "Checked In" : "Check In"}
             </button>
           </div>
         }
