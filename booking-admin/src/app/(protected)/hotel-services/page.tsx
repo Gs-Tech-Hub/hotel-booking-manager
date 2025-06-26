@@ -5,12 +5,35 @@ import { OverviewCardsGroup } from './overview-cards';
 import { OverviewCardsSkeleton } from './overview-cards/skeleton';
 import { ExtendedProduct, handleMainRecord } from '@/utils/ReportHelpers/mainHandle';
 import { ProductsListSkeleton } from '../bar/_components/products-table/skeleton';
-import  DrinksInventoryPage  from './product-table/drinks-inventory'
+import DrinksInventoryPage from './product-table/drinks-inventory';
+
+// Generate past week date ranges (copied from bar page for consistency)
+const generatePastWeekDateRanges = () => {
+    const now = new Date();
+    const ranges = [];
+    for (let i = 0; i <= 7; i++) {
+        const pastDate = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+        ranges.push({
+            label:
+                i === 0
+                    ? `Today (${pastDate.toLocaleDateString()})`
+                    : i === 1
+                        ? `Yesterday (${pastDate.toLocaleDateString()})`
+                        : `${i} days ago (${pastDate.toLocaleDateString()})`,
+            value: pastDate.toISOString().split('T')[0],
+        });
+    }
+    return ranges;
+};
+const pastWeekDateRanges = generatePastWeekDateRanges();
 
 export default function HotelServicesPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [products, setProducts] = useState<ExtendedProduct[]>([]);
-    const [selectedDate, setSelectedDate] = useState('today');
+    const [selectedDateRange, setSelectedDateRange] = useState({
+        startDate: pastWeekDateRanges[0].value,
+        endDate: pastWeekDateRanges[0].value,
+    });
     const [overviewData, setOverviewData] = useState({
         total_cash: { value: 0 },
         total_transfers: { value: 0 },
@@ -19,26 +42,15 @@ export default function HotelServicesPage() {
         out_of_stock: { value: 0 },
     });
 
-    const formatDate = (date: Date) => date.toISOString().split('T')[0];
+    const formatDate = (date: Date | string) => {
+        if (typeof date === 'string') return date;
+        return date.toISOString().split('T')[0];
+    };
 
-    const fetchHotelServices = async (dateOption: string) => {
+    const fetchHotelServices = async (dateOption: { startDate: string; endDate: string }) => {
         setIsLoading(true);
-        const today = new Date();
-        const yesterday = new Date();
-        yesterday.setDate(today.getDate() - 1);
-        let startDate, endDate;
-        if (dateOption === 'today') {
-            startDate = new Date(today);
-            startDate.setHours(0, 0, 0, 0);
-            endDate = new Date(today);
-            endDate.setHours(23, 59, 59, 999);
-        } else if (dateOption === 'yesterday') {
-            startDate = new Date(yesterday);
-            startDate.setHours(0, 0, 0, 0);
-            endDate = new Date(yesterday);
-            endDate.setHours(23, 59, 59, 999);
-        }
-        if (!startDate || !endDate) return;
+        let startDate = dateOption.startDate;
+        let endDate = dateOption.endDate;
         try {
             const { overview, products } = await handleMainRecord(
                 formatDate(startDate),
@@ -67,20 +79,26 @@ export default function HotelServicesPage() {
     };
 
     useEffect(() => {
-        fetchHotelServices(selectedDate);
-    }, [selectedDate]);
+        fetchHotelServices(selectedDateRange);
+    }, [selectedDateRange]);
 
     return (
         <div className="flex flex-col gap-4 p-4">
             <div className="flex items-center gap-2">
                 <h1 className="text-2xl font-bold">Hotel Services</h1>
                 <select
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
+                    value={selectedDateRange.startDate}
+                    onChange={e => {
+                        const selectedDate = e.target.value;
+                        setSelectedDateRange({ startDate: selectedDate, endDate: selectedDate });
+                    }}
                     className="border rounded p-2"
                 >
-                    <option value="today">Today</option>
-                    <option value="yesterday">Yesterday</option>
+                    {pastWeekDateRanges.map(range => (
+                        <option key={range.value} value={range.value}>
+                            {range.label}
+                        </option>
+                    ))}
                 </select>
             </div>
             {isLoading ? (

@@ -30,7 +30,6 @@ interface EmployeeAttendanceModalProps {
 
 const EmployeeAttendanceModal: React.FC<EmployeeAttendanceModalProps> = ({
   onClose,
-  employeeId,
   employeeName,
   attendance: initialAttendance,
   imageUrl,

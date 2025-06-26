@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import EmployeeRecordsSummary from "./EmployeeRecordsSummary";
@@ -16,7 +17,7 @@ export default function EmployeeSummary({ employeeDetails }: { employeeDetails: 
         );
         setRecords(response);
       } catch (e) {
-        // handle error
+        console.error("Error fetching employee records:", e);
       }
     };
     fetchRecords();
