@@ -54,11 +54,10 @@ export default function EmployeeSummaryPage() {
                  'admin123',
             );
             console.log("User created:", user);
-            const userID = user.id;
+            const userID = user.user.id;
             // 2. Use the user id to create the employee summary
-            await employeeEndpoints.createEmployeeSummary({
+          const newEmployee = await employeeEndpoints.createEmployeeSummary({
                 // Properly connect the user permission to the created user
-                users_permissions_user: userID,
                 employmentDate: form.employmentDate,
                 salary: form.salary,
                 position: form.position,
@@ -68,6 +67,10 @@ export default function EmployeeSummaryPage() {
                 salary_advanced: 0,
                 salary_advanced_status: "pending",
             });
+            await employeeEndpoints.updateEmployeeSummary(newEmployee.documentId, {
+            users_permissions_user: { connect: { id: userID } },
+            });
+
             setShowCreateModal(false);
             setForm({ username: "", employmentDate: "", position: "", salary: "" });
             await fetchEmployees();

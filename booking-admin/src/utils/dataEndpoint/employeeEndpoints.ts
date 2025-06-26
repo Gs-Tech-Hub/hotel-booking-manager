@@ -28,21 +28,7 @@ export const employeeEndpoints = {
     if (result.error) throw new Error(result.error);
     return result.data;
   },
-  async createEmployeeSummary(employeeData: {
-    documentId?: string;
-    employmentDate: string | Date;
-    position: string;
-    salary: number | string;
-    order_discount_total?: number;
-    debt_shortage?: number;
-    fines_debits?: number;
-    salary_advanced?: number;
-    salary_advanced_status?: 'pending' | 'approved' | 'rejected';
-    users_permissions_user?: {
-      id?: number
-    };
-    id?: string;
-  }) {
+  async createEmployeeSummary(employeeData: any) {
     const result = await apiHandlerInstance.createData({
       endpoint: "employee-summaries",
       data: employeeData,
@@ -50,21 +36,7 @@ export const employeeEndpoints = {
     if (result.error) throw new Error(result.error);
     return result.data;
   },
-  async updateEmployeeSummary(employeeId: string | number, employeeData: {
-    documentId?: string;
-    employmentDate: string | Date;
-    salary: number | string;
-    order_discount_total?: number;
-    debt_shortage?: number;
-    fines_debits?: number;
-    salary_advanced?: number;
-    salary_advanced_status?: 'pending' | 'approved' | 'rejected';
-    users_permissions_user?: {
-      documentId: string;
-      id?: number
-    };
-    id?: string;
-  }) {
+  async updateEmployeeSummary(employeeId: string | number, employeeData: any) {
     const result = await apiHandlerInstance.updateData({
       endpoint: "employee-summaries",
       id: employeeId,
