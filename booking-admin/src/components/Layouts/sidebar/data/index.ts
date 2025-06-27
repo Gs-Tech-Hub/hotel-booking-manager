@@ -23,7 +23,7 @@ export const NAV_DATA: NavSection[] = [
       {
         title: "Human Resources",
         icon: Icons.HomeIcon,
-        roles: ["admin", "receptionist", "manager"],
+        roles: ["admin", "receptionist", "manager", "bar"],
         items: [
           {
             title: "Employee",
