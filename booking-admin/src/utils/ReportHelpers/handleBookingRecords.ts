@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { Booking } from "@/types/bookingTypes";
-import { strapiService } from "./dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint";
 
 export async function handleBookingRecords(timeFrame: { startDate: string, endDate: string }) {
   // Ensure startDate and endDate are full-day ISO strings
@@ -10,31 +10,32 @@ export async function handleBookingRecords(timeFrame: { startDate: string, endDa
   end.setHours(23, 59, 59, 999);
 
   // Fetch booking data with full-day ISO strings
-  const bookingData = await strapiService.getBookings({
+  const bookingData = await strapiService.bookingEndpoints.getBookings({
     populate: "*",
     "pagination[pageSize]": 100,
     "filters[createdAt][$gte]": start.toISOString(),
     "filters[createdAt][$lte]": end.toISOString(),
   });
- console.log('booking data:', bookingData);
-  // Only consider bookings that overlap with the selected date range
-  const filteredBookings = bookingData.filter((booking: Booking) => {
-    if (!booking.checkin || !booking.checkout) return false;
-    const bookingCheckin = new Date(booking.checkin);
-    const bookingCheckout = new Date(booking.checkout);
-    // Booking is considered if it overlaps with the selected range
-    return (
-      bookingCheckin.getTime() <= end.getTime() &&
-      bookingCheckout.getTime() >= start.getTime()
-    );
-  });
+//  console.log('booking data:', bookingData);
+  // Only consider bookings that overlap with the selected date range and have a valid booking_status
+  // const filteredBookings = bookingData.filter((booking: Booking) => {
+  //   const bookingCheckin = new Date(booking.checkin);
+  //   const bookingCheckout = new Date(booking.checkout);
+  //   // Booking is considered if it overlaps with the selected range
+  //   return (
+  //     bookingCheckin.getTime() <= end.getTime() &&
+  //     bookingCheckout.getTime() >= start.getTime()
+  //   );
+  // });
+
+  // console.log('filtered Booking:', filteredBookings)
 
   // Fetch room data
-  const roomData = await strapiService.getRooms({ populate: "*" });
+  const roomData = await strapiService.roomEndpoints.getRooms({ populate: "*" });
 
   // Count occupied rooms for the selected date
   let occupiedRooms = 0;
-  filteredBookings.forEach((booking: Booking) => {
+  bookingData.forEach((booking: Booking) => {
     if (booking.booking_status === "checkedin") {
       occupiedRooms++;
     }
@@ -45,10 +46,10 @@ export async function handleBookingRecords(timeFrame: { startDate: string, endDa
     return total + (room.availability || 0);
   }, 0) - occupiedRooms;
 
+  // Count check-ins and check-outs for the selected date range
   let totalCheckIns = 0;
   let totalCheckOuts = 0;
-
-  filteredBookings.forEach((booking: Booking) => {
+  bookingData.forEach((booking: Booking) => {
     if (booking.booking_status === "checkedin") {
       totalCheckIns++;
     } else if (booking.booking_status === "checkedout") {
@@ -56,24 +57,24 @@ export async function handleBookingRecords(timeFrame: { startDate: string, endDa
     }
   });
 
-  // Payment breakdown (use payment object for accuracy)
-  const cash = filteredBookings
+  // Payment breakdown (use bookingData for financials)
+  const cash = bookingData
     .filter((booking: any) => booking.payment?.paymentMethod === "cash")
     .reduce((total: number, booking: any) => total + (booking.payment?.totalPrice || 0), 0);
 
-  const transfer = filteredBookings
+  const transfer = bookingData
     .filter((booking: any) =>
       booking.payment?.paymentMethod === "bank_transfer" || booking.payment?.paymentMethod === "card"
     )
     .reduce((total: number, booking: any) => total + (booking.payment?.totalPrice || 0), 0);
 
-  const totalSales = filteredBookings.reduce((total: number, booking: any) => {
+  const totalSales = bookingData.reduce((total: number, booking: any) => {
     return total + (booking.payment?.totalPrice || 0);
   }, 0);
 
-  console.group("Booking Summary");
-  console.log({ totalAvailableRooms, occupiedRooms, totalCheckIns, totalCheckOuts, cash, transfer, totalSales });
-  console.groupEnd();
+  // console.group("Booking Summary");
+  // console.log({ totalAvailableRooms, occupiedRooms, totalCheckIns, totalCheckOuts, cash, transfer, totalSales });
+  // console.groupEnd();
 
   return {
     totalAvailableRooms,

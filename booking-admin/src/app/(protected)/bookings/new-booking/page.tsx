@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import InputGroup from "@/components/FormElements/InputGroup";
 import { Button } from "@/components/ui-elements/button";
 import { Booking, Customer } from "@/types/bookingTypes";
-import { strapiService } from "@/utils/dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint"; 
 import Image from "next/image";
 import { useRouter } from "next/navigation"; // Import useRouter
 import { toast } from "react-toastify";
@@ -31,7 +31,7 @@ const CreateBookingForm: React.FC = () => {
   useEffect(() => {
     const fetchRoomsAndAvailability = async () => {
       try {
-        const rooms = await strapiService.getRooms();
+        const rooms = await strapiService.roomEndpoints.getRooms();
         setRoomData(rooms);
 
         if (rooms.length > 0) {
@@ -129,15 +129,15 @@ const CreateBookingForm: React.FC = () => {
     console.log("form Data:", formData);
 
       const transactionData = {
-      PaymentStatus: payment.PaymentStatus,
-      paymentMethod: payment.paymentMethod,
-      totalPrice: totalPrice,
-    };
+        PaymentStatus: payment.PaymentStatus,
+        paymentMethod: payment.paymentMethod,
+        totalPrice: totalPrice,
+      };
 
       // Post the payload directly
-      const paymentId = await strapiService.createTransaction(transactionData);
+      const paymentId = await strapiService.paymentEndpoints.createTransaction(transactionData);
 
-      const response = await strapiService.createBooking({
+      const response = await strapiService.bookingEndpoints.createBooking({
         checkin,
         checkout,
         guests,
@@ -149,17 +149,19 @@ const CreateBookingForm: React.FC = () => {
       });
 
       const bookingResponse = await response;
-      console.log("booking Response:", bookingResponse);
       toast.success("Booking created successfully!");
 
-      // Redirect to the booking summary page
-      router.push(`/booking-confirmation?bookingId=
-        ${bookingResponse.documentId}
-        &amount=${bookingResponse.totalPrice}
-        &checkIn=${bookingResponse.checkin}
-        &checkOut=${bookingResponse.checkout}
-        &room=${selectedRoom.title}
-      `);
+      // Redirect to the booking summary page, passing all customer details
+     router.push(
+  `/booking-confirmation?bookingId=${bookingResponse.documentId}` +
+  `&amount=${bookingResponse.totalPrice}` +
+  `&checkIn=${bookingResponse.checkin}` +
+  `&checkOut=${bookingResponse.checkout}` +
+  `&room=${selectedRoom.title}` +
+  `&customerName=${encodeURIComponent(formData.customer.firstName + " " + formData.customer.lastName)}` +
+  `&customerEmail=${encodeURIComponent(formData.customer.email ?? "")}` +
+  `&customerPhone=${encodeURIComponent(formData.customer.phone ?? "")}`
+);
     } catch (error) {
       console.error("Error creating booking:", error);
       toast.error("Failed to create booking. Please try again.");
@@ -308,7 +310,7 @@ const CreateBookingForm: React.FC = () => {
             <p>
               <strong>Selected Customer:</strong>{" "}
               {formData.customer.firstName
-                ? `${formData.customer.firstName} ${formData.customer.lastName}`
+               ? `${formData.customer.firstName} ${formData.customer.lastName}`
                 : "None"}
             </p>
 
@@ -330,12 +332,16 @@ const CreateBookingForm: React.FC = () => {
         isOpen={isCustomerModalOpen}
         onClose={() => setIsCustomerModalOpen(false)}
         onSubmit={(customer: Customer) => {
-          setCustomerId(customer.id ?? null); 
+          setCustomerId(customer.id ?? null);
+
           setFormData((prev) => ({
             ...prev,
             customer: {
-              ...prev.customer,
-              documentId: customer.documentId, // Save the documentId
+              documentId: customer.documentId,
+              firstName: customer.firstName,
+              lastName: customer.lastName,
+              phone: customer.phone,
+              email: customer.email,
             },
           }));
           setIsCustomerModalOpen(false);

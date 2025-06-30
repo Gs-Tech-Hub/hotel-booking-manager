@@ -1,4 +1,4 @@
-import { strapiService } from "@/utils/dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint";
 import { TimeFrame } from "@/types";
 
 interface Payment {
@@ -67,7 +67,7 @@ function getGroupKey(dateStr: string, timeFrame: TimeFrame): string {
 export async function getPaymentsOverviewData(
     timeFrame: TimeFrame): Promise<OverviewData> {
 
-  const { data } = await strapiService.getTransactions(
+  const { data } = await strapiService.paymentEndpoints.getTransactions(
     {
     pagination: 50
     });

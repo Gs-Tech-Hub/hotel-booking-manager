@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal } from "@/components/ui-elements/modal";
 import { Button } from "@/components/ui-elements/button";
-import { strapiService } from "@/utils/dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint";
 import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/Auth/context/auth-context";
@@ -150,7 +150,7 @@ export function AddGameModal({
       }
 
       if (defaultData?.documentId) {
-        await strapiService.updateGame(defaultData.documentId, payload);
+        await strapiService.gameEndpoints.updateGame(defaultData.documentId, payload);
       }
 
       toast.success("Game updated successfully!");

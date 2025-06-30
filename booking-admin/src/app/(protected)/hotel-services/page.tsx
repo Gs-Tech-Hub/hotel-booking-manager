@@ -57,8 +57,8 @@ export default function HotelServicesPage() {
                 formatDate(endDate),
                 'hotel',
                 {
-                    inventoryEndpoint: 'getHotelServices',
-                    departmentStockField: 'quantity',
+                    inventoryEndpointGroup: "menuEndpoints",
+                    inventoryMethod: "getHotelServices",                    departmentStockField: 'quantity',
                     otherStockField: '',
                     fetchInventory: true
                 }

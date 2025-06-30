@@ -11,7 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
-import { strapiService } from "@/utils/dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint";
 import UpdateCustomerBooking from "../update-booking-modal";
 import React from "react";
 
@@ -76,7 +76,7 @@ export function InterActiveGuestList({ className }: { className?: string }) {
       const end = new Date(selectedDateRange.endDate);
       end.setHours(23, 59, 59, 999);
 
-      const result = await strapiService.getBookings({
+      const result = await strapiService.bookingEndpoints.getBookings({
         populate: "*",
         pagination: 25,
         "filters[createdAt][$gte]": start.toISOString(),
@@ -139,7 +139,7 @@ export function InterActiveGuestList({ className }: { className?: string }) {
   }) => {
     if (selectedGuest) {
       try {
-        await strapiService.updateBooking(selectedGuest.documentId, updatedData);
+        await strapiService.bookingEndpoints.updateBooking(selectedGuest.documentId, updatedData);
         setData((prevData) =>
           prevData.map((guest) =>
             guest.documentId === selectedGuest.documentId

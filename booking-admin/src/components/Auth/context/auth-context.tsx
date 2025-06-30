@@ -4,7 +4,7 @@
 
 import { createContext, useContext, useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { strapiService } from "@/utils/dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint";
 
 interface User {
   id: string; // Added id property to User interface
@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         try {
-          const isValid = await strapiService.verifyToken(storedJwt, userId);
+          const isValid = await strapiService.authEndpoints.verifyToken(storedJwt, userId);
           if (isValid?.valid) {
             setUser(userData);
            console.log("User set from storage:", userData);
@@ -98,14 +98,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // log("Attempting login...");
     try {
       setLoading(true);
-      const verifiedUser = await strapiService.loginUser(email, password);
+      const verifiedUser = await strapiService.authEndpoints.loginUser(email, password);
       // log("Login response:", verifiedUser);
 
       if (!verifiedUser?.jwt) {
         throw new Error("Invalid credentials: missing JWT");
       }
 
-      const userWithRole = await strapiService.getUserProfileWithRole(verifiedUser.user.id);
+      const userWithRole = await strapiService.authEndpoints.getUserProfileWithRole(verifiedUser.user.id);
       // log("Fetched user profile with role:", userWithRole);
 
       if (!userWithRole?.role) {

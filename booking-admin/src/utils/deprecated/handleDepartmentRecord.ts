@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { strapiService } from "@/utils/dataEndPoint";
+import { strapiService } from "./dataEndPoint";
 import { Product } from "@/app/(protected)/bar/_components/products-table/products-table";
 
 export interface OverviewCardData {

@@ -77,7 +77,8 @@ export default function Products() {
           selectedDateRange.endDate,
           "restaurant",
           {
-            inventoryEndpoint: "getFoodItems",
+            inventoryEndpointGroup: "menuEndpoints",
+            inventoryMethod: "getFoodItems",
             departmentStockField: "bar_stock",
             otherStockField: "restaurant_stock",
             fetchInventory: true,

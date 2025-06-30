@@ -6,8 +6,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatPrice } from "@/utils/priceHandler";
-import { ExtendedProduct } from "@/utils/handleDepartmentRecord";
+import { formatPrice } from "@/utils/deprecated/priceHandler";
+import { ExtendedProduct } from "@/utils/deprecated/handleDepartmentRecord";
 
 export type Product = {
   name: string;

@@ -1,5 +1,5 @@
 import { OverviewCard } from "./card";
-import { formatPrice } from "@/utils/priceHandler";
+import { formatPrice } from "@/utils/deprecated/priceHandler";
 
 type OverviewDataItem = {
   value: number;

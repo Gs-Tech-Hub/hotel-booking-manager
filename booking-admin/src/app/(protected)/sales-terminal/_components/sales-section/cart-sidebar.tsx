@@ -5,9 +5,9 @@ import { Button } from "@/components/ui-elements/button";
 import { useCartStore } from "@/app/stores/useCartStore";
 import { toast } from "react-toastify";
 import { Order, useOrderStore } from "@/app/stores/useOrderStore";
-import { formatPrice } from "@/utils/priceHandler";
+import { formatPrice } from "@/utils/deprecated/priceHandler";
 import { useAuth } from "@/components/Auth/context/auth-context";
-import { strapiService } from "@/utils/dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint";
 
 interface StaffUser {
   id: string;
@@ -68,7 +68,7 @@ export default function CartSidebar({
   useEffect(() => {
     async function fetchStaff() {
       try {
-        const response = await strapiService.getUsers();
+        const response = await strapiService.authEndpoints.getUsers();
         if (Array.isArray(response)) {
           setStaffList(response);
         }
@@ -91,18 +91,6 @@ export default function CartSidebar({
     }
     return cartTotal - (parseFloat(inputDiscount) || 0); // Fallback for new orders
   });
-
-  // useEffect(() => {
-  //   // console.log("CartSidebar State:", {
-  //   //   customerName,
-  //   //   tableNumber,
-  //   //   waiterName,
-  //   //   cartItems,
-  //   //   inputDiscount,
-  //   //   selectedStaffId,
-  //   //   finalTotal,
-  //   // });
-  // }, [customerName, tableNumber, waiterName, cartItems, inputDiscount, selectedStaffId, finalTotal]);
 
   const handleCreateOrder = async () => {
     if (!customerName || !tableNumber || cartItems.length === 0) {

@@ -11,7 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
-import { strapiService } from "@/utils/dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint";
 
 export function GuestList({ className, dateRange }: { className?: string, dateRange: { start: string, end: string } }) {
   interface Guest {
@@ -49,7 +49,7 @@ export function GuestList({ className, dateRange }: { className?: string, dateRa
       start.setHours(0, 0, 0, 0);
       const end = new Date(dateRange.end);
       end.setHours(23, 59, 59, 999);
-      const result = await strapiService.getBookings({
+      const result = await strapiService.bookingEndpoints.getBookings({
         populate: '*',
         pagination: 25,
         "filters[createdAt][$gte]": start.toISOString(),

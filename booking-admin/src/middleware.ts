@@ -13,14 +13,6 @@ const protectedRoutes = [
   '/kitchen',
 ];
 
-// Define role-based access for specific routes
-// const roleBasedRoutes: Record<string, string[]> = {
-//   '/bar': ['admin', 'bar'],
-//   '/kitchen': ['admin', 'kitchen'],
-//   '/games': ['admin', 'bar'],
-//   '/products': ['admin', 'manager'],
-// };
-
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 

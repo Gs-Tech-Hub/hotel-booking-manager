@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { strapiService } from '@/utils/dataEndPoint';
+import { strapiService } from './dataEndPoint';
 import { CartItem } from '@/app/stores/useCartStore';
 
 type ProductCountAssociation = {

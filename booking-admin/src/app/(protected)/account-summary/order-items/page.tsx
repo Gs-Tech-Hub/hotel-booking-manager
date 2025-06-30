@@ -1,5 +1,5 @@
 'use client'
-import { strapiService } from '@/utils/dataEndPoint'
+import { strapiService } from '@/utils/dataEndpoint'
 import React, { useEffect, useState } from 'react'
 
 type FoodItem = {
@@ -24,7 +24,7 @@ export default function FoodItemsList() {
   const fetchBookingItems = async () => {
     setLoading(true)
     try {
-      const res = await strapiService.getBookingItems({
+      const res = await strapiService.bookingEndpoints.getBookingItems({
         "pagination[pageSize]": "100",
         "pagination[page]": "3",
         "populate": "*"

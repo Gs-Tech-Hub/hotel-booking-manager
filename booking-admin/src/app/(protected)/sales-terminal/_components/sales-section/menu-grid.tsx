@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useCartStore, MenuItem } from "@/app/stores/useCartStore";
 import { Button } from "@/components/ui-elements/button";
 import { Card } from "@/components/ui-elements/card";
-import { formatPrice } from "@/utils/priceHandler";
+import { formatPrice } from "@/utils/deprecated/priceHandler";
 import { toast } from "react-toastify";
 
 type MenuGridProps = {

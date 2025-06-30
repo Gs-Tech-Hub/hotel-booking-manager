@@ -3,7 +3,7 @@ import InputGroup from "@/components/FormElements/InputGroup";
 import { Select } from "@/components/FormElements/select";
 import { Button } from "@/components/ui-elements/button";
 import { toast } from "react-toastify";
-import { strapiService } from "@/utils/dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint";
 
 interface Booking {
   id: number;
@@ -101,7 +101,7 @@ const UpdateBookingForm: React.FC<UpdateBookingFormProps> = ({ booking, onSubmit
         return;
       }
 
-      const response = await strapiService.updateBooking(booking.documentId, payload);
+      const response = await strapiService.bookingEndpoints.updateBooking(booking.documentId, payload);
       if (response) {
         toast.success("Booking updated successfully!");
         onSubmit(payload);

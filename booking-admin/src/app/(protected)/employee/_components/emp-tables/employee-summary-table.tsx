@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatPrice } from "@/utils/priceHandler";
+import { formatPrice } from "@/utils/deprecated/priceHandler";
 import EmployeeAttendanceModal from "../emp-attendance-modal";
 
 // Employment Data Table

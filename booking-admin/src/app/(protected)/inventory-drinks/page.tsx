@@ -6,7 +6,7 @@ import { OverviewCardsGroup } from "./_components/overview-cards";
 import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
 import DrinksInventoryPage from "./_components/products-table/drinks-inventory";
 import { ProductsListSkeleton } from "./_components/products-table/skeleton";
-import { strapiService } from "@/utils/dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint";
 import { useRoleGuard } from "@/hooks/useRoleGuard";
 
 
@@ -24,7 +24,7 @@ export default function Bar() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const productsData = await strapiService.getDrinksList({
+        const productsData = await strapiService.menuEndpoints.getDrinksList({
           'populate': '*',
           'pagination[pageSize]': 120,
         });

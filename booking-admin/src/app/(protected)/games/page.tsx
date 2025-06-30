@@ -4,7 +4,7 @@ import { OverviewCardsGroup } from "./_components/overview-cards";
 import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
 import { ProductsListSkeleton } from "./_components/games-table/skeleton";
 import DrinksInventoryPage from "./_components/games-table/games-list";
-import { strapiService } from "@/utils/dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint";
 
 export default function Games() {
   const [gamesList, setGamesList] = useState([]);
@@ -31,7 +31,7 @@ export default function Games() {
           endOfDay = new Date(yesterday.setHours(23, 59, 59, 999));
         }
 
-        const gamesData = await strapiService.getGamesList({
+        const gamesData = await strapiService.gameEndpoints.getGamesList({
           populate: '*',
           'pagination[pageSize]': 100,
           'filters[createdAt][$gte]': startOfDay.toISOString(),

@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { Button } from '@/components/ui-elements/button';
-import { strapiService } from '@/utils/dataEndPoint';
+import { strapiService } from '@/utils/dataEndpoint';
 import React, { useState } from 'react';
 import { toast } from "react-toastify";
 
@@ -58,7 +58,7 @@ const AddEmployeeSummaryForm = ({ initialData = {} as AddEmployeeSummaryFormProp
         throw new Error("Employee ID is required for updating");
       }
 
-      const res = await strapiService.updateEmployeeSummary(form.documentId, payload);
+      const res = await strapiService.employeeEndpoints.updateEmployeeSummary(form.documentId, payload);
       toast.success("Employee summary updated successfully!");
       onSubmit(res);
     } catch (error: any) {

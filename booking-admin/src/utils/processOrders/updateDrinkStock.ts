@@ -1,5 +1,5 @@
 import { OrderItem, ConnectedItem } from '@/types/order';
-import { strapiService } from '../dataEndPoint';
+import { strapiService } from '@/utils/dataEndpoint';
 
 export const updateDrinkStock = async (items: OrderItem[], drinks: ConnectedItem[]) => {
     for (const item of items) {
@@ -8,7 +8,7 @@ export const updateDrinkStock = async (items: OrderItem[], drinks: ConnectedItem
       if (drink && drink.documentId) {
         const newStock = (drink.bar_stock ?? 0) - item.quantity;
         if (newStock < 0) throw new Error(`Insufficient stock for drink: ${item.name}`);
-        await strapiService.updateDrinksList(drink.documentId, { bar_stock: newStock });
+        await strapiService.menuEndpoints.updateDrinksList(drink.documentId, { bar_stock: newStock });
         drink.bar_stock = newStock;
       }
     }

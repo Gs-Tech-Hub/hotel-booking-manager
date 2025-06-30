@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { OverviewCardsSkeleton } from "../account-summary/_components/overview-cards/skeleton";
 import POSLayout from "./_components/sales-section";
 import { MenuItem } from "@/app/stores/useCartStore";
-import { strapiService } from "@/utils/dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint";
 
 export default function POS() {
   const [department, setDepartment] = useState<'bar' | 'restaurant' | 'hotel'>('bar');
@@ -17,7 +17,7 @@ export default function POS() {
     let items: MenuItem[] = [];
 
     if (dept === 'bar') {
-      const response = await strapiService.getBarAndClubs({
+      const response = await strapiService.menuEndpoints.getBarAndClubs({
         populate: '*',
         'pagination[pageSize]': 100,
       });
@@ -35,7 +35,7 @@ export default function POS() {
       ) || [];
 
     } else if (dept === 'restaurant') {
-      const response = await strapiService.getRestaurants({
+      const response = await strapiService.menuEndpoints.getRestaurants({
         populate: '*',
         'pagination[pageSize]': 100,
       });
@@ -53,7 +53,7 @@ export default function POS() {
       ) || [];
 
     } else if (dept === 'hotel') {
-      const response = await strapiService.getHotelServices({
+      const response = await strapiService.menuEndpoints.getHotelServices({
         populate: '*',
         'pagination[pageSize]': 100,
       });

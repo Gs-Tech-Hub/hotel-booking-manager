@@ -1,5 +1,4 @@
 /* eslint-disable */
-
 type ApiHandlerProps = {
   baseUrl: string;
 };

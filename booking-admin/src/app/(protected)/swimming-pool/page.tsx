@@ -1,7 +1,7 @@
 /* eslint-disable */
 'use client';
 import React, { useState, useEffect, Suspense } from 'react';
-import { strapiService } from '@/utils/dataEndPoint';
+import { strapiService } from '@/utils/dataEndpoint';
 import { SwimmingPoolList } from './products-table/pool-table';
 
 export default function SwimmingPoolPage() {
@@ -35,7 +35,7 @@ export default function SwimmingPoolPage() {
         if (!startDate || !endDate) return;
 
         try {
-            const response = await strapiService.getBookingItems({
+            const response = await strapiService.bookingEndpoints.getBookingItems({
                 populate: '*',
                 'pagination[pageSize]': 100,
                 'filters[hotel_services][id][$notNull]': true, // Ensures we only get bookings with at least one service

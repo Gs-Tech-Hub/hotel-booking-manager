@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Suspense, useRef } from "react";
-import {formatPrice} from "@/utils/priceHandler";
+import {formatPrice} from "@/utils/deprecated/priceHandler";
 import axios from "axios";
 import { useOrganisationInfo } from "@/hooks/useOrganisationInfo";
 
@@ -14,13 +14,15 @@ const BookingConfirmationContent = () => {
 
   const bookingId = searchParams.get("bookingId");
   const reference = searchParams.get("reference");
-  const email = searchParams.get("email");
+  const email = searchParams.get("customerEmail");
+  const phone = searchParams.get("customerPhone");
   const amount = searchParams.get("amount");
   const checkIn = searchParams.get("checkIn");
   const checkOut = searchParams.get("checkOut");
   const guests = searchParams.get("guests");
   const room = searchParams.get("room");
   const roomImage = searchParams.get("roomImage");
+  const customerName = searchParams.get("customerName");
 
   const hasHotelDetails = room && roomImage;
 
@@ -105,6 +107,8 @@ const BookingConfirmationContent = () => {
               <h3 className="text-lg font-semibold mb-2">Hotel Booking Receipt</h3>             
               <p><strong>Booking ID:</strong> {bookingId}</p>
               <p><strong>Reference:</strong> {reference}</p>
+              <p><strong>Customer:</strong> {customerName}</p>
+              <p><strong>Phone:</strong> {phone}</p>
               <p><strong>Email:</strong> {email}</p>
               <p><strong>Room:</strong> {room}</p>
               <p><strong>Guests:</strong> {guests}</p>
@@ -121,6 +125,8 @@ const BookingConfirmationContent = () => {
         
             {bookingId && <p><strong>Booking ID:</strong> {bookingId}</p>}
             {reference && <p><strong>Reference:</strong> {reference}</p>}
+            {customerName && <p><strong>Customer:</strong> {customerName}</p>}
+            {phone && <p><strong>Phone:</strong> {phone}</p>}
             {email && <p><strong>Email:</strong> {email}</p>}
             {checkIn && <p><strong>Check-in:</strong> {checkIn}</p>}
             {checkOut && <p><strong>Check-Out:</strong>{checkOut}</p>}

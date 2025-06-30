@@ -1,5 +1,5 @@
 import { Order } from "@/app/stores/useOrderStore";
-import { formatPrice } from "@/utils/priceHandler";
+import { formatPrice } from "@/utils/deprecated/priceHandler";
 import { X } from "lucide-react";
 
 interface OrderItemProps {

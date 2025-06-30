@@ -9,7 +9,7 @@ import {
     TableHeader,
     TableRow,
   } from "@/components/ui/table";
-import { strapiService } from "@/utils/dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint";
 
 interface JobApplication {
     id: number;
@@ -26,7 +26,7 @@ export default function JobApplicationTable() {
   useEffect(() => {
     async function fetchJobApplications() {
       try {
-        const response = await strapiService.getJobApplications(
+        const response = await strapiService.miscEndpoints.getJobApplications(
             {
                 "populate": "*",
                 "pagination[pageSize]": "50"

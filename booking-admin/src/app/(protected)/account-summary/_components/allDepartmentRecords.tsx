@@ -1,5 +1,5 @@
-import { strapiService } from "@/utils/dataEndPoint";
-import { OverviewCardData } from "@/utils/handleDepartmentRecord";
+import { strapiService } from "@/utils/dataEndpoint";
+import { OverviewCardData } from "@/utils/deprecated/handleDepartmentRecord";
 import { handleMainRecord } from "@/utils/ReportHelpers/mainHandle";
 
 export async function getAllDepartmentOverviews(startDate: string, endDate: string) {
@@ -19,7 +19,7 @@ export async function getAllDepartmentOverviews(startDate: string, endDate: stri
     ]);
     // console.log("Batch 2 Loaded: Hotel and Games");
 
-    const gamesData = await strapiService.getGamesList({
+    const gamesData = await strapiService.gameEndpoints.getGamesList({
       populate: '*',
       'pagination[pageSize]': 100,
       'filters[createdAt][$gte]': startDate,

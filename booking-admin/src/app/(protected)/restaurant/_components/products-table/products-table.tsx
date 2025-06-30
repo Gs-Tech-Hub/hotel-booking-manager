@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatPrice } from "@/utils/priceHandler";
+import { formatPrice } from "@/utils/deprecated/priceHandler";
 
 function getAvailabilityStatus(quantity: number, threshold: number) {
   if (quantity === 0) return { label: "Out of Stock", color: "text-red-600" };

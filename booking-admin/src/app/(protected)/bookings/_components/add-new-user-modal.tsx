@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal } from "@/components/ui-elements/modal";
 import { Button } from "@/components/ui-elements/button";
-import { strapiService } from "@/utils/dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint";
 import { toast } from "react-toastify";
 import { Customer } from "@/types/bookingTypes";
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
@@ -46,7 +46,7 @@ export function AddNewCustomerModal({ isOpen, onClose, onSubmit }: CreateCustome
     
       setIsLoading(true);
       try {
-        const user = await strapiService.findCustomerByPhoneOrEmail(customerInput);
+        const user = await strapiService.customerEndpoints.findCustomerByPhoneOrEmail(customerInput);
     
         if (user) {
           toast.success("Customer found! Skipping to the last step.");
@@ -87,7 +87,7 @@ export function AddNewCustomerModal({ isOpen, onClose, onSubmit }: CreateCustome
 
     setIsLoading(true);
     try {
-      const response = await strapiService.createCustomer({
+      const response = await strapiService.customerEndpoints.createCustomer({
         firstName: newUserName,
         lastName: newUserLastName,
         phone: newUserPhone,
@@ -103,10 +103,14 @@ export function AddNewCustomerModal({ isOpen, onClose, onSubmit }: CreateCustome
       }
 
       // Pass all required customer fields
-      const { id, documentId } = response;
+      const { id, documentId, firstName, lastName, email, phone  } = response;
       onSubmit({
         id,
         documentId,
+        firstName,
+        lastName,
+        email,  
+        phone,
       });
       onClose();
       toast.success("Customer created successfully!");

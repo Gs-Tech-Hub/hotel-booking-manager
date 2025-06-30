@@ -4,7 +4,7 @@ import { resolveProductCountIds } from './resolveProductcountId';
 import { fetchAndConnectItems } from './fetchAndConnectItems';
 import { updateDrinkStock } from './updateDrinkStock';
 import { createBookingItemForDepartment } from './createBookingItemsForDepartments';
-import { strapiService } from '../dataEndPoint';
+import { strapiService } from '@/utils/dataEndpoint';
 import { OrderItem, PaymentMethod, Order, ValidatedItem } from '@/types/order';
 export const processOrder = async ({
   order,
@@ -38,14 +38,14 @@ export const processOrder = async ({
 
       if (department === 'bar') {
         // Step 1: Fetch drinks
-        drinks = await fetchAndConnectItems(items, strapiService.getDrinksList, 'drinks', order, employeeOrders);
+        drinks = await fetchAndConnectItems(items, strapiService.menuEndpoints.getDrinksList, 'drinks', order, employeeOrders);
         validatedItems = (drinks || []).filter(
           item => typeof item.documentId === 'string'
         ) as ValidatedItem[];
 
           // Create employee orders
           for (const empOrder of employeeOrders) {
-            await strapiService.createEmployeeOrder(empOrder);
+            await strapiService.employeeEndpoints.createEmployeeOrder(empOrder);
           }
           
     // Step 2: Create productCount records
@@ -56,7 +56,7 @@ export const processOrder = async ({
         const documentIds = Array.from(new Set(items.map(item => item.documentId).filter(Boolean)));
           let updatedDrinksList: ValidatedItem[] = [];
           for (const docId of documentIds) {
-            const res = await strapiService.getDrinksList({
+            const res = await strapiService.menuEndpoints.getDrinksList({
               "filters[documentId][$eq]": docId,
             });
             updatedDrinksList = [...updatedDrinksList, ...res];
@@ -80,12 +80,12 @@ export const processOrder = async ({
     await updateDrinkStock(items, validatedItems);
     
       } else if (department === 'restaurant') {
-        food_items = await fetchAndConnectItems(items, strapiService.getFoodItems, 'food_items', order, employeeOrders);
+        food_items = await fetchAndConnectItems(items, strapiService.menuEndpoints.getFoodItems, 'food_items', order, employeeOrders);
         validatedItems = (food_items || []) as ValidatedItem[];
 
           // Create employee orders
         for (const empOrder of employeeOrders) {
-          await strapiService.createEmployeeOrder(empOrder);
+          await strapiService.employeeEndpoints.createEmployeeOrder(empOrder);
         }
 
         const productCountMap = await resolveProductCountIds(items, validatedItems);
@@ -104,12 +104,12 @@ export const processOrder = async ({
         });
         bookingItems.push({ id: bookingItemRes.id });
       } else if (department === 'hotel') {
-        hotel_services = await fetchAndConnectItems(items, strapiService.getHotelServices, 'hotel_services', order, employeeOrders);
+        hotel_services = await fetchAndConnectItems(items, strapiService.menuEndpoints.getHotelServices, 'hotel_services', order, employeeOrders);
         validatedItems = (hotel_services || []) as ValidatedItem[];
 
           // Create employee orders
         for (const empOrder of employeeOrders) {
-          await strapiService.createEmployeeOrder(empOrder);
+          await strapiService.employeeEndpoints.createEmployeeOrder(empOrder);
         }
 
         const productCountMap = await resolveProductCountIds(items, validatedItems);
@@ -191,7 +191,7 @@ export const processOrder = async ({
       ...(customerId && { customer: { connect: { id: customerId } } }),
     };
 
-    const orderRes = await strapiService.post('orders', orderPayload);
+    const orderRes = await strapiService.utilityEndpoints.post('orders', orderPayload);
 
     return { success: true, orderId: orderRes.documentId };
   } catch (error) {

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal } from "@/components/ui-elements/modal";
 import { Button } from "@/components/ui-elements/button";
-import { strapiService } from "@/utils/dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint";
 import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
@@ -40,7 +40,7 @@ export function CreateGameModal({ isOpen, onClose, onSubmit }: CreateGameModalPr
     setIsLoading(true);
     try {
       // assuming playerInput is being matched against both phone & email
-      const user = await strapiService.findCustomerByPhoneOrEmail(playerInput);
+      const user = await strapiService.customerEndpoints.findCustomerByPhoneOrEmail(playerInput);
   
       if (user) {
         await createGame(user.documentId); 
@@ -72,7 +72,7 @@ export function CreateGameModal({ isOpen, onClose, onSubmit }: CreateGameModalPr
 
     setIsLoading(true);
     try {
-      const newUser = await strapiService.createCustomer({
+      const newUser = await strapiService.customerEndpoints.createCustomer({
         firstName: newUserName,
         lastName: newUserLastName,
         phone: newUserPhone,
@@ -88,7 +88,7 @@ export function CreateGameModal({ isOpen, onClose, onSubmit }: CreateGameModalPr
 
   const createGame = async (customerId: string) => {
     try {
-      await strapiService.createGame({
+      await strapiService.gameEndpoints.createGame({
         customer: customerId,
         count: 1,
         amount_paid: 0,

@@ -7,7 +7,7 @@ import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
 import { GuestList } from "@/app/(protected)/(home)/_components/guest-list";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/Auth/context/auth-context";
-import { handleBookingRecords } from "@/utils/handleBookingRecords";
+import { handleBookingRecords } from "@/utils/ReportHelpers/handleBookingRecords";
 
 const generatePastWeekDateRanges = () => {
   const now = new Date();

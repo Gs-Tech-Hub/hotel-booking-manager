@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { OrderItem, ConnectedItem, PaymentMethod, Order } from "@/types/order";
-import { strapiService } from "../dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint";
 
 export const createBookingItemForDepartment = async ({
   items,
@@ -73,7 +73,7 @@ export const createBookingItemForDepartment = async ({
     console.log("Booking Item Payload:", bookingItemPayload);
 
     // Create the booking item
-    const res = await strapiService.createBookingItem(bookingItemPayload);
+    const res = await strapiService.bookingEndpoints.createBookingItem(bookingItemPayload);
     // console.log("Booking item created:", res);
 
     return res;

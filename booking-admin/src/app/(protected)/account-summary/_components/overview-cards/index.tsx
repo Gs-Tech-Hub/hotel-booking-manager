@@ -1,6 +1,6 @@
 import { OverviewCard } from "./card";
 import * as icons from "./icons";
-import { formatPrice } from "@/utils/priceHandler";
+import { formatPrice } from "@/utils/deprecated/priceHandler";
 import { useState, useEffect } from "react";
 import { Spinner } from "@/components/Spinner";
 

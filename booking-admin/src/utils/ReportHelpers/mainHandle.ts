@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { strapiService } from "@/utils/dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint";
 import { Product } from "@/app/(protected)/bar/_components/products-table/products-table";
 import { fetchInventoryData } from "./reportHelpers/fetchInventoryData";
 import { calculateDepartmentTotals } from "./reportHelpers/calculateDepartmentTotals";
@@ -57,19 +57,22 @@ export async function handleMainRecord(
   endDate: string,
   department: "bar" | "restaurant" | "hotel" | "games" | "gym_memberships" | "sport_memberships",
   options: {
-    inventoryEndpoint: keyof typeof strapiService;
+    inventoryEndpointGroup: string;
+    inventoryMethod: string;
     departmentStockField: string;
     otherStockField: string;
     fetchInventory?: boolean;
   } = {
-    inventoryEndpoint: "fetch",
+    inventoryEndpointGroup: "menuEndpoints",
+    inventoryMethod: "getDrinksList",
     departmentStockField: "stock",
     otherStockField: "other_stock",
     fetchInventory: false,
   }
 ): Promise<{ overview: OverviewCardData; products: ExtendedProduct[] }> {
   const {
-    inventoryEndpoint,
+    inventoryEndpointGroup,
+    inventoryMethod,
     departmentStockField,
     otherStockField,
     fetchInventory = false,
@@ -77,13 +80,13 @@ export async function handleMainRecord(
 
   try {
     const filters = generateFilters(startDate, endDate, department);
-    const bookingItems = await strapiService.getBookingItems(filters);
+    const bookingItems = await strapiService.bookingEndpoints.getBookingItems(filters);
     console.log('booking-items:', bookingItems);
     const groupedItems = itemsByDepartment(bookingItems);
     console.log("grouped items:", groupedItems);
 
     const productCountFilters = generateFilters(startDate, endDate, "product_count");
-    const productCountItems = await strapiService.getBookingItems(productCountFilters);
+    const productCountItems = await strapiService.bookingEndpoints.getBookingItems(productCountFilters);
 
     // Merge counts into grouped items
     const { updatedItems: mergedGroupedItems } = mergedProductCount(groupedItems, productCountItems);
@@ -140,7 +143,7 @@ export async function handleMainRecord(
 
     // Optional inventory fetch
     const inventoryData = fetchInventory
-      ? await fetchInventoryData(inventoryEndpoint)
+      ? await fetchInventoryData(inventoryEndpointGroup, inventoryMethod)
       : [];
 
     const products: ExtendedProduct[] = inventoryData.map((product: any) => {

@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Spinner } from "@/components/Spinner";
-import { strapiService } from "@/utils/dataEndpoint/index";
+import { strapiService } from "@/utils/dataEndpoint";
 import AddMembershipModal from "./AddMembershipModal";
 import RenewMembershipModal from "./RenewMembershipModal";
 import AttendanceModal from "./AttendanceModal";
@@ -100,6 +100,7 @@ export default function GymMembershipTable({ dataType = 'gym', title = 'Membersh
     fetchMembers();
   }, [dataType]);
   console.log("Members:", members);
+
   const handleAddMember = async (values: any) => {
     // Find the gym or sport id (use the first for now)
     const data = await strapiService.sportsAndFitnessEndpoints.getSportsAndFitnessList({

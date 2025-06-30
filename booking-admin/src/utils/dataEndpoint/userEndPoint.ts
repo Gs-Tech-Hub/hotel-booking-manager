@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { useAuth } from "@/components/Auth/context/auth-context";
-import ApiHandler from "@/utils/apiHandler";
+import ApiHandler from "@/utils/dataEndpoint/apiHandler";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
 

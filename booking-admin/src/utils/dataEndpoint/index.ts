@@ -34,12 +34,15 @@ import * as gymMembershipsEndpoints from './gymMemberships';
 import * as sportMembershipsEndpoints from './sportMemberships'; 
 import * as checkinEndpoints from './checkIn';
 import * as organisationInfo  from './organisation-info';
+import * as employeeRecordsEndpoints from './employeeEndpoints'; // <-- Add employeeRecordsEndpoints to central exports
+import * as gameEndpoints  from './gameEndpoints';
 
 
 export const strapiService = {
   ...bookingEndpoints,
   ...customerEndpoints,
   ...paymentEndpoints,
+  ...gameEndpoints,
   ...menuEndpoints,
   ...employeeEndpoints,
   ...roomEndpoints,
@@ -53,5 +56,5 @@ export const strapiService = {
   ...sportMembershipsEndpoints,
   ...checkinEndpoints,
   ...organisationInfo,
-
+  ...employeeRecordsEndpoints, 
 };

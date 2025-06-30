@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { CartItem } from '@/app/stores/useCartStore';
-import { strapiService } from '../dataEndPoint';
+import { strapiService } from '@/utils/dataEndpoint';
 import { ValidatedItem } from '@/types/order';
 
 export const resolveProductCountIds = async (
@@ -45,7 +45,7 @@ export const resolveProductCountIds = async (
       continue;
     }
 
-    const res = await strapiService.createProductCount(data);
+    const res = await strapiService.miscEndpoints.createProductCount(data);
     if (res?.id) {
       productCountResults.push({ itemId: item.id, productCountId: res.id });
     } else {

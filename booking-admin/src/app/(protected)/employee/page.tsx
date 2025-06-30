@@ -1,6 +1,5 @@
 /* eslint-disable */
 'use client'
-import { strapiService } from "@/utils/dataEndPoint"
 import { EmployeeEmploymentTable } from "./_components/emp-tables/employee-summary-table"
 import { Suspense, useEffect, useState } from "react"
 import EmployeeOrdersTable from "./_components/emp-tables/employee-order-table"
@@ -30,12 +29,12 @@ export default function EmployeeSummaryPage() {
     }, [])
 
     const fetchEmployees = async () => {
-        const employeeSummaryData = await strapiService.getEmployeeSummary({
+        const employeeSummaryData = await employeeEndpoints.getEmployeeSummary({
             "populate": "*"
         });
         setEmployeeDetails(employeeSummaryData);
 
-        const employeeOrdersData = await strapiService.getEmployeeOrders({
+        const employeeOrdersData = await employeeEndpoints.getEmployeeOrders({
             "populate": "*",
         });
         setEmployeeOrdersData(employeeOrdersData);

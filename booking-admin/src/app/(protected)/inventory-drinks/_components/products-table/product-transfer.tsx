@@ -5,7 +5,7 @@ import { Button } from "@/components/ui-elements/button";
 import { Select } from "@/components/ui-elements/select";
 import { SelectItem } from "@/components/ui-elements/select-item";
 import { Input } from "@/components/ui-elements/input";
-import { strapiService } from "@/utils/dataEndPoint";
+import { strapiService } from "@/utils/dataEndpoint";
 import { Product } from "./products-table";
 import { AlertTriangle, X } from "lucide-react";
 import { toast } from "react-toastify";
@@ -107,7 +107,7 @@ export default function StockTransferForm({ products, onClose }: { products: Pro
           continue;
         }
 
-        await strapiService.updateDrinksList(product.documentId, {
+        await strapiService.menuEndpoints.updateDrinksList(product.documentId, {
           [item.target === "bar" ? "bar_stock" : "restaurant_stock"]: newTargetStock,
           quantity: newMainStock,
         });
