@@ -9,7 +9,7 @@ export const defaultOrganisationInfo = {
     light: "/images/fmmm1-light.svg",
     dark: "/images/fmmm1-dark.svg",
   },
-  website: "https://f-mmm1hotel.com",
+  website: "https://f-mmm1hotel.nl",
   socials: {
     facebook: "https://facebook.com/f-mmm1hotel",
     twitter: "",

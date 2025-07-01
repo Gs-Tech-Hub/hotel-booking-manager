@@ -15,11 +15,11 @@ import { getOrganisationInfo } from "@/lib/getOrganisationInfo";
 
 
 export async function generateMetadata() {
-  const organisation = await getOrganisationInfo();
+  const { organisation } = await getOrganisationInfo();
   return {
     title: {
-      template: `${organisation.organisation.name} Admin`,
-      default: `${organisation.organisation.name} - Dashboard`,
+      template: `${organisation.name} Admin`,
+      default: `${organisation.name} - Dashboard`,
     },
     description: "Admin Dashboard",
   };

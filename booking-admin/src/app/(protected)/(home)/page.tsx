@@ -8,24 +8,7 @@ import { GuestList } from "@/app/(protected)/(home)/_components/guest-list";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/Auth/context/auth-context";
 import { handleBookingRecords } from "@/utils/ReportHelpers/handleBookingRecords";
-
-const generatePastWeekDateRanges = () => {
-  const now = new Date();
-  const ranges = [];
-  for (let i = 0; i <= 7; i++) {
-    const pastDate = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-    ranges.push({
-      label:
-        i === 0
-          ? `Today (${pastDate.toLocaleDateString()})`
-          : i === 1
-          ? `Yesterday (${pastDate.toLocaleDateString()})`
-          : `${i} days ago (${pastDate.toLocaleDateString()})`,
-      value: pastDate.toISOString().split("T")[0],
-    });
-  }
-  return ranges;
-};
+import { generatePastWeekDateRanges } from "@/lib/dateRange";
 
 const pastWeekDateRanges = generatePastWeekDateRanges();
 

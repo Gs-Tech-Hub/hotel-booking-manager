@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const isValid = await strapiService.authEndpoints.verifyToken(storedJwt, userId);
           if (isValid?.valid) {
             setUser(userData);
-           console.log("User set from storage:", userData);
+          //  console.log("User set from storage:", userData);
           } else {
             // log("Token invalid, clearing storage...");
             localStorage.removeItem('user');

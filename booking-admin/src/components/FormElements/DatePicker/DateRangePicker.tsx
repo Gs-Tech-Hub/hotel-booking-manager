@@ -1,27 +1,10 @@
 import { useState, useEffect } from "react";
+import { generatePastWeekDateRanges } from "@/lib/dateRange";
 
 interface DateRangePickerProps {
   onChange: (start: string, end: string) => void;
   className?: string;
 }
-
-const generatePastWeekDateRanges = () => {
-  const now = new Date();
-  const ranges = [];
-  for (let i = 0; i < 7; i++) {
-    const pastDate = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-    ranges.push({
-      label:
-        i === 0
-          ? `Today (${pastDate.toLocaleDateString()})`
-          : i === 1
-          ? `Yesterday (${pastDate.toLocaleDateString()})`
-          : `${i} days ago (${pastDate.toLocaleDateString()})`,
-      value: pastDate.toISOString().split("T")[0],
-    });
-  }
-  return ranges;
-};
 
 export const DateRangePicker: React.FC<DateRangePickerProps> = ({ onChange, className }) => {
   const pastWeekDateRanges = generatePastWeekDateRanges();

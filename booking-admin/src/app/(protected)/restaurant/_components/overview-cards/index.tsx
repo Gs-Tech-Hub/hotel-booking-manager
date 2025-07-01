@@ -41,25 +41,6 @@ export function OverviewCardsGroup({ total_cash, total_transfers, total_sold }: 
           value: formatPrice((total_sold.value), 'NGN'),
         }}
       />
-
-      {/* <OverviewCard
-        label="Low Stock"
-        data={{
-          ...low_stock,
-          value: (low_stock.value),
-        }}
-      /> */}
-
-      {/* <OverviewCard
-        label="Out-Of-Stock"
-        data={{
-          ...out_of_stock,
-          value: (out_of_stock.value),
-        }}
-        // Icon={icons.CheckIn}
-      /> */}
-
-  
     </div>
   );
 }

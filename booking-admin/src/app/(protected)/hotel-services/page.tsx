@@ -6,25 +6,8 @@ import { OverviewCardsSkeleton } from './overview-cards/skeleton';
 import { ExtendedProduct, handleMainRecord } from '@/utils/ReportHelpers/mainHandle';
 import { ProductsListSkeleton } from '../bar/_components/products-table/skeleton';
 import DrinksInventoryPage from './product-table/drinks-inventory';
+import { generatePastWeekDateRanges } from '@/lib/dateRange';
 
-// Generate past week date ranges (copied from bar page for consistency)
-const generatePastWeekDateRanges = () => {
-    const now = new Date();
-    const ranges = [];
-    for (let i = 0; i <= 7; i++) {
-        const pastDate = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-        ranges.push({
-            label:
-                i === 0
-                    ? `Today (${pastDate.toLocaleDateString()})`
-                    : i === 1
-                        ? `Yesterday (${pastDate.toLocaleDateString()})`
-                        : `${i} days ago (${pastDate.toLocaleDateString()})`,
-            value: pastDate.toISOString().split('T')[0],
-        });
-    }
-    return ranges;
-};
 const pastWeekDateRanges = generatePastWeekDateRanges();
 
 export default function HotelServicesPage() {

@@ -6,7 +6,7 @@ import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
 import { ProductsListSkeleton } from "./_components/products-table/skeleton";
 import DrinksInventoryPage from "./_components/products-table/drinks-inventory";
 import { handleMainRecord } from "@/utils/ReportHelpers/mainHandle";
-
+import { generatePastWeekDateRanges } from "@/lib/dateRange";
 interface ProductData {
   name: string;
   price: number;
@@ -30,24 +30,6 @@ interface ProductData {
 
   [key: string]: any;
 }
-
-const generatePastWeekDateRanges = () => {
-  const now = new Date();
-  const ranges = [];
-  for (let i = 0; i <= 7; i++) {
-    const pastDate = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-    ranges.push({
-      label:
-        i === 0
-          ? `Today (${pastDate.toLocaleDateString()})`
-          : i === 1
-          ? `Yesterday (${pastDate.toLocaleDateString()})`
-          : `${i} days ago (${pastDate.toLocaleDateString()})`,
-      value: pastDate.toISOString().split("T")[0],
-    });
-  }
-  return ranges;
-};
 
 const pastWeekDateRanges = generatePastWeekDateRanges();
 
