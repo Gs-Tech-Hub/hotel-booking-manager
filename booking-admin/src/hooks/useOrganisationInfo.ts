@@ -18,10 +18,6 @@ export function useOrganisationInfo() {
         const { organisation: apiOrganisation } = await getOrganisationInfo();
         if (isMounted) setOrganisation(apiOrganisation);
       } catch (err: any) {
-        if (isMounted) {
-          setError(err.message || "Failed to fetch organisation info");
-          setOrganisation(defaultOrganisationInfo);
-        }
       } finally {
         if (isMounted) setLoading(false);
       }
